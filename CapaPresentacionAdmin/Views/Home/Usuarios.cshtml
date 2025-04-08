@@ -1,0 +1,120 @@
+﻿
+@{
+    ViewBag.Title = "Usuarios";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@*CREATE TABLE SEGURIDAD.USUARIO
+    (
+    id_usuario INTEGER NOT NULL IDENTITY(1,1),
+    nombres VARCHAR(150) NOT NULL,
+    apellidos VARCHAR(150) NOT NULL,
+    correo VARCHAR(20) NOT NULL,
+    contraseña VARCHAR(150) NOT NULL,
+    telefono VARCHAR(20) NOT NULL,
+    estado BIT DEFAULT 1 NOT NULL,
+    ROLES_id_rol INTEGER NOT NULL
+    )
+    GO *@
+
+<ol class="breadcrumb mb-4 mt-4">
+    <li class="breadcrumb-item"><a href="@Url.Action("Index","Home")">Resumen</a></li>
+    <li class="breadcrumb-item active">Usuarios</li>
+</ol>
+
+<div class="card">
+    <div class="card-header">
+
+        <i class="fas fa-users"></i> Lista de Usuarios
+    </div>
+
+    <div class="card-body">
+        <div class="row">
+            <div class="col-12">
+                <button type="button" class="btn btn-success" onclick="abrirModal(null)">Crear Nuevo</button>
+            </div>
+        </div>
+
+        <hr />
+
+        <table id="tablausuario" class="display cell-border" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Nombres</th>
+                    <th>Apellidos</th>
+                    <th>Correo</th>
+                    <th>Contraseña</th>
+                    <th>Telefono</th>
+                    <th>Estado</th>
+                    <th>Rol</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+
+@section Scripts{
+    <script>
+        var tabladata;
+
+       
+        jQuery.ajax({
+            url: '@Url.Action("ListarUsuarios", "Home")',
+            type: 'GET',
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                //debugger;
+                //var texto = "Hello word";
+
+                console.log(data);
+            }
+        });
+
+        tabladata = $('#tablausuario').DataTable({
+            responsive: true,
+            ordering: false,
+            "ajax": {
+                "url": '@Url.Action("ListarUsuarios", "Home")',
+                "type": "GET",
+                "datatype": "json"
+            },
+            "columns": [
+                { "data": "nombres" },
+                { "data": "apellidos" },
+                { "data": "correo" },
+                { "data": "contraseña" },
+                { "data": "telefono" },
+                {
+                    "data": "estado",
+                    "render": function (valor) {
+                        if (valor) {
+                            return '<span class="badge bg-success">Activo</span>';
+                        } else {
+                            return '<span class="badge bg-danger">Inactivo</span>';
+                        }
+                        
+                    }
+                },
+                { "data": "rol" },
+                {
+                    "defaultContent": '<button type="button" class="btn btn-warning btn-editar">Editar</button> <button type="button" class="btn btn-danger btn-eliminar">Eliminar</button>',
+                    "oderrable": false,
+                    "searchable": false,
+                    "width": "180px"
+
+
+                }
+
+            ],
+            "language": {
+                "url": '//cdn.datatables.net/plug-ins/2.2.1/i18n/es-ES.json',
+            },
+        });
+
+    </script>
+}
