@@ -56,13 +56,89 @@
 </div>
 
 
+<!-- Modal -->
+<div class="modal fade" id="FormModal1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title" id="exampleModalLabel">Usuario</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body ">
+
+                <!-- <input id ="txtid" type="hidden" name="name" value="0" /> -->
+                <input id="txtid" type="text" name="name" value="0" />
+                <input id="txtid_rol" type="text" name="name" value="0" />
+
+                <div class="row g-2">
+
+                    <div class="col-sm-6">
+                        <label for="txtNombre" class="form-label">Nombres</label>
+                        <input type="text" class="form-control" id="txtNombre" placeholder="Juan Carlos" autocomplete="off">
+                    </div>
+
+                    <div class="col-sm-6">
+                        <label for="txtApellidos" class="form-label">Apellidos</label>
+                        <input type="text" class="form-control" id="txtApellidos" placeholder="Perez Soliz" autocomplete="off">
+                    </div>
+
+                    <div class="col-sm-6">
+                        <label for="txtCorreo" class="form-label">Correo</label>
+                        <input type="text" class="form-control" id="txtCorreo" placeholder="juanperezsoliz@gmail.com" autocomplete="off">
+                    </div>
+
+                    <div class="col-sm-6">
+                        <label for="txtContraseña" class="form-label">Contraseña</label>
+                        <input type="text" class="form-control" id="txtContraseña" autocomplete="off">
+                    </div>
+
+                    <div class="col-sm-6">
+                        <label for="txtTelefono" class="form-label">Telefono</label>
+                        <input type="text" class="form-control" id="txtTelefono" placeholder="77555555" autocomplete="off">
+                    </div>
+
+                    <div class="col-sm-6">
+                        <label for="cdactivo" class="form-label">Estado</label>
+                        <select class="form-select" aria-label="Default select example" id="cdactivo">
+                            <option value="1">Activo</option>
+                            <option value="0">Inactivo</option>
+                        </select>
+                    </div>
+
+                    <div class="col-sm-12">
+                        <label for="cdrol" class="form-label">Rol</label>
+                        <select class="form-select" aria-label="Default select example" id="cdrol">
+                            <option value="1">SUPER ADMIN</option>
+                        </select>
+                    </div>
+
+                </div>
+                <div class="row mt-2">
+                    <div class="col-12">
+
+                        <div id="mensajeError" class="alert alert-danger" role="alert">
+                            A simple danger alert—check it out!
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" onclick="Guardar()">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 @section Scripts{
     <script>
         var tabladata;
+        var filaSeleccionada;
 
-       
-        jQuery.ajax({
+
+        @*jQuery.ajax({
             url: '@Url.Action("ListarUsuarios", "Home")',
             type: 'GET',
             dataType: 'json',
@@ -73,7 +149,7 @@
 
                 console.log(data);
             }
-        });
+        });*@
 
         tabladata = $('#tablausuario').DataTable({
             responsive: true,
@@ -97,12 +173,12 @@
                         } else {
                             return '<span class="badge bg-danger">Inactivo</span>';
                         }
-                        
+
                     }
                 },
                 { "data": "rol" },
                 {
-                    "defaultContent": '<button type="button" class="btn btn-warning btn-editar">Editar</button> <button type="button" class="btn btn-danger btn-eliminar">Eliminar</button>',
+                    "defaultContent": '<button type="button" class="btn btn-warning btn-sm btn-editar">Editar</button> <button type="button" class="btn btn-danger btn-eliminar">Eliminar</button>',
                     "oderrable": false,
                     "searchable": false,
                     "width": "180px"
@@ -116,5 +192,170 @@
             },
         });
 
+        function abrirModal(json) {
+
+            $("#txtid").val(0);
+            $("#txtid_rol").val(0);
+            $("#txtNombre").val("");
+            $("#txtApellidos").val("");
+            $("#txtCorreo").val("");
+            $("#txtContraseña").val("");
+            $("#txtTelefono").val("");
+            $("#cdactivo").val(1);
+
+            $("#mensajeError").hide();
+
+
+
+            if (json != null) {
+
+                $("#txtid").val(json.id_usuario);
+                $("#txtid_rol").val(json.id_rol);
+                $("#txtNombre").val(json.nombres);
+                $("#txtApellidos").val(json.apellidos);
+                $("#txtCorreo").val(json.correo);
+                $("#txtContraseña").val(json.contraseña);
+                $("#txtTelefono").val(json.telefono);
+                $("#cdactivo").val(json.estado == true ? 1 : 0);
+            }
+
+            $('#FormModal1').modal('show');
+        }
+
+        $("#tablausuario tbody").on("click", '.btn-editar', function () {
+
+            filaSeleccionada = $(this).closest("tr");
+
+            var data = tabladata.row(filaSeleccionada).data();
+
+            console.log(data)
+
+            abrirModal(data)
+
+
+        })
+
+        $("#tablausuario tbody").on("click", '.btn-eliminar', function () {
+
+            var usuarioSeleccionado = $(this).closest("tr");
+
+            var data = tabladata.row(usuarioSeleccionado).data();
+
+            swal({
+                title: "¿Estás seguro?",
+                text: "¿Desea eliminar el usuario?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: "btn-danger",
+                confirmButtonText: "Si, Eliminar",
+                cancelButtonText: "No, Cancelar",
+                closeOnConfirm: true,
+            },
+            function ()
+            {
+                $.ajax({
+                    url: '@Url.Action("EliminarUsuario", "Home")',
+                    type: 'POST',
+                    data: JSON.stringify({ id: data.id_usuario }),
+                    dataType: 'json',
+                    contentType: 'application/json; charset=utf-8',
+                    success: function (data) {
+
+                        if (data.resultado) {
+                                                      
+                            tabladata.row(usuarioseleccionado).remove().draw();
+                        } else {
+                            swal("No se pudo eliminar", data.mensaje, "error");
+                        }
+                    },
+                    error: function (error) {
+                        console.log(error)
+                    }
+                });
+            });
+
+
+
+            console.log(data);
+
+
+
+        })
+
+        function Guardar()
+        {
+
+            var Usuario = {
+                id_usuario: $("#txtid").val(),
+                nombres: $("#txtNombre").val(),
+                apellidos: $("#txtApellidos").val(),
+                correo: $("#txtCorreo").val(),
+                contraseña: $("#txtContraseña").val(),
+                telefono: $("#txtTelefono").val(),
+                estado: $("#cdactivo").val() == 1 ? true : false,
+                id_rol: $("#cdrol").val()
+            }
+
+            jQuery.ajax({
+                url: '@Url.Action("GuardarUsuario", "Home")',
+                type: 'POST',
+                data: JSON.stringify({ objeto : Usuario }),
+                datatype: 'json',
+                contentType: 'application/json; charset=utf-8',
+                //data: JSON.stringify(Usuario),
+                success: function (data) {
+
+                    $(".modal-body").LoadingOverlay("hide");
+
+                    //USUARIO NUEVO
+                    if (Usuario.id_usuario == 0) {
+
+                        if (data.resultado != 0) {
+
+                            Usuario, id_usuario = data.resultado;
+                            tabladata.row.add(Usuario).draw(false);
+
+                            $('#FormModal1').modal("hide");
+
+                        } else {
+                            //alert(data.mensaje)
+                            $("#mensajeError").text(data.mensaje);
+                            $("#mensajeError").show();
+                        }
+                    }
+                    //USUARIO editar
+                    else {
+
+                        if (data.resultado) {
+                            tabladata.row(filaSeleccionada).data(Usuario).draw(false);
+                            filaSeleccionada = null;
+
+                            $('#FormModal1').modal("hide");
+                        } else {
+                            $("#mensajeError").text(data.mensaje);
+                            $("#mensajeError").show();
+                        }
+                    }
+                },
+                error: function (error) {
+                    $(".modal-body").LoadingOverlay("hide");
+                    $('#mensajeError').text("Error Ajax");
+                    $('#mensajeError').show();
+                },
+                beforeSend: function () {
+                    $(".modal-body").LoadingOverlay("show", {
+                        imageResizeFactor: 2,
+                        text: "Cargando...",
+                        size: 24
+                    })
+                }
+            });
+        }
+
+
+
     </script>
 }
+
+
+
