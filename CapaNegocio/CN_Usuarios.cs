@@ -100,6 +100,15 @@ namespace CapaNegocio
             return objUsuario.Eliminar(id, out Mensaje);
         }
 
+        //validar usuario
+        public Usuario ValidarUsuario(string correo, string contraseña)
+        {
+            //contraseña = CN_Recursos.ConvertirSha256(contraseña);
+            return objUsuario.ValidarUsuario(correo, contraseña);
+        }
+
+
+
 
     }
 }

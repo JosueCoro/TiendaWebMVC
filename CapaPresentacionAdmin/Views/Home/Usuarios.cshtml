@@ -262,6 +262,7 @@
                         success: function (data) {
 
                             if (data.resultado) {
+                                ActualizarTabla();
 
                                 tabladata.row(usuarioseleccionado).remove().draw();
                             } else {
@@ -315,6 +316,8 @@
                                 Usuario, id_usuario = data.resultado;
                                 tabladata.row.add(Usuario).draw(false);
 
+                                ActualizarTabla();
+
                                 $('#FormModal1').modal("hide");
 
                             } else {
@@ -329,6 +332,7 @@
                             if (data.resultado) {
                                 tabladata.row(filaSeleccionada).data(Usuario).draw(false);
                                 filaSeleccionada = null;
+                                ActualizarTabla();
 
                                 $('#FormModal1').modal("hide");
                             } else {
@@ -350,6 +354,10 @@
                         })
                     }
                 });
+            }
+            //funcion que actualiza el datatable
+            function ActualizarTabla() {
+                tabladata.ajax.reload(null, false);
             }
 
 

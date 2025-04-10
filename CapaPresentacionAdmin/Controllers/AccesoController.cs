@@ -18,13 +18,15 @@ namespace CapaPresentacionAdmin.Controllers
         }
 
 
-
+        //Login
         [HttpPost]
         public ActionResult Index(string correo, string contraseña)
         {
             Usuario oUsuario = new Usuario();
 
-            oUsuario = new CN_Usuarios().Listar().Where(u => u.correo == correo && u.contraseña == CN_Recursos.ConvertirSha256(contraseña)).FirstOrDefault();
+            string contraseñaEncriptada = CN_Recursos.ConvertirSha256(contraseña);
+
+            oUsuario = new CN_Usuarios().ValidarUsuario(correo, contraseñaEncriptada);
 
             if (oUsuario == null)
             {
@@ -33,8 +35,10 @@ namespace CapaPresentacionAdmin.Controllers
             }
             else
             {
-                ViewBag.Error = null;
+                Session["Usuario"] = oUsuario;
                 return RedirectToAction("Index", "Home");
+                //ViewBag.Error = null;
+                //return RedirectToAction("Index", "Home");
             }
         }
     }

@@ -227,6 +227,89 @@ namespace CapaDatos
             return resultado;
         }
 
+        /*CREATE PROCEDURE SEGURIDAD.PA_ValidarLogin
+        (
+            @Correo VARCHAR(50),
+            @Contraseña VARCHAR(150)
+        )
+        AS
+        BEGIN
+            -- Declarar variables para almacenar el ID del usuario y el resultado
+            DECLARE @ID_Usuario INT;
+            DECLARE @Resultado INT;
+
+            -- Comprobar si el usuario existe con el correo y la contraseña proporcionados
+            SELECT @ID_Usuario = id_usuario
+            FROM SEGURIDAD.USUARIO
+            WHERE correo = @Correo
+              AND contraseña = @Contraseña
+              AND estado = 1;  -- Solo usuarios activos
+
+            -- Si el usuario fue encontrado y está activo
+            IF @ID_Usuario IS NOT NULL
+            BEGIN
+                -- Se asigna el resultado 1 (usuario existe y está activo)
+                SET @Resultado = 1;
+            END
+            ELSE
+            BEGIN
+                -- Si no se encuentra el usuario o está inactivo, el resultado es 0
+                SET @Resultado = 0;
+                SET @ID_Usuario = NULL; -- Se asegura de que no se devuelva un ID si no se encuentra el usuario
+            END
+
+            -- Retornar los valores de ID_Usuario y Resultado
+            SELECT @ID_Usuario AS ID_Usuario, @Resultado AS Resultado;
+        END;
+        GO
+        */
+        public Usuario ValidarUsuario(string correo, string contraseña)
+        {
+            Usuario oUsuario = null;
+            try
+            {
+                using (SqlConnection oconexion = new SqlConnection(Conexion.cn))
+                {
+                    SqlCommand cmd = new SqlCommand("SEGURIDAD.PA_ValidarLogin", oconexion);
+                    cmd.Parameters.Add("@Correo", SqlDbType.VarChar, 50).Value = correo;
+                    cmd.Parameters.Add("@Contraseña", SqlDbType.VarChar, 150).Value = contraseña;
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    oconexion.Open();
+
+                    SqlDataReader lectura = cmd.ExecuteReader();
+
+                    if (lectura.Read())
+                    {
+                        int idUsuario = Convert.ToInt32(lectura["ID_Usuario"]);
+                        int resultado = Convert.ToInt32(lectura["Resultado"]); 
+
+                        if (resultado == 1)
+                        {
+                            oUsuario = new Usuario()
+                            {
+                                id_usuario = idUsuario
+                            };
+                        }
+                        else
+                        {
+                            oUsuario = null;
+                        }
+                    }
+                    else
+                    {
+                        oUsuario = null;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al validar usuario: {ex.Message}");
+                oUsuario = null;
+            }
+
+            return oUsuario;
+        }
 
     }
 }
