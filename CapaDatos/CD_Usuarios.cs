@@ -153,7 +153,7 @@ namespace CapaDatos
                     cmd.Parameters.AddWithValue("@Nombres", obj.nombres);
                     cmd.Parameters.AddWithValue("@Apellidos", obj.apellidos);
                     cmd.Parameters.AddWithValue("@Correo", obj.correo);
-                    cmd.Parameters.AddWithValue("@Contraseña", obj.contraseña);
+                    //cmd.Parameters.AddWithValue("@Contraseña", obj.contraseña);
                     cmd.Parameters.AddWithValue("@Telefono", obj.telefono);
                     cmd.Parameters.AddWithValue("@Estado", obj.estado);
                     cmd.Parameters.AddWithValue("@RolId", obj.id_rol);

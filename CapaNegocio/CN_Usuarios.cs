@@ -33,10 +33,6 @@ namespace CapaNegocio
             {
                 Mensaje = "El correo del usuario no puede ser vacio";
             }
-            else if (string.IsNullOrEmpty(obj.contraseña) || string.IsNullOrWhiteSpace(obj.contraseña))
-            {
-                Mensaje = "La contraseña del usuario no puede ser vacio";
-            }
             else if (string.IsNullOrEmpty(obj.telefono) || string.IsNullOrWhiteSpace(obj.telefono))
             {
                 Mensaje = "El telefono del usuario no puede ser vacio";
@@ -44,10 +40,24 @@ namespace CapaNegocio
 
             if (string.IsNullOrEmpty(Mensaje))
             {
-                string clave = "13540503";
-                obj.contraseña = CN_Recursos.ConvertirSha256(clave);
 
-                return objUsuario.Registrar(obj, out Mensaje);
+
+                string clave = CN_Recursos.GenerarClave();
+
+                string asunto = "Creacion de Cuenta";
+                string mensaje = "<h3>Su cuenta fue creada correctamente</h3></br><p>Su contraseña para acceder es: !clave!</p>";
+                mensaje = mensaje.Replace("!clave!", clave);
+
+                bool respuesta = CN_Recursos.EnviarCorreo(obj.correo, asunto, mensaje);
+
+                if (respuesta)
+                {
+                    obj.contraseña = CN_Recursos.ConvertirSha256(clave);
+                    return objUsuario.Registrar(obj, out Mensaje);
+                }else {
+                    Mensaje = "Error al enviar el correo, por favor verifique su correo electronico";
+                    return 0;
+                }            
             }
             else
             {
@@ -69,10 +79,6 @@ namespace CapaNegocio
             else if (string.IsNullOrEmpty(obj.correo) || string.IsNullOrWhiteSpace(obj.correo))
             {
                 Mensaje = "El correo del usuario no puede ser vacio";
-            }
-            else if (string.IsNullOrEmpty(obj.contraseña) || string.IsNullOrWhiteSpace(obj.contraseña))
-            {
-                Mensaje = "La contraseña del usuario no puede ser vacio";
             }
             else if (string.IsNullOrEmpty(obj.telefono) || string.IsNullOrWhiteSpace(obj.telefono))
             {
