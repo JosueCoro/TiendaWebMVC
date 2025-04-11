@@ -1,87 +1,115 @@
-﻿
-@{
+﻿@{
     Layout = null;
 }
 
 <!DOCTYPE html>
-
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>Index</title>
+    <title>Login - Autopartes DOS HERMANOS</title>
     <link href="~/Content/Site.css" rel="stylesheet" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
 </head>
-<body class="bg-primary">
+<body style="background-color: #2b3c56;">
     <div id="layoutAuthentication">
         <div id="layoutAuthentication_content">
             <main>
                 <div class="container">
                     <div class="row justify-content-center">
-                        <div class="col-lg-5">
+                        <div class="col-lg-10">
                             <div class="card shadow-lg border-0 rounded-lg mt-5">
-                                <div class="card-header"><h3 class="text-center font-weight-light my-4">Login</h3></div>
-                                <div class="card-body">
-                                    <form action="@Url.Action("Index", "Acceso")" method="post">
+                                <div class="row g-0">
+                                    <div class="col-md-6 bg-light d-flex flex-column align-items-center justify-content-center p-4">
+                                        <img src="~/Content/Imagenes/Logo.png" alt="Logo de Autopartes DOS HERMANOS" class="img-fluid my-3" style="max-width: 80%;">
+                                        <p class="text-muted text-center px-3">
+                                            Autopartes de confianza para tu vehículo, siempre a tu alcance.
+                                        </p>
+                                    </div>
 
-
-                                        <div class="form-floating mb-3">
-                                            <input class="form-control" name="correo" type="email" />
-                                            <label for="inputEmail">Email</label>
+                                    <div class="col-md-6 p-4">
+                                        <div class="text-center mb-4">
+                                            <h3 class="font-weight-light"></h3>
                                         </div>
-                                        <div class="form-floating mb-3">
-                                            <input class="form-control" name="contraseña" type="password" />
-                                            <label for="inputPassword">Contraseña</label>
+                                        <div class="text-center mb-4">
+                                            <h3 class="font-weight-light">Iniciar Sesión</h3>
                                         </div>
 
 
-                                        @{
-                                            if (ViewBag.Error != null)
+                                        <form action="@Url.Action("Index", "Acceso")" method="post">
+                                            <div class="form-floating mb-3">
+                                                <input class="form-control" name="correo" type="email" placeholder="Ingrese su correo" required />
+                                                <label for="inputEmail">Correo electrónico</label>
+                                            </div>
+
+                                            <div class="form-floating mb-3">
+                                                <input id="inputPassword" class="form-control" name="contraseña" type="password" placeholder="Ingrese su contraseña" required />
+                                                <label for="inputPassword">Contraseña</label>
+                                                <button type="button" class="btn position-absolute top-50 end-0 translate-middle-y me-2 p-0" onclick="togglePassword()" style="z-index: 2;">
+                                                    <i id="eyeIcon" class="bi bi-eye" style="font-size: 1.2rem;"></i>
+                                                </button>
+                                            </div>
+
+                                            <div class="text-center mb-4">
+                                                <h3 class="font-weight-light"></h3>
+                                            </div>
+
+                                            @if (ViewBag.Error != null)
                                             {
                                                 <div class="form-floating mb-3">
-                                                    <div  class="alert alert-danger" role="alert">
-                                                        @ViewBag.Error 
+                                                    <div class="alert alert-danger" role="alert">
+                                                        @ViewBag.Error
                                                     </div>
                                                 </div>
                                             }
 
-                                        }
+                                            <div class="d-flex align-items-center justify-content-center mt-4 mb-3">
+                                                <button type="submit" class="btn btn-primary w-100" style="background-color: #e7333a; border-color: #e7333a; color: white;">Iniciar Sesión</button>
+                                            </div>
 
-
-
-
-
-                                        <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
-                                            <a class="small" href="password.html">¿Has olvidado tu contraseña?</a>
-                                            <button type="submit" class="btn btn-primary" href="index.html">Iniciar Sesión</button>
-                                        </div>
-                                    </form>
+                                            <div class="d-flex justify-content-between">
+                                                <a class="small" href="@Url.Action("CambiarContraseña", "Acceso")">¿Olvidaste tu contraseña?</a>
+                                            </div>
+                                        </form>
+                                    </div>
                                 </div>
-
                             </div>
                         </div>
                     </div>
                 </div>
             </main>
         </div>
+
         <div id="layoutAuthentication_footer">
             <footer class="py-4 bg-light mt-auto">
                 <div class="container-fluid px-4">
                     <div class="d-flex align-items-center justify-content-between small">
-                        <div class="text-muted">Copyright &copy; Your Website 2023</div>
+                        <div class="text-muted">Copyright &copy; Autopartes DOS HERMANOS 2025</div>
                         <div>
-                            <a href="#">Privacy Policy</a>
+                            <a href="#">Política de Privacidad</a>
                             &middot;
-                            <a href="#">Terms &amp; Conditions</a>
+                            <a href="#">Términos &amp; Condiciones</a>
                         </div>
                     </div>
                 </div>
             </footer>
         </div>
     </div>
+
     <script src="~/Scripts/bootstrap.bundle.js"></script>
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById("inputPassword");
+            const eyeIcon = document.getElementById("eyeIcon");
+            const isPassword = passwordInput.type === "password";
+
+            passwordInput.type = isPassword ? "text" : "password";
+            eyeIcon.className = isPassword ? "bi bi-eye-slash" : "bi bi-eye";
+        }
+    </script>
+
 </body>
 </html>

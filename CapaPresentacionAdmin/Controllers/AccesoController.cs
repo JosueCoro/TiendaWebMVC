@@ -17,6 +17,11 @@ namespace CapaPresentacionAdmin.Controllers
             return View();
         }
 
+        public ActionResult CambiarContraseña()
+        {
+            return View();
+        }
+
 
         //Login
         [HttpPost]
