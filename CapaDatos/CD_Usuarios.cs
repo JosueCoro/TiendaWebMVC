@@ -7,18 +7,18 @@ using System.Data;
 using System.Data.SqlClient;
 
 using CapaEntidad;
-//CREATE TABLE SEGURIDAD.USUARIO 
-//(
-//id_usuario INTEGER NOT NULL IDENTITY(1,1), 
-//nombres VARCHAR(150) NOT NULL,
-//apellidos VARCHAR(150) NOT NULL,
-//correo VARCHAR(20) NOT NULL,
-//contraseña VARCHAR(150) NOT NULL,
-//telefono VARCHAR(20) NOT NULL,
-//estado BIT DEFAULT 1 NOT NULL,
-//ROLES_id_rol INTEGER NOT NULL 
-//)
-//GO 
+/*CREATE TABLE SEGURIDAD.USUARIO 
+    (
+     id_usuario INTEGER NOT NULL IDENTITY(1,1), 
+     nombres VARCHAR (150) NOT NULL , 
+     apellidos VARCHAR (150) NOT NULL , 
+     correo VARCHAR (50) NOT NULL , 
+     contraseña VARCHAR (150) NOT NULL , 
+     telefono VARCHAR (20) NOT NULL , 
+     estado BIT DEFAULT 1 NOT NULL , 
+     ROLES_id_rol INTEGER NOT NULL 
+    )
+GO*/
 namespace CapaDatos
 {
     public class CD_Usuarios
