@@ -13,7 +13,7 @@
 <div class="card">
     <div class="card-header">
 
-        <i class="fas fa-users"></i> Lista de Roles
+        <i class="fas fa-address-book"></i> Lista de Roles
     </div>
 
     <div class="card-body">
@@ -213,10 +213,12 @@
                     success: function (data) {
 
                         if (data.resultado) {
-                            //ActualizarTabla();
+                            ActualizarTabla();
 
                             tabladata.row(usuarioSeleccionado).remove().draw();
                         } else {
+                            //mostrar el mensaje(Mensaje = "El rol se encuentra relacionado a un usuario. No se puede eliminar";) del controlador
+                           
                             swal("No se pudo eliminar", data.mensaje, "error");
                         }
                     },

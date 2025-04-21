@@ -467,6 +467,7 @@
     <Content Include="Views\Operaciones\Stock.cshtml" />
     <Content Include="Views\Acceso\Index.cshtml" />
     <Content Include="Views\Acceso\CambiarContraseña.cshtml" />
+    <Content Include="Views\Mantenedor\UnidadMedida.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

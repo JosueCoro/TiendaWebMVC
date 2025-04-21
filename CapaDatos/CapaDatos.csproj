@@ -42,7 +42,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CD_Categoria.cs" />
+    <Compile Include="CD_Cliente.cs" />
+    <Compile Include="CD_Marca.cs" />
     <Compile Include="CD_Roles.cs" />
+    <Compile Include="CD_TipoPago.cs" />
+    <Compile Include="CD_UnidadMedida.cs" />
     <Compile Include="CD_Usuarios.cs" />
     <Compile Include="Conexion.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

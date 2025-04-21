@@ -1,20 +1,19 @@
 ﻿
 @{
-    ViewBag.Title = "Marcas";
+    ViewBag.Title = "UnidadMedida";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 
-
 <ol class="breadcrumb mb-4 mt-4">
     <li class="breadcrumb-item"><a href="@Url.Action("Index","Home")">Resumen</a></li>
-    <li class="breadcrumb-item active">Marcas</li>
+    <li class="breadcrumb-item active">Unidad de Medida</li>
 </ol>
 
 <div class="card">
     <div class="card-header">
 
-        <i class="fas fa-bookmark"></i> Lista de Marcas de Producto
+        <i class="fas fa-chart-bar"></i> Lista de Unidad de medida para los productos
     </div>
 
     <div class="card-body">
@@ -58,7 +57,7 @@
 
                     <div class="col-sm-6">
                         <label for="txtdescripcion" class="form-label">Descripcion</label>
-                        <input type="text" class="form-control" id="txtdescripcion" placeholder="Yuasa" autocomplete="off">
+                        <input type="text" class="form-control" id="txtdescripcion" placeholder="Unidad, Par" autocomplete="off">
                     </div>
 
 
@@ -97,7 +96,7 @@
         var tabladata;
         var filaSeleccionada;
         jQuery.ajax({
-            url: '@Url.Action("ListarMarcas", "Mantenedor")',
+            url: '@Url.Action("ListarUnidadMedida", "Mantenedor")',
             type: 'GET',
             dataType: 'json',
             contentType: 'application/json; charset=utf-8',
@@ -113,7 +112,7 @@
             responsive: true,
             ordering: false,
             "ajax": {
-                "url": '@Url.Action("ListarMarcas", "Mantenedor")',
+                "url": '@Url.Action("ListarUnidadMedida", "Mantenedor")',
                 "type": "GET",
                 "datatype": "json"
             },
@@ -156,7 +155,7 @@
 
             if (json != null) {
 
-                $("#txtid").val(json.id_marca);
+                $("#txtid").val(json.id_unidad_medida);
                 $("#txtdescripcion").val(json.descripcion);
                 $("#cdactivo").val(json.estado == true ? 1 : 0);
             }
@@ -196,9 +195,9 @@
             function ()
             {
                 $.ajax({
-                    url: '@Url.Action("EliminarMarcas", "Mantenedor")',
+                    url: '@Url.Action("EliminarUnidadMedida", "Mantenedor")',
                     type: 'POST',
-                    data: JSON.stringify({ id: data.id_marca }),
+                    data: JSON.stringify({ id: data.id_unidad_medida }),
                     dataType: 'json',
                     contentType: 'application/json; charset=utf-8',
                     success: function (data) {
@@ -228,16 +227,16 @@
         function Guardar()
         {
 
-            var Marcas = {
-                id_marca: $("#txtid").val(),
+            var UM = {
+                id_unidad_medida: $("#txtid").val(),
                 descripcion: $("#txtdescripcion").val(),
                 estado: $("#cdactivo").val() == 1 ? true : false,
             }
 
             jQuery.ajax({
-                url: '@Url.Action("GuardarMarca", "Mantenedor")',
+                url: '@Url.Action("GuardarUnidadMedida", "Mantenedor")',
                 type: 'POST',
-                data: JSON.stringify({ objeto: Marcas }),
+                data: JSON.stringify({ objeto: UM }),
                 datatype: 'json',
                 contentType: 'application/json; charset=utf-8',
                 //data: JSON.stringify(Usuario),
@@ -246,12 +245,12 @@
                     $(".modal-body").LoadingOverlay("hide");
 
                     //USUARIO NUEVO
-                    if (Marcas.id_marca == 0) {
+                    if (UM.id_unidad_medida == 0) {
 
                         if (data.resultado != 0) {
 
-                            Marcas, id_marca = data.resultado;
-                            tabladata.row.add(Marcas).draw(false);
+                            UM, id_unidad_medida = data.resultado;
+                            tabladata.row.add(UM).draw(false);
 
                             ActualizarTabla();
 
@@ -267,7 +266,7 @@
                     else {
 
                         if (data.resultado) {
-                            tabladata.row(filaSeleccionada).data(Marcas).draw(false);
+                            tabladata.row(filaSeleccionada).data(UM).draw(false);
                             filaSeleccionada = null;
                             ActualizarTabla();
 
@@ -302,6 +301,9 @@
 
     </script>
 }
+
+
+
 
 
 
