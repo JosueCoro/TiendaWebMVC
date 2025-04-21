@@ -220,9 +220,22 @@ namespace CapaDatos
                     SqlCommand cmd = new SqlCommand("SEGURIDAD.CRUD_ROLES", conexion);
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.AddWithValue("@Operacion", "DELETE");
+                    cmd.Parameters.AddWithValue("@Nombre", DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Descripcion", DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Estado", DBNull.Value);
                     cmd.Parameters.AddWithValue("@IdRol", id_rol);
-                    cmd.Parameters.Add("@Mensaje", SqlDbType.VarChar, 500).Direction = ParameterDirection.Output;
-                    cmd.Parameters.Add("@Resultado", SqlDbType.Bit).Direction = ParameterDirection.Output;
+
+                    SqlParameter pMensaje = new SqlParameter("@Mensaje", SqlDbType.VarChar, 500)
+                    {
+                        Direction = ParameterDirection.Output
+                    };
+                    SqlParameter pResultado = new SqlParameter("@Resultado", SqlDbType.Bit)
+                    {
+                        Direction = ParameterDirection.Output
+                    };
+
+                    cmd.Parameters.Add(pMensaje);
+                    cmd.Parameters.Add(pResultado);
 
                     conexion.Open();
 

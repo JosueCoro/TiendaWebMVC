@@ -63,15 +63,13 @@ namespace CapaNegocio
         public bool Eliminar(int id_rol, out string Mensaje)
         {
             Mensaje = string.Empty;
-            //mostrar el mensaje "El rol se encuentra relacionado a un usuario. No se puede eliminar" si no se pudo elminar
-            if (objRol.Eliminar(id_rol, out Mensaje) == false)
-            {
-                Mensaje = "El rol se encuentra relacionado a un usuario. No se puede eliminar";
-                return false;
-            }
-            else
-                return objRol.Eliminar(id_rol, out Mensaje);
 
+            bool eliminado = objRol.Eliminar(id_rol, out Mensaje);
+            if (!eliminado)
+            {
+                Mensaje = "El rol se encuentra relacionado a un usuario. No se puede eliminar.";
+            }
+            return eliminado;
         }
 
 

@@ -101,11 +101,7 @@ namespace CapaPresentacionAdmin.Controllers
         {
             bool respuesta = false;
             string Mensaje = string.Empty;
-
             respuesta = new CN_Roles().Eliminar(id, out Mensaje);
-
-
-
             return Json(new { resultado = respuesta, mensaje = Mensaje }, JsonRequestBehavior.AllowGet);
         }
 
