@@ -218,8 +218,9 @@
                             tabladata.row(usuarioSeleccionado).remove().draw();
                         } else {
                             //mostrar el mensaje(Mensaje = "El rol se encuentra relacionado a un usuario. No se puede eliminar";) del controlador
-                           
-                            swal("No se pudo eliminar", data.mensaje, "error");
+                            //mostrar el mensaje de error en alert
+                            alert(data.mensaje);    
+                            //swal("No se pudo eliminar", data.mensaje, "error");
                         }
                     },
                     error: function (error) {
