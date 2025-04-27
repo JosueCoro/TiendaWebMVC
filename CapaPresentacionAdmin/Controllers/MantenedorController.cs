@@ -130,10 +130,60 @@ namespace CapaPresentacionAdmin.Controllers
             return View();
         }
 
+
+
+
+        //SERVICIOS
         public ActionResult Servicios()
         {
             return View();
         }
+
+
+        [HttpGet]
+        public JsonResult ListarServicios()
+        {
+            List<Servicio> olista = new List<Servicio>();
+            olista = new CN_Servicios().Listar();
+            return Json(new { data = olista }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public JsonResult GuardarServicio(Servicio objeto)
+        {
+            object resultado;
+            string Mensaje = string.Empty;
+            if (objeto.id_servicio == 0)
+            {
+                resultado = new CN_Servicios().Registrar(objeto, out Mensaje);
+            }
+            else
+            {
+                resultado = new CN_Servicios().Editar(objeto, out Mensaje);
+            }
+            return Json(new { resultado = resultado, mensaje = Mensaje }, JsonRequestBehavior.AllowGet);
+        }
+
+
+
+        [HttpPost]
+        public JsonResult EliminarServicio(int id)
+        {
+            bool respuesta = false;
+            string Mensaje = string.Empty;
+            respuesta = new CN_Servicios().Eliminar(id, out Mensaje);
+            return Json(new { resultado = respuesta, mensaje = Mensaje }, JsonRequestBehavior.AllowGet);
+        }
+
+
+
+
+
+
+
+
+
+
 
 
         //TIPOS DE PAGO

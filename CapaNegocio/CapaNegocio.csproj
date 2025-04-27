@@ -44,8 +44,10 @@
     <Compile Include="CN_Categoria.cs" />
     <Compile Include="CN_Clientes.cs" />
     <Compile Include="CN_Marcas.cs" />
+    <Compile Include="CN_Proveedores.cs" />
     <Compile Include="CN_Recursos.cs" />
     <Compile Include="CN_Roles.cs" />
+    <Compile Include="CN_Servicios.cs" />
     <Compile Include="CN_TipoPago.cs" />
     <Compile Include="CN_UnidadMedida.cs" />
     <Compile Include="CN_Usuarios.cs" />
