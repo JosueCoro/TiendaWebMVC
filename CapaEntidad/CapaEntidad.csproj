@@ -51,6 +51,8 @@
     <Compile Include="Proveedor.cs" />
     <Compile Include="Roles.cs" />
     <Compile Include="Servicio.cs" />
+    <Compile Include="Stock.cs" />
+    <Compile Include="Tienda.cs" />
     <Compile Include="TipoPago.cs" />
     <Compile Include="UnidadMedida.cs" />
     <Compile Include="Usuario.cs" />

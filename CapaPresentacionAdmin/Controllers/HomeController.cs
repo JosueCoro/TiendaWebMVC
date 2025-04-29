@@ -14,6 +14,9 @@ namespace CapaPresentacionAdmin.Controllers
         {
             return View();
         }
+
+
+        #region USUARIO
         //USUARIO
         public ActionResult Usuarios()
         {
@@ -57,12 +60,12 @@ namespace CapaPresentacionAdmin.Controllers
 
             return Json(new { resultado = respuesta, mensaje = Mensaje }, JsonRequestBehavior.AllowGet);
         }
+        #endregion
 
 
 
 
-
-
+        #region ROL
         //ROLES
         public ActionResult Roles()
         {
@@ -104,6 +107,7 @@ namespace CapaPresentacionAdmin.Controllers
             respuesta = new CN_Roles().Eliminar(id, out Mensaje);
             return Json(new { resultado = respuesta, mensaje = Mensaje }, JsonRequestBehavior.AllowGet);
         }
+        #endregion
 
 
 
