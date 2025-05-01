@@ -17,10 +17,16 @@ namespace CapaPresentacionAdmin
                 "~/Scripts/loadingoverlay/loadingoverlay.min.js",
                 "~/Scripts/sweetalert.min.js",
                 "~/Scripts/fontawesome/all.min.js",
+                "~/Scripts/jquery-ui-1-14.1.js",
+                "~/Scripts/jquery-ui-1.14.1.js",
+                "~/Scripts/jquery-ui-1.14.1.min.js",
                 "~/Scripts/scripts.js"));
 
             //bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(
             //"~/Scripts/jquery.validate*"));
+            bundles.Add(new ScriptBundle("~/bundles/sidebar").Include(
+                "~/Scripts/sidebar-toggle.js"));
+
 
             // Utilice la versión de desarrollo de Modernizr para desarrollar y obtener información sobre los formularios.  De esta manera estará
             // para la producción, use la herramienta de compilación disponible en https://modernizr.com para seleccionar solo las pruebas que necesite.
@@ -30,12 +36,15 @@ namespace CapaPresentacionAdmin
             bundles.Add(new Bundle("~/bundles/bootstrap").Include(
                       "~/Scripts/bootstrap.bundle.js"));
 
-            bundles.Add(new StyleBundle("~/Content/css").Include("~/Content/font-awesome.css", "~/Content/site.css"));
+            //bundles.Add(new StyleBundle("~/Content/css").Include("~/Content/font-awesome.css", "~/Content/site.css"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                 "~/Content/font-awesome.min.css",
+                "~/Content/font-awesome.css",
                 "~/Content/DataTables/css/jquery.dataTables.css",
                 "~/Content/DataTables/css/responsive.dataTables.css",
+                "~/Content/jquery-ui.css",
+                "~/Content/jquery-ui.min.css",
                 "~/Content/sweetalert.css",
                 "~/Content/site.css"));
         }

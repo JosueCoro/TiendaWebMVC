@@ -47,6 +47,7 @@
     <Compile Include="CN_Producto.cs" />
     <Compile Include="CN_Proveedores.cs" />
     <Compile Include="CN_Recursos.cs" />
+    <Compile Include="CN_Reporte.cs" />
     <Compile Include="CN_Roles.cs" />
     <Compile Include="CN_Servicios.cs" />
     <Compile Include="CN_TipoPago.cs" />
