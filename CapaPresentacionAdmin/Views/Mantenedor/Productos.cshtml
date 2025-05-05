@@ -4,5 +4,443 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Productos</h2>
+
+
+
+
+<ol class="breadcrumb mb-4 mt-4">
+    <li class="breadcrumb-item"><a href="@Url.Action("Index","Home")">Resumen</a></li>
+    <li class="breadcrumb-item active">Productos</li>
+</ol>
+
+<div class="card">
+    <div class="card-header">
+
+        <i class="fas fa-boxes"></i> Lista de Producto
+    </div>
+
+    <div class="card-body">
+        <div class="row">
+            <div class="col-12">
+                <button type="button" class="btn btn-success" onclick="abrirModal(null)">Crear Nuevo</button>
+            </div>
+        </div>
+
+        <hr />
+
+        <table id="tablausuario" class="display cell-border" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Descripcion</th>
+                    <th>Cantidad</th>
+                    <th>Unidad de Medida</th>
+                    <th>Categoria</th>
+                    <th>Marca</th>
+                    <th>Precio</th>
+                    <th>Estado</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="FormModal1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title" id="exampleModalLabel">Producto</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body ">
+
+                <!-- <input id ="txtid" type="hidden" name="name" value="0" /> -->
+                <input id="txtid" type="text" name="name" value="0" />
+
+                <form id="contenedor" class="row">
+                    <div class="col-sm-3">
+                        <div class="mb-2">
+                            <img id="img_producto" height="197" width="200" class="border rounded mx-auto d-block img-fluid" />
+                        </div>
+                        <div class="mb-2">
+                            <input type="file" class="form-control" id="fileproducto" accept="image/png, image/jpg, image/jpeg" onchange="mostrarImagen(this)" />
+
+                        </div>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <div class="mb-3">
+                            <label class="form-label">Nombre del Producto</label>
+                            <input type="text" class="form-control" id="txtnombre" name="nombre" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Descripcion</label>
+                            <textarea type="text" class="form-control" id="txtdescripcion" name="descripcion" style="height:125px;resize:none"> </textarea>
+
+                        </div>
+                    </div>
+
+
+                    <div class="col-sm-3">
+
+                        <div class="mb-3">
+                            <label class="form-label">Unidad De Medida</label>
+                            <select id="cboum" class="form-select">
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Categoria</label>
+                            <select id="cbocategoria" class="form-select">
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Marca</label>
+                            <select id="cbomarca" class="form-select">
+                            </select>
+                        </div>
+
+
+                        <div class="mb-3">
+                            <label class="form-label">Precio</label>
+                            <input type="text" class="form-control" id="txtprecio" name="precio" autocomplete="off" />
+                        </div>
+
+
+                    </div>
+
+                    <div class="col-sm-3">
+                        <div class="mb-3">
+                            <label class="form-label">Cantidad</label>
+                            <input type="text" class="form-control" id="txtstock" name="stock" />
+                        </div>
+                        <div class="col-sm-6">
+                            <label for="cdactivo" class="form-label">Estado</label>
+                            <select class="form-select" aria-label="Default select example" id="cdactivo">
+                                <option value="1">Activo</option>
+                                <option value="0">Inactivo</option>
+                            </select>
+                        </div>
+                    </div>
+
+                </form>
+
+
+
+                <div class="row mt-2">
+                    <div class="col-12">
+
+                        <div id="mensajeError" class="alert alert-danger" role="alert">
+                            A simple danger alert—check it out!
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" onclick="Guardar()">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+        var tabladata;
+        var filaSeleccionada;
+
+        function mostrarImagen(input) {
+            if (input.files) {
+
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $('#img_producto').attr('src', e.target.result).width(200).height(197)
+                }
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        @*jQuery.ajax({
+            url: '@Url.Action("ListarMarcas", "Mantenedor")',
+            type: 'GET',
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                //debugger;
+                //var texto = "Hello word";
+
+                console.log(data);
+            }
+        });*@
+
+        tabladata = $('#tablausuario').DataTable({
+            responsive: true,
+            ordering: false,
+            "ajax": {
+                "url": '@Url.Action("ListarMarcas", "Mantenedor")',
+                "type": "GET",
+                "datatype": "json"
+            },
+            "columns": [
+                { "data": "descripcion" },
+                {
+                    "data": "estado",
+                    "render": function (valor) {
+                        if (valor) {
+                            return '<span class="badge bg-success">Activo</span>';
+                        } else {
+                            return '<span class="badge bg-danger">Inactivo</span>';
+                        }
+                    }
+                },
+                {
+                    "defaultContent": '<button type="button" class="btn btn-warning btn-sm btn-editar">Editar</button> <button type="button" class="btn btn-danger btn-eliminar">Eliminar</button>',
+                    "oderrable": false,
+                    "searchable": false,
+                    "width": "180px"
+
+
+                }
+
+            ],
+            "language": {
+                "url": '//cdn.datatables.net/plug-ins/2.2.1/i18n/es-ES.json',
+            },
+        });
+
+        //lista de unidad de medida
+        jQuery.ajax({
+            url: '@Url.Action("ListarUnidadMedida", "Mantenedor")',
+            type: 'GET',
+            data: null,
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+
+                console.log(data);
+
+                $.each(data.data, function (index, valor) {
+                    $("<option>").attr("value", valor.id_unidad_medida).text(valor.descripcion).appendTo("#cboum");
+
+                })
+
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+        //lista de categoria
+        jQuery.ajax({
+            url: '@Url.Action("ListarCategorias", "Mantenedor")',
+            type: 'GET',
+            data: null,
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                console.log(data);
+                $.each(data.data, function (index, valor) {
+                    $("<option>").attr("value", valor.id_categoria).text(valor.descripcion).appendTo("#cbocategoria");
+                })
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+        //lista de marca
+        jQuery.ajax({
+            url: '@Url.Action("ListarMarcas", "Mantenedor")',
+            type: 'GET',
+            data: null,
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                console.log(data);
+                $.each(data.data, function (index, valor) {
+                    $("<option>").attr("value", valor.id_marca).text(valor.descripcion).appendTo("#cbomarca");
+                })
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+
+
+
+
+        function abrirModal(json) {
+
+            $("#txtid").val(0);
+            $("#txtdescripcion").val("");
+            $("#cdactivo").val(1);
+
+            $("#mensajeError").hide();
+
+
+
+            if (json != null) {
+
+                $("#txtid").val(json.id_marca);
+                $("#txtdescripcion").val(json.descripcion);
+                $("#cdactivo").val(json.estado == true ? 1 : 0);
+            }
+
+            $('#FormModal1').modal('show');
+        }
+
+        $("#tablausuario tbody").on("click", '.btn-editar', function () {
+
+            filaSeleccionada = $(this).closest("tr");
+
+            var data = tabladata.row(filaSeleccionada).data();
+
+            console.log(data)
+
+            abrirModal(data)
+
+
+        })
+
+        $("#tablausuario tbody").on("click", '.btn-eliminar', function () {
+
+            var usuarioSeleccionado = $(this).closest("tr");
+
+            var data = tabladata.row(usuarioSeleccionado).data();
+
+            swal({
+                title: "¿Estás seguro?",
+                text: "¿Desea eliminar la Marca?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: "btn-danger",
+                confirmButtonText: "Si, Eliminar",
+                cancelButtonText: "No, Cancelar",
+                closeOnConfirm: true,
+            },
+            function ()
+            {
+                $.ajax({
+                    url: '@Url.Action("EliminarMarcas", "Mantenedor")',
+                    type: 'POST',
+                    data: JSON.stringify({ id: data.id_marca }),
+                    dataType: 'json',
+                    contentType: 'application/json; charset=utf-8',
+                    success: function (data) {
+
+                        if (data.resultado) {
+                            //ActualizarTabla();
+
+                            tabladata.row(usuarioSeleccionado).remove().draw();
+                        } else {
+                            swal("No se pudo eliminar", data.mensaje, "error");
+                        }
+                    },
+                    error: function (error) {
+                        console.log(error)
+                    }
+                });
+            });
+
+
+
+            console.log(data);
+
+
+
+        })
+
+        function Guardar()
+        {
+
+            var Marcas = {
+                id_marca: $("#txtid").val(),
+                descripcion: $("#txtdescripcion").val(),
+                estado: $("#cdactivo").val() == 1 ? true : false,
+            }
+
+            jQuery.ajax({
+                url: '@Url.Action("GuardarMarca", "Mantenedor")',
+                type: 'POST',
+                data: JSON.stringify({ objeto: Marcas }),
+                datatype: 'json',
+                contentType: 'application/json; charset=utf-8',
+                //data: JSON.stringify(Usuario),
+                success: function (data) {
+
+                    $(".modal-body").LoadingOverlay("hide");
+
+                    //USUARIO NUEVO
+                    if (Marcas.id_marca == 0) {
+
+                        if (data.resultado != 0) {
+
+                            Marcas, id_marca = data.resultado;
+                            tabladata.row.add(Marcas).draw(false);
+
+                            ActualizarTabla();
+
+                            $('#FormModal1').modal("hide");
+
+                        } else {
+                            //alert(data.mensaje)
+                            $("#mensajeError").text(data.mensaje);
+                            $("#mensajeError").show();
+                        }
+                    }
+                    //USUARIO editar
+                    else {
+
+                        if (data.resultado) {
+                            tabladata.row(filaSeleccionada).data(Marcas).draw(false);
+                            filaSeleccionada = null;
+                            ActualizarTabla();
+
+                            $('#FormModal1').modal("hide");
+                        } else {
+                            $("#mensajeError").text(data.mensaje);
+                            $("#mensajeError").show();
+                        }
+                    }
+                },
+                error: function (error) {
+                    $(".modal-body").LoadingOverlay("hide");
+                    $('#mensajeError').text("Error Ajax");
+                    $('#mensajeError').show();
+                },
+                beforeSend: function () {
+                    $(".modal-body").LoadingOverlay("show", {
+                        imageResizeFactor: 2,
+                        text: "Cargando...",
+                        size: 24
+                    })
+                }
+            });
+        }
+        //funcion que actualiza el datatable
+        function ActualizarTabla() {
+            tabladata.ajax.reload(null, false);
+        }
+
+
+
+
+    </script>
+}
+
+
+
+
+
+
+
+
 

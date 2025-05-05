@@ -88,9 +88,9 @@
                     </div>
 
                     <!--<div class="col-sm-6">
-                            <label for="txtContraseña" class="form-label">Contraseña</label>
-                            <input type="text" class="form-control" id="txtContraseña" autocomplete="off">
-                        </div>  -->
+            <label for="txtContraseña" class="form-label">Contraseña</label>
+            <input type="text" class="form-control" id="txtContraseña" autocomplete="off">
+        </div>  -->
 
                     <div class="col-sm-6">
                         <label for="txtTelefono" class="form-label">Telefono</label>
@@ -108,9 +108,10 @@
                     <div class="col-sm-12">
                         <label for="cdrol" class="form-label">Rol</label>
                         <select class="form-select" aria-label="Default select example" id="cdrol">
-                            <option value="1">SUPER ADMIN</option>
                         </select>
                     </div>
+
+                    
 
                 </div>
                     <div class="row mt-2">
@@ -163,7 +164,7 @@
                     { "data": "nombres" },
                     { "data": "apellidos" },
                     { "data": "correo" },
-                    { "data": "contraseña" },
+                    //{ "data": "contraseña" },
                     { "data": "telefono" },
                     {
                         "data": "estado",
@@ -191,6 +192,26 @@
                     "url": '//cdn.datatables.net/plug-ins/2.2.1/i18n/es-ES.json',
                 },
             });
+            
+            //lista de roles
+            jQuery.ajax({
+                url: '@Url.Action("ListarRoles", "Home")',
+                type: 'GET',
+                data: null,
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    console.log(data);
+                    $.each(data.data, function (index, valor) {
+                        $("<option>").attr("value", valor.id_rol).text(valor.nombre).appendTo("#cdrol");
+                    })
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+
+
 
             function abrirModal(json) {
 

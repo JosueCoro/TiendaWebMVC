@@ -49,7 +49,8 @@ namespace CapaDatos
                             telefono = lectura["telefono"].ToString(),
                             estado = Convert.ToBoolean(lectura["estado"]),
                             id_rol = Convert.ToInt32(lectura["ROLES_id_rol"]),
-                            rol = lectura["nombre_rol"].ToString() 
+                            rol = lectura["nombre_rol"] != DBNull.Value ? lectura["nombre_rol"].ToString() : "Sin Rol"
+                            //rol = lectura["nombre_rol"].ToString() 
                         });
                     }
                 }               
