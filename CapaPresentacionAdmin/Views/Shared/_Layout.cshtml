@@ -69,41 +69,27 @@
                             <div class="sb-nav-link-icon"><i class="fas fa-user-edit"></i></div>
                             Permisos
                         </a>
-                        <a class="nav-link" href="@Url.Action("CambiarContraseña","Acceso")">
-                            <div class="sb-nav-link-icon"><i class="fas fa-user-edit"></i></div>
-                            Cambiar contraseña
-                        </a>
+                        
 
+                        <div class="sb-sidenav-menu-heading">Interface</div>
+                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+                            <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                            Mantenimiento
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav">
+                                <a class="nav-link" href="@Url.Action("Categorias","Mantenedor")"><i class="fas fa-table me-2"></i>Categorías</a>
+                                <a class="nav-link" href="@Url.Action("Marcas","Mantenedor")"><i class="fas fa-bookmark me-2"></i>Marcas</a>
+                                <a class="nav-link" href="@Url.Action("productos","Mantenedor")"><i class="fas fa-boxes me-2"></i>Productos</a>
+                                <a class="nav-link" href="@Url.Action("UnidadMedida","Mantenedor")"><i class="fas fa-chart-bar me-2"></i>Unidad de Medida</a>
+                                <a class="nav-link" href="@Url.Action("Servicios","Mantenedor")"><i class="fas fa-thumbtack me-2"></i>Servicios</a>
+                                <a class="nav-link" href="@Url.Action("TipoPago","Mantenedor")"><i class="fas fa-coins me-2"></i>Tipo de Pago</a>
+                                <a class="nav-link" href="@Url.Action("Tiendas","Mantenedor")"><i class="fas fa-store me-2"></i>Tiendas</a>
+                            </nav>
+                        </div>
 
-                        <div class="sb-sidenav-menu-heading">Mantenimiento</div>
-                        <a class="nav-link" href="@Url.Action("Categorias","Mantenedor")">
-                            <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
-                            Categorias
-                        </a>
-                        <a class="nav-link" href="@Url.Action("Marcas","Mantenedor")">
-                            <div class="sb-nav-link-icon"><i class="fas fa-bookmark"></i></div>
-                            Marcas
-                        </a>
-                        <a class="nav-link" href="@Url.Action("productos","Mantenedor")">
-                            <div class="sb-nav-link-icon"><i class="fas fa-boxes"></i></div>
-                            Productos
-                        </a>
-                        <a class="nav-link" href="@Url.Action("UnidadMedida","Mantenedor")">
-                            <div class="sb-nav-link-icon"><i class="fas fa-chart-bar"></i></div>
-                            Unidad De Medida
-                        </a>
-                        <a class="nav-link" href="@Url.Action("Servicios","Mantenedor")">
-                            <div class="sb-nav-link-icon"><i class="fas fa-thumbtack"></i></div>
-                            Servicios
-                        </a>
-                        <a class="nav-link" href="@Url.Action("TipoPago","Mantenedor")">
-                            <div class="sb-nav-link-icon"><i class="fas fa-coins"></i></div>
-                            Tipo de pago
-                        </a>
-                        <a class="nav-link" href="@Url.Action("Tiendas","Mantenedor")">
-                            <div class="sb-nav-link-icon"><i class="fas fa-store"></i></div>
-                            Tiendas
-                        </a>
+                        
 
                         <div class="sb-sidenav-menu-heading">Operaciones</div>
                         <a class="nav-link" href="@Url.Action("Ventas","Operaciones")">

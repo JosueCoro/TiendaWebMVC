@@ -13,6 +13,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
 </head>
 <body style="background-color: #2b3c56;">
     <div id="layoutAuthentication">
@@ -24,54 +26,64 @@
                             <div class="card shadow-lg border-0 rounded-lg mt-5">
                                 <div class="card-header"><h3 class="text-center font-weight-light my-4">Cambiar Contraseña</h3></div>
                                 <div class="card-body">
-                                    <form>
-
-                                       
-                                        <div class="row mb-3">
-                                            <div class="col-md-12">
-                                                <div class="form-floating mb-3 mb-md-0">
-                                                    <input class="form-control" id="inputPassword" type="email" placeholder="Create a password" />
-                                                    <label for="inputPassword">Correo</label>
-                                                </div>
-                                            </div>
-
+                                    <form id="formCambiarContraseña" action="@Url.Action("CambiarContraseña", "Acceso")" method="post" onsubmit="return validarContraseñas()">
+                                        <div class="form-floating mb-3">
+                                            <input class="form-control" name="correo" type="email" placeholder="Ingrese su correo" required />
+                                            <label for="inputEmail">Correo electrónico</label>
                                         </div>
 
-                                        <div class="row mb-3">
-                                            <div class="col-md-12">
-                                                <div class="form-floating mb-3 mb-md-0">
-                                                    <input class="form-control" id="inputPassword" type="password" placeholder="Create a password" />
-                                                    <label for="inputPassword">Contraseña Actual</label>
-                                                </div>
-                                            </div>
-
+                                        <div class="form-floating mb-3 position-relative">
+                                            <input id="actualPassword" class="form-control" name="contraseñaActual" type="password" placeholder="Ingrese su contraseña Actual" required />
+                                            <label for="actualPassword">Contraseña Actual</label>
+                                            <button type="button" class="btn position-absolute top-50 end-0 translate-middle-y me-2 p-0"
+                                                    onclick="togglePassword('actualPassword', 'eyeActual')" style="z-index: 2;">
+                                                <i id="eyeActual" class="bi bi-eye" style="font-size: 1.2rem;"></i>
+                                            </button>
                                         </div>
 
-                                        <div class="row mb-3">
-                                            <div class="col-md-12">
-                                                <div class="form-floating mb-3 mb-md-0">
-                                                    <input class="form-control" id="inputPassword" type="password" placeholder="Create a password" />
-                                                    <label for="inputPassword">Nueva contraseña</label>
-                                                </div>
-                                            </div>
-
+                                        <div class="form-floating mb-3 position-relative">
+                                            <input id="newPassword" class="form-control" name="nuevaContraseña" type="password" placeholder="Ingrese su contraseña Nueva" required />
+                                            <label for="newPassword">Contraseña Nueva</label>
+                                            <button type="button" class="btn position-absolute top-50 end-0 translate-middle-y me-2 p-0"
+                                                    onclick="togglePassword('newPassword', 'eyeNueva')" style="z-index: 2;">
+                                                <i id="eyeNueva" class="bi bi-eye" style="font-size: 1.2rem;"></i>
+                                            </button>
                                         </div>
 
-                                        <div class="row mb-3">
-                                            <div class="col-md-12">
-                                                <div class="form-floating mb-3 mb-md-0">
-                                                    <input class="form-control" id="inputPassword" type="password" placeholder="Create a password" />
-                                                    <label for="inputPassword">Confirmar Nueva Contraseña</label>
-                                                </div>
-                                            </div>
-
+                                        <div class="form-floating mb-3 position-relative">
+                                            <input id="confirmPassword" class="form-control" name="confirmarContraseña" type="password" placeholder="Confirmar nueva contraseña" required />
+                                            <label for="confirmPassword">Confirmar Nueva Contraseña</label>
+                                            <button type="button" class="btn position-absolute top-50 end-0 translate-middle-y me-2 p-0"
+                                                    onclick="togglePassword('confirmPassword', 'eyeConfirmar')" style="z-index: 2;">
+                                                <i id="eyeConfirmar" class="bi bi-eye" style="font-size: 1.2rem;"></i>
+                                            </button>
                                         </div>
+                                        <div id="errorPassword" style="display: none;" class="alert alert-danger">
+                                            Las contraseñas no coinciden.
+                                        </div>
+
+                                        @if (ViewBag.Mensaje != null)
+                                        {
+                                            <div class="alert alert-danger">
+                                                @ViewBag.Mensaje
+                                            </div>
+                                        }
+
+                                        @if (ViewBag.MensajeExito != null)
+                                        {
+                                            <div class="alert alert-success">
+                                                @ViewBag.MensajeExito
+                                            </div>
+                                        }
+
 
 
                                         <div class="mt-4 mb-0">
-                                            <div class="d-grid"><a class="btn btn-primary btn-block" href="login.html">Cambiar Contraseña</a></div>
+                                            <div class="d-grid"><button type="submit" class="btn btn-primary btn-block">Cambiar Contraseña</button></div>
                                         </div>
                                     </form>
+
+
                                 </div>
                                 <div class="card-footer text-center py-3">
                                     <div class="small"><a href="@Url.Action("Index", "Acceso")">Volver</a></div>
@@ -98,5 +110,34 @@
         </div>
     </div>
     <script src="~/Scripts/bootstrap.bundle.js"></script>
+    <script>
+        function togglePassword(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            const isPassword = input.type === "password";
+
+            input.type = isPassword ? "text" : "password";
+            icon.className = isPassword ? "bi bi-eye-slash" : "bi bi-eye";
+        }
+
+        function validarContraseñas() {
+            const nueva = document.getElementById("newPassword").value;
+            const confirmar = document.getElementById("confirmPassword").value;
+            const errorDiv = document.getElementById("errorPassword");
+
+            console.log("Validando contraseñas...");
+
+            if (nueva !== confirmar) {
+                errorDiv.style.display = "block";
+                return false;
+            }
+
+            errorDiv.style.display = "none";
+            return true;
+        }
+
+
+    </script>
+
 </body>
 </html>

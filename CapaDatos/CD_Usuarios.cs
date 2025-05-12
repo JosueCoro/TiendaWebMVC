@@ -312,5 +312,166 @@ namespace CapaDatos
             return oUsuario;
         }
 
+        /*--Procedimiento almacenado para que el usuario cambie su contraseña
+         * COMO PARAMETROS LE PASAMOS EL CORREO, LA CONTRASEÑA ACTUAL Y LA NUEVA CONTRASEÑA(CORREO VA FUNCIONAR COMO ID YA QUE EL CORREO ES UNICO EN CADA USUARIO)
+         CREATE PROCEDURE SEGURIDAD.CambiarContraseña
+        (
+            @Correo VARCHAR(50),
+            @ContraseñaActual VARCHAR(150),
+            @NuevaContraseña VARCHAR(150),
+            @ID_Usuario INT OUTPUT,
+            @Resultado INT OUTPUT,
+            @Mensaje VARCHAR(200) OUTPUT
+        )
+        AS
+        BEGIN
+            -- Inicializar valores
+            SET @ID_Usuario = NULL;
+            SET @Resultado = 0;
+            SET @Mensaje = '';
+
+            -- Buscar usuario con correo y contraseña actual
+            SELECT @ID_Usuario = id_usuario
+            FROM SEGURIDAD.USUARIO
+            WHERE correo = @Correo
+              AND contraseña = @ContraseñaActual
+              AND estado = 1;
+
+            -- Validar existencia y estado del usuario
+            IF @ID_Usuario IS NOT NULL
+            BEGIN
+                -- Actualizar contraseña
+                UPDATE SEGURIDAD.USUARIO
+                SET contraseña = @NuevaContraseña
+                WHERE id_usuario = @ID_Usuario;
+
+                SET @Resultado = 1;
+                SET @Mensaje = 'Contraseña actualizada correctamente.';
+            END
+            ELSE
+            BEGIN
+                SET @Mensaje = 'Correo o contraseña actual incorrectos, o el usuario está inactivo.';
+            END
+        END;
+        GO
+         
+         */
+        public bool CambiarContraseña(string correo, string contraseñaActual, string nuevaContraseña, out string Mensaje)
+        {
+            bool resultado = false;
+            Mensaje = string.Empty;
+
+            try
+            {
+                using (SqlConnection oconexion = new SqlConnection(Conexion.cn))
+                {
+                    SqlCommand cmd = new SqlCommand("SEGURIDAD.CambiarContraseña", oconexion);
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    // Parámetros de entrada
+                    cmd.Parameters.Add("@Correo", SqlDbType.VarChar, 50).Value = correo;
+                    cmd.Parameters.Add("@ContraseñaActual", SqlDbType.VarChar, 150).Value = contraseñaActual;
+                    cmd.Parameters.Add("@NuevaContraseña", SqlDbType.VarChar, 150).Value = nuevaContraseña;
+
+                    // Parámetros de salida
+                    cmd.Parameters.Add("@ID_Usuario", SqlDbType.Int).Direction = ParameterDirection.Output;
+                    cmd.Parameters.Add("@Resultado", SqlDbType.Int).Direction = ParameterDirection.Output;
+                    cmd.Parameters.Add("@Mensaje", SqlDbType.VarChar, 500).Direction = ParameterDirection.Output;
+
+                    oconexion.Open();
+                    cmd.ExecuteNonQuery();
+
+                    // Captura de resultados
+                    resultado = Convert.ToInt32(cmd.Parameters["@Resultado"].Value) == 1;
+                    Mensaje = cmd.Parameters["@Mensaje"].Value.ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                resultado = false;
+                Mensaje = ex.Message;
+            }
+
+            return resultado;
+        }
+        /*Procedimiento almacenado para un administrador pueda actualizar contraseña de un usuario(osea que va ir con id, correo,contraseña y nueva como parametros)
+         CREATE PROCEDURE SEGURIDAD.EditarUsuario
+        (
+            @IdUsuario INT,
+            @Nombres VARCHAR(150),
+            @Apellidos VARCHAR(150),
+            @Correo VARCHAR(50),
+            @Telefono VARCHAR(20),
+            @Estado BIT,
+            @RolId INT,
+            @Mensaje VARCHAR(500) OUTPUT,
+            @Resultado BIT OUTPUT
+        )
+        AS
+        BEGIN
+            SET @Resultado = 0;
+
+            -- Validar si el correo ya está en uso por otro usuario
+            IF NOT EXISTS (
+                SELECT * 
+                FROM SEGURIDAD.USUARIO 
+                WHERE correo = @Correo AND id_usuario != @IdUsuario
+            )
+            BEGIN
+                UPDATE SEGURIDAD.USUARIO
+                SET nombres = @Nombres,
+                    apellidos = @Apellidos,
+                    correo = @Correo,
+                    telefono = @Telefono,
+                    estado = @Estado,
+                    ROLES_id_rol = @RolId
+                WHERE id_usuario = @IdUsuario;
+
+                SET @Resultado = 1;
+            END
+            ELSE
+            BEGIN
+                SET @Mensaje = 'El correo del usuario ya existe';
+            END
+        END
+        GO
+
+         */
+        public bool ActualizarContraseñaUsuario(int idUsuario, string correo, string nuevaContraseña, out string mensaje)
+        {
+            bool resultado = false;
+            mensaje = string.Empty;
+
+            try
+            {
+                using (SqlConnection oConexion = new SqlConnection(Conexion.cn))
+                {
+                    SqlCommand cmd = new SqlCommand("SEGURIDAD.ActualizarContraseñaUsuario", oConexion);
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.AddWithValue("@IdUsuario", idUsuario);
+                    cmd.Parameters.AddWithValue("@Correo", correo);
+                    cmd.Parameters.AddWithValue("@NuevaContraseña", nuevaContraseña);
+
+                    cmd.Parameters.Add("@Resultado", SqlDbType.Int).Direction = ParameterDirection.Output;
+                    cmd.Parameters.Add("@Mensaje", SqlDbType.VarChar, 200).Direction = ParameterDirection.Output;
+
+                    oConexion.Open();
+                    cmd.ExecuteNonQuery();
+
+                    resultado = Convert.ToBoolean(cmd.Parameters["@Resultado"].Value);
+                    mensaje = cmd.Parameters["@Mensaje"].Value.ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                resultado = false;
+                mensaje = ex.Message;
+            }
+
+            return resultado;
+        }
+
+
     }
 }

@@ -22,6 +22,46 @@ namespace CapaPresentacionAdmin.Controllers
             return View();
         }
 
+        [HttpPost]
+        public ActionResult CambiarContraseña(string correo, string contraseñaActual, string nuevaContraseña, string confirmarContraseña)
+        {
+            string mensaje = string.Empty;
+
+            // Validaciones
+            if (string.IsNullOrWhiteSpace(correo) ||
+                string.IsNullOrWhiteSpace(contraseñaActual) ||
+                string.IsNullOrWhiteSpace(nuevaContraseña) ||
+                string.IsNullOrWhiteSpace(confirmarContraseña))
+            {
+                ViewBag.Mensaje = "Todos los campos son obligatorios.";
+                return View();
+            }
+
+            if (nuevaContraseña != confirmarContraseña)
+            {
+                ViewBag.Mensaje = "La nueva contraseña y su confirmación no coinciden.";
+                return View();
+            }
+
+            bool resultado = new CN_Usuarios().CambiarContraseña(correo, contraseñaActual, nuevaContraseña, out mensaje);
+
+            if (resultado)
+            {
+                ViewBag.MensajeExito = "Contraseña actualizada correctamente. Revise su correo.";
+            }
+            else
+            {
+                ViewBag.Mensaje = mensaje;  // mensaje puede venir de la capa de negocio
+            }
+
+            return View();
+        }
+
+
+
+
+
+
 
         //Login
         [HttpPost]
@@ -41,7 +81,10 @@ namespace CapaPresentacionAdmin.Controllers
             else
             {
                 Session["Usuario"] = oUsuario;
+                //Session["id_usuario"] = oUsuario.id_usuario;
                 return RedirectToAction("Index", "Home");
+                //MOSTRAR EL ID DEL USUARIO QUE INICIO SESION
+                
                 //ViewBag.Error = null;
                 //return RedirectToAction("Index", "Home");
             }

@@ -61,6 +61,16 @@ namespace CapaPresentacionAdmin.Controllers
 
             return Json(new { resultado = respuesta, mensaje = Mensaje }, JsonRequestBehavior.AllowGet);
         }
+
+        //Actualizar contraseña
+        [HttpPost]
+        public JsonResult ActualizarContraseña(Usuario objeto)
+        {
+            bool resultado = false;
+            string Mensaje = string.Empty;
+            resultado = new CN_Usuarios().ActualizarContraseñaUsuario(objeto.id_usuario, objeto.correo, objeto.contraseña, out Mensaje);
+            return Json(new { resultado = resultado, mensaje = Mensaje }, JsonRequestBehavior.AllowGet);
+        }
         #endregion
 
 

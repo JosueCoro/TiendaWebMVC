@@ -104,8 +104,102 @@ namespace CapaNegocio
         public Usuario ValidarUsuario(string correo, string contraseña)
         {
             //contraseña = CN_Recursos.ConvertirSha256(contraseña);
+
             return objUsuario.ValidarUsuario(correo, contraseña);
         }
+
+
+        // Cambiar contraseña por correo
+        public bool CambiarContraseña(string correo, string contraseñaActual, string nuevaContraseña, out string Mensaje)
+        {
+            Mensaje = string.Empty;
+
+            // Validaciones
+            if (string.IsNullOrWhiteSpace(correo))
+            {
+                Mensaje = "El correo del usuario no puede estar vacío.";
+            }
+            else if (string.IsNullOrWhiteSpace(contraseñaActual))
+            {
+                Mensaje = "La contraseña actual no puede estar vacía.";
+            }
+            else if (string.IsNullOrWhiteSpace(nuevaContraseña))
+            {
+                Mensaje = "La nueva contraseña no puede estar vacía.";
+            }
+
+            if (!string.IsNullOrEmpty(Mensaje))
+                return false;
+
+            // Encriptar contraseñas
+            string contraseñaActualHash = CN_Recursos.ConvertirSha256(contraseñaActual);
+            string nuevaContraseñaHash = CN_Recursos.ConvertirSha256(nuevaContraseña);
+
+            // Llamar a capa de datos
+            bool resultado = objUsuario.CambiarContraseña(correo, contraseñaActualHash, nuevaContraseñaHash, out Mensaje);
+
+            // Si fue exitosa la actualización, enviar correo
+            if (resultado)
+            {
+                string asunto = "Cambio de contraseña"; 
+                string mensaje = "<h3>Su contraseña fue cambiada correctamente</h3><br/><p>Su nueva contraseña es: <strong>" + nuevaContraseña + "</strong></p>";
+
+                bool envioCorreo = CN_Recursos.EnviarCorreo(correo, asunto, mensaje);
+
+                if (!envioCorreo)
+                {
+                    Mensaje = "La contraseña fue actualizada, pero hubo un error al enviar el correo.";
+                }
+            }
+
+            return resultado;
+        }
+        //Actualizar contraseña
+        public bool ActualizarContraseñaUsuario(int idUsuario, string correo, string nuevaContraseña, out string Mensaje)
+        {
+            Mensaje = string.Empty;
+
+            // Validaciones
+            if (idUsuario <= 0)
+            {
+                Mensaje = "El ID de usuario no es válido.";
+            }
+            else if (string.IsNullOrWhiteSpace(correo))
+            {
+                Mensaje = "El correo del usuario no puede estar vacío.";
+            }
+            else if (string.IsNullOrWhiteSpace(nuevaContraseña))
+            {
+                Mensaje = "La nueva contraseña no puede estar vacía.";
+            }
+
+            if (!string.IsNullOrEmpty(Mensaje))
+                return false;
+
+            // Encriptar la nueva contraseña
+            string nuevaContraseñaHash = CN_Recursos.ConvertirSha256(nuevaContraseña);
+
+            // Llamar a la capa de datos
+            bool resultado = objUsuario.ActualizarContraseñaUsuario(idUsuario, correo, nuevaContraseñaHash, out Mensaje);
+
+            // Si se actualizó correctamente, enviar correo
+            if (resultado)
+            {
+                string asunto = "Actualización de contraseña";
+                string mensaje = "<h3>Su contraseña fue actualizada por un administrador</h3><br/><p>Su nueva contraseña es: <strong>" + nuevaContraseña + "</strong></p>";
+
+                bool envioCorreo = CN_Recursos.EnviarCorreo(correo, asunto, mensaje);
+
+                if (!envioCorreo)
+                {
+                    Mensaje = "La contraseña fue actualizada, pero no se pudo enviar el correo de notificación.";
+                }
+            }
+
+            return resultado;
+        }
+
+
 
 
 
