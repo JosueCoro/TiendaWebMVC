@@ -34,6 +34,7 @@
                     <th>Nombre</th>
                     <th>Descripcion</th>
                     <th>Cantidad</th>
+                    <th>Sucursal</th>
                     <th>Unidad de Medida</th>
                     <th>Categoria</th>
                     <th>Marca</th>
@@ -106,20 +107,15 @@
                             </select>
                         </div>
 
+                    </div>
+
+                    <div class="col-sm-3">
 
                         <div class="mb-3">
                             <label class="form-label">Precio</label>
                             <input type="text" class="form-control" id="txtprecio" name="precio" autocomplete="off" />
                         </div>
 
-
-                    </div>
-
-                    <div class="col-sm-3">
-                        <div class="mb-3">
-                            <label class="form-label">Cantidad</label>
-                            <input type="text" class="form-control" id="txtstock" name="stock" />
-                        </div>
                         <div class="col-sm-6">
                             <label for="cdactivo" class="form-label">Estado</label>
                             <select class="form-select" aria-label="Default select example" id="cdactivo">
@@ -170,29 +166,58 @@
             }
         }
 
-        @*jQuery.ajax({
-            url: '@Url.Action("ListarMarcas", "Mantenedor")',
-            type: 'GET',
-            dataType: 'json',
-            contentType: 'application/json; charset=utf-8',
-            success: function (data) {
-                //debugger;
-                //var texto = "Hello word";
-
-                console.log(data);
-            }
-        });*@
 
         tabladata = $('#tablausuario').DataTable({
             responsive: true,
             ordering: false,
             "ajax": {
-                "url": '@Url.Action("ListarMarcas", "Mantenedor")',
+                "url": '@Url.Action("ListarProductos", "Mantenedor")',
                 "type": "GET",
-                "datatype": "json"
+                "datatype": "json",
+                /*success: function (data) {
+                    console.log(data);
+                }*/
             },
+            
             "columns": [
+                { "data": "nombre" },            
                 { "data": "descripcion" },
+                {
+                    "data": "oStock",
+                    "render": function (data) {
+                        return data && data.stock_actual != null ? data.stock_actual : 0;
+                    }
+                },
+                {
+                    "data": "oTienda", 
+                    "render": function (data) {
+                        return data && data.nombre != null ? data.nombre : "No asignada";
+                    }
+                },
+                {
+                    "data": "oUnidadMedida",
+                    "render": function (data) {
+                        return data.descripcion;
+                    }
+                },
+                {
+                    "data": "oCategoria",
+                    "render": function (data) {
+                        return data.descripcion;
+                    }
+                },
+                {
+                    "data": "oMarca",
+                    "render": function (data) {
+                        return data.descripcion;
+                    }
+                },
+                {
+                    "data": "precio",
+                    "render": function (data) {
+                        return data.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' });
+                    }
+                },
                 {
                     "data": "estado",
                     "render": function (valor) {
@@ -279,8 +304,17 @@
 
         function abrirModal(json) {
 
-            $("#txtid").val(0);
+            $("#txtid").val(0);  
+            $("#img_producto").removeAttr("src");
+            $("#fileproducto").val("");
+            $("#txtnombre").val("");
             $("#txtdescripcion").val("");
+            $("#cboum").val($("#cboum option:first").val());
+            $("#cbocategoria").val($("#cbocategoria option:first").val());
+            $("#cbomarca").val($("#cbomarca option:first").val());
+            $("#txtprecio").val("");
+
+
             $("#cdactivo").val(1);
 
             $("#mensajeError").hide();
@@ -289,8 +323,14 @@
 
             if (json != null) {
 
-                $("#txtid").val(json.id_marca);
+                $("#txtid").val(json.id_producto);
+                $("#txtnombre").val(json.nombre);
                 $("#txtdescripcion").val(json.descripcion);
+
+                $("#cboum").val(json.UNIDAD_MEDIDA_id_unidad_medida);
+                $("#cbocategoria").val(json.CATEGORIA_id_categoria);
+                $("#cbomarca").val(json.MARCA_id_marca);
+                $("#txtprecio").val(json.precio);
                 $("#cdactivo").val(json.estado == true ? 1 : 0);
             }
 
@@ -360,31 +400,50 @@
 
         function Guardar()
         {
+            var imagenSeleccionada = $("#fileproducto")[0].files[0];
 
-            var Marcas = {
-                id_marca: $("#txtid").val(),
+            var valorPrecio = $("#txtprecio").val().replace(",", ".");
+            if (isNaN(valorPrecio) || valorPrecio.trim() === "") {
+                $("#mensajeError").text("El precio debe ser un número válido.");
+                $("#mensajeError").show();
+                return;
+            }
+            var Producto = {
+                id_producto: $("#txtid").val(),
+                nombre: $("#txtnombre").val(),
                 descripcion: $("#txtdescripcion").val(),
+                UNIDAD_MEDIDA_id_unidad_medida: $("#cboum").val(),
+                CATEGORIA_id_categoria: $("#cbocategoria").val(),
+                MARCA_id_marca: $("#cbomarca").val(),
+                precio: Number(valorPrecio), 
+                //precio: $("#txtprecio").val().replace(",", "."),
                 estado: $("#cdactivo").val() == 1 ? true : false,
             }
 
+            var request = new FormData();
+            request.append("objeto", JSON.stringify(Producto));
+            request.append("archivoImagen", imagenSeleccionada);
+
             jQuery.ajax({
-                url: '@Url.Action("GuardarMarca", "Mantenedor")',
+                url: '@Url.Action("GuardarProducto", "Mantenedor")',
                 type: 'POST',
-                data: JSON.stringify({ objeto: Marcas }),
-                datatype: 'json',
-                contentType: 'application/json; charset=utf-8',
-                //data: JSON.stringify(Usuario),
+                data: request,
+                processData: false,
+                contentType: false,
                 success: function (data) {
+                    console.log(data);
 
                     $(".modal-body").LoadingOverlay("hide");
 
-                    //USUARIO NUEVO
-                    if (Marcas.id_marca == 0) {
+                    //PRODUCTO NUEVO
+                    if (Producto.id_producto == 0) {
 
-                        if (data.resultado != 0) {
+                        if (data.idgenerado != 0) {
+                            console.log(data.idgenerado);
+                            console.log(JSON.stringify(Producto));
 
-                            Marcas, id_marca = data.resultado;
-                            tabladata.row.add(Marcas).draw(false);
+                            Producto, id_producto = data.idgenerado;
+                            tabladata.row.add(Producto).draw(false);
 
                             ActualizarTabla();
 
@@ -396,11 +455,11 @@
                             $("#mensajeError").show();
                         }
                     }
-                    //USUARIO editar
+                    //PRODUCTO editar
                     else {
 
-                        if (data.resultado) {
-                            tabladata.row(filaSeleccionada).data(Marcas).draw(false);
+                        if (data.operacion_exitosa) {
+                            tabladata.row(filaSeleccionada).data(Producto).draw(false);
                             filaSeleccionada = null;
                             ActualizarTabla();
 
@@ -412,6 +471,7 @@
                     }
                 },
                 error: function (error) {
+                    console.log(error);
                     $(".modal-body").LoadingOverlay("hide");
                     $('#mensajeError').text("Error Ajax");
                     $('#mensajeError').show();

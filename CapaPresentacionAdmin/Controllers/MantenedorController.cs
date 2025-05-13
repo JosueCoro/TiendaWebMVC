@@ -136,34 +136,47 @@ namespace CapaPresentacionAdmin.Controllers
         [HttpGet]
         public JsonResult ListarProductos()
         {
+            List<Producto> olista = new CN_Producto().Listar();
+
+            var resultado = olista.Select(p => new
+            {
+                p.id_producto,
+                p.nombre,
+                p.descripcion,
+                p.precio,
+                p.estado,
+
+                oTienda = new { nombre = p.oTienda?.nombre ?? "Sin tienda" },
+                oStock = new { stock_actual = p.oStock?.stock_actual ?? 0 },
+                oUnidadMedida = new { descripcion = p.oUnidadMedida?.descripcion ?? "" },
+                oCategoria = new { descripcion = p.oCategoria?.descripcion ?? "" },
+                oMarca = new { descripcion = p.oMarca?.descripcion ?? "" }
+            });
+
+            return Json(new { data = resultado }, JsonRequestBehavior.AllowGet);
+        }
+
+        /*public JsonResult ListarProductos()
+        {
             List<Producto> olista = new List<Producto>();
             olista = new CN_Producto().Listar();
             return Json(new { data = olista }, JsonRequestBehavior.AllowGet);
-        }
+        }*/
 
         [HttpPost]
         public JsonResult GuardarProducto(string objeto, HttpPostedFileBase archivoImagen)
         {
-            object resultado;
+            //object resultado;
             string Mensaje = string.Empty;
             bool operacion_exitosa = true;
             bool guardar_imagen_exito = true;
 
             Producto oproducto = new Producto();
             oproducto = JsonConvert.DeserializeObject<Producto>(objeto);
-
-            decimal precio;
-
-            if (decimal.TryParse(oproducto.precioTexto, NumberStyles.AllowDecimalPoint, new CultureInfo("es-PE"), out precio))
+            if (oproducto.precio <= 0)
             {
-                oproducto.precio = precio;
+                return Json(new { operacion_exitosa = false, mensaje = "El precio del producto debe ser mayor a cero" }, JsonRequestBehavior.AllowGet);
             }
-            else
-            {
-                return Json(new { operacion_exitosa = false, Mensaje =  "El formato del precio debe ser ##.##"}, JsonRequestBehavior.AllowGet);
-            }
-
-
 
             if (oproducto.id_producto == 0)
             {
@@ -200,8 +213,9 @@ namespace CapaPresentacionAdmin.Controllers
                     }
                     catch (Exception ex)
                     {
-                        string mensaje_error = ex.Message;
+                        //string mensaje_error = ex.Message;
                         guardar_imagen_exito = false;
+                        Mensaje = "Se guardó el producto pero hubo problemas con la imagen: " + ex.Message;
                     }
 
                     if (guardar_imagen_exito)
@@ -228,11 +242,17 @@ namespace CapaPresentacionAdmin.Controllers
         [HttpPost]
         public JsonResult ImagenProducto(int id)
         {
-
             bool conversion;
             Producto oproducto = new CN_Producto().Listar().Where(p => p.id_producto == id).FirstOrDefault();
+            if (oproducto == null)
+            {
+                return Json(new { conversion = false, mensaje = "Producto no encontrado" }, JsonRequestBehavior.AllowGet);
+            }
 
             string textoBase64 = CN_Recursos.ConvertirBase64(Path.Combine(oproducto.ruta_imagen, oproducto.nombre_imagen), out conversion);
+            //Producto oproducto = new CN_Producto().Listar().Where(p => p.id_producto == id).FirstOrDefault();
+
+            //string textoBase64 = CN_Recursos.ConvertirBase64(Path.Combine(oproducto.ruta_imagen, oproducto.nombre_imagen), out conversion);
             return Json(new 
             {
                 conversion = conversion,

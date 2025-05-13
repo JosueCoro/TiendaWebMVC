@@ -19,32 +19,37 @@ namespace CapaDatos
 
             try
             {
-                /*SELECT P.id_producto, P.nombre, P.descripcion,
-                S.id_stock, S.cantidad [stock_actual],
-                C.id_categoria, C.descripcion[DesCategoria],
-                M.id_marca, M.descripcion[DesMarca],
-                U.id_unidad_medida, U.descripcion[DesUnidadMed],
+                /*--Listar Producto
+                SELECT P.id_producto, P.nombre, P.descripcion,
+                S.id_stock, S.cantidad AS stock_actual,
+                T.id_tienda, T.nombre AS nombre_tienda,
+                C.id_categoria, C.descripcion AS DesCategoria,
+                M.id_marca, M.descripcion AS DesMarca,
+                U.id_unidad_medida, U.descripcion AS DesUnidadMed,
                 P.precio, P.ruta_imagen, P.nombre_imagen, P.estado
                 FROM INVENTARIO.PRODUCTO P
-                INNER JOIN INVENTARIO.STOCK S ON S.PRODUCTO_id_producto = P.id_producto
+                LEFT JOIN INVENTARIO.STOCK S ON S.PRODUCTO_id_producto = P.id_producto
+                LEFT JOIN INVENTARIO.TIENDA T ON T.id_tienda = S.TIENDA_id_tienda
                 INNER JOIN INVENTARIO.CATEGORIA C ON C.id_categoria = P.CATEGORIA_id_categoria
-                INNER JOIN INVENTARIO.MARCA  M ON M.id_marca = P.MARCA_id_marca
-                INNER JOIN INVENTARIO.UNIDAD_MEDIDA U ON U.id_unidad_medida = P.UNIDAD_MEDIDA_id_unidad_medida*/
+                INNER JOIN INVENTARIO.MARCA M ON M.id_marca = P.MARCA_id_marca
+                INNER JOIN INVENTARIO.UNIDAD_MEDIDA U ON U.id_unidad_medida = P.UNIDAD_MEDIDA_id_unidad_medida */
                 using (SqlConnection oconexion = new SqlConnection(Conexion.cn))
                 {
                     StringBuilder sb = new StringBuilder();
-
                     sb.AppendLine("SELECT P.id_producto, P.nombre, P.descripcion,");
-                    sb.AppendLine("S.id_stock, S.cantidad [stock_actual],");
-                    sb.AppendLine("C.id_categoria, C.descripcion[DesCategoria],");
-                    sb.AppendLine("M.id_marca, M.descripcion[DesMarca],");
-                    sb.AppendLine("U.id_unidad_medida, U.descripcion[DesUnidadMed],");
+                    sb.AppendLine("S.id_stock, S.cantidad AS stock_actual,");
+                    sb.AppendLine("T.id_tienda, T.nombre AS nombre_tienda,");
+                    sb.AppendLine("C.id_categoria, C.descripcion AS DesCategoria,"); 
+                    sb.AppendLine("M.id_marca, M.descripcion AS DesMarca,");       
+                    sb.AppendLine("U.id_unidad_medida, U.descripcion AS DesUnidadMed,"); 
                     sb.AppendLine("P.precio, P.ruta_imagen, P.nombre_imagen, P.estado");
                     sb.AppendLine("FROM INVENTARIO.PRODUCTO P");
-                    sb.AppendLine("INNER JOIN INVENTARIO.STOCK S ON S.PRODUCTO_id_producto = P.id_producto");
+                    sb.AppendLine("LEFT JOIN INVENTARIO.STOCK S ON S.PRODUCTO_id_producto = P.id_producto");
+                    sb.AppendLine("LEFT JOIN INVENTARIO.TIENDA T ON T.id_tienda = S.TIENDA_id_tienda");
                     sb.AppendLine("INNER JOIN INVENTARIO.CATEGORIA C ON C.id_categoria = P.CATEGORIA_id_categoria");
-                    sb.AppendLine("INNER JOIN INVENTARIO.MARCA  M ON M.id_marca = P.MARCA_id_marca");
+                    sb.AppendLine("INNER JOIN INVENTARIO.MARCA M ON M.id_marca = P.MARCA_id_marca");
                     sb.AppendLine("INNER JOIN INVENTARIO.UNIDAD_MEDIDA U ON U.id_unidad_medida = P.UNIDAD_MEDIDA_id_unidad_medida");
+
 
                     SqlCommand cmd = new SqlCommand(sb.ToString(), oconexion);
                     cmd.CommandType = CommandType.Text;
@@ -62,8 +67,13 @@ namespace CapaDatos
                                 descripcion = dr["descripcion"].ToString(),
                                 oStock = new Stock()
                                 {
-                                    id_stock = Convert.ToInt32(dr["id_stock"]),
-                                    cantidad = Convert.ToInt32(dr["stock_actual"]),
+                                    id_stock = dr["id_stock"] != DBNull.Value ? Convert.ToInt32(dr["id_stock"]) : 0,
+                                    cantidad = dr["stock_actual"] != DBNull.Value ? Convert.ToInt32(dr["stock_actual"]) : 0
+                                },
+                                oTienda = new Tienda() 
+                                {
+                                    id_tienda = dr["id_tienda"] != DBNull.Value ? Convert.ToInt32(dr["id_tienda"]) : 0,
+                                    nombre = dr["nombre_tienda"] != DBNull.Value ? dr["nombre_tienda"].ToString() : "No asignada"
                                 },
                                 oMarca = new Marca()
                                 {
@@ -161,7 +171,7 @@ namespace CapaDatos
                 using (SqlConnection oconexion = new SqlConnection(Conexion.cn))
                 {
                     SqlCommand cmd = new SqlCommand("INVENTARIO.sp_RegistrarProducto", oconexion);
-                    cmd.Parameters.AddWithValue("@@nombre", obj.nombre);
+                    cmd.Parameters.AddWithValue("@nombre", obj.nombre);
                     cmd.Parameters.AddWithValue("@Descripcion", obj.descripcion);
                     cmd.Parameters.AddWithValue("@Precio", obj.precio);
                     cmd.Parameters.AddWithValue("@ruta_imagen", obj.ruta_imagen);

@@ -22,7 +22,7 @@ namespace CapaNegocio
         {
             Mensaje = string.Empty;
 
-            if (string.IsNullOrEmpty(obj.nombre) || string.IsNullOrEmpty(obj.nombre)) 
+            if (string.IsNullOrEmpty(obj.nombre)) 
             {
                 Mensaje = "El nombre del Producto no puede ser vacio";
             }
@@ -30,18 +30,19 @@ namespace CapaNegocio
             {
                 Mensaje = "El precio del Producto no puede ser menor o igual a cero";
             }
-            if (obj.oMarca.id_marca == 0)
+            if (obj.MARCA_id_marca == 0)
             {
                 Mensaje = "Debe seleccionar una marca";
             }
-            if (obj.oCategoria.id_categoria == 0)
+            if (obj.CATEGORIA_id_categoria == 0)
             {
-                Mensaje = "Debe seleccionar una categoria";
+                Mensaje = "Debe seleccionar una categoría";
             }
-            if (obj.oUnidadMedida.id_unidad_medida == 0)
+            if (obj.UNIDAD_MEDIDA_id_unidad_medida == 0)
             {
                 Mensaje = "Debe seleccionar una unidad de medida";
             }
+
 
 
             if (string.IsNullOrEmpty(Mensaje))
@@ -67,15 +68,15 @@ namespace CapaNegocio
             {
                 Mensaje = "El precio del Producto no puede ser menor o igual a cero";
             }
-            if (obj.oMarca.id_marca == 0)
+            if (obj.MARCA_id_marca == 0)
             {
                 Mensaje = "Debe seleccionar una marca";
             }
-            if (obj.oCategoria.id_categoria == 0)
+            if (obj.CATEGORIA_id_categoria == 0)
             {
                 Mensaje = "Debe seleccionar una categoria";
             }
-            if (obj.oUnidadMedida.id_unidad_medida == 0)
+            if (obj.UNIDAD_MEDIDA_id_unidad_medida == 0)
             {
                 Mensaje = "Debe seleccionar una unidad de medida";
             }

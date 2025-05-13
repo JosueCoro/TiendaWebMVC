@@ -26,6 +26,7 @@ namespace CapaEntidad
         public int PRODUCTO_id_producto { get; set; }
         public Tienda oTienda { get; set; }
         public int TIENDA_id_tienda { get; set; }
+        public int stock_actual { get; set; }
 
     }
 }
