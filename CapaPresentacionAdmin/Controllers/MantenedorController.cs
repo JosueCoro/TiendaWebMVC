@@ -136,7 +136,7 @@ namespace CapaPresentacionAdmin.Controllers
         [HttpGet]
         public JsonResult ListarProductos()
         {
-            List<Producto> olista = new CN_Producto().Listar();
+            var olista = new CN_Producto().Listar();
 
             var resultado = olista.Select(p => new
             {
@@ -146,8 +146,8 @@ namespace CapaPresentacionAdmin.Controllers
                 p.precio,
                 p.estado,
 
-                oTienda = new { nombre = p.oTienda?.nombre ?? "Sin tienda" },
-                oStock = new { stock_actual = p.oStock?.stock_actual ?? 0 },
+                oTienda = new { nombre = p.oTienda?.nombre ?? "Sin tienda" },                
+                oStock = new { cantidad = p.oStock?.cantidad ?? 0 },
                 oUnidadMedida = new { descripcion = p.oUnidadMedida?.descripcion ?? "" },
                 oCategoria = new { descripcion = p.oCategoria?.descripcion ?? "" },
                 oMarca = new { descripcion = p.oMarca?.descripcion ?? "" }
@@ -155,6 +155,28 @@ namespace CapaPresentacionAdmin.Controllers
 
             return Json(new { data = resultado }, JsonRequestBehavior.AllowGet);
         }
+
+        //public JsonResult ListarProductos()
+        //{
+        //    List<Producto> olista = new CN_Producto().Listar();
+
+        //    var resultado = olista.Select(p => new
+        //    {
+        //        p.id_producto,
+        //        p.nombre,
+        //        p.descripcion,
+        //        p.precio,
+        //        p.estado,
+
+        //        oTienda = new { nombre = p.oTienda?.nombre ?? "Sin tienda" },
+        //        oStock = new { stock_actual = p.oStock?.stock_actual ?? 0 },
+        //        oUnidadMedida = new { descripcion = p.oUnidadMedida?.descripcion ?? "" },
+        //        oCategoria = new { descripcion = p.oCategoria?.descripcion ?? "" },
+        //        oMarca = new { descripcion = p.oMarca?.descripcion ?? "" }
+        //    });
+
+        //    return Json(new { data = resultado }, JsonRequestBehavior.AllowGet);
+        //}
 
         /*public JsonResult ListarProductos()
         {

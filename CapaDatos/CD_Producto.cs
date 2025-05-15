@@ -19,29 +19,15 @@ namespace CapaDatos
 
             try
             {
-                /*--Listar Producto
-                SELECT P.id_producto, P.nombre, P.descripcion,
-                S.id_stock, S.cantidad AS stock_actual,
-                T.id_tienda, T.nombre AS nombre_tienda,
-                C.id_categoria, C.descripcion AS DesCategoria,
-                M.id_marca, M.descripcion AS DesMarca,
-                U.id_unidad_medida, U.descripcion AS DesUnidadMed,
-                P.precio, P.ruta_imagen, P.nombre_imagen, P.estado
-                FROM INVENTARIO.PRODUCTO P
-                LEFT JOIN INVENTARIO.STOCK S ON S.PRODUCTO_id_producto = P.id_producto
-                LEFT JOIN INVENTARIO.TIENDA T ON T.id_tienda = S.TIENDA_id_tienda
-                INNER JOIN INVENTARIO.CATEGORIA C ON C.id_categoria = P.CATEGORIA_id_categoria
-                INNER JOIN INVENTARIO.MARCA M ON M.id_marca = P.MARCA_id_marca
-                INNER JOIN INVENTARIO.UNIDAD_MEDIDA U ON U.id_unidad_medida = P.UNIDAD_MEDIDA_id_unidad_medida */
                 using (SqlConnection oconexion = new SqlConnection(Conexion.cn))
                 {
                     StringBuilder sb = new StringBuilder();
                     sb.AppendLine("SELECT P.id_producto, P.nombre, P.descripcion,");
                     sb.AppendLine("S.id_stock, S.cantidad AS stock_actual,");
                     sb.AppendLine("T.id_tienda, T.nombre AS nombre_tienda,");
-                    sb.AppendLine("C.id_categoria, C.descripcion AS DesCategoria,"); 
-                    sb.AppendLine("M.id_marca, M.descripcion AS DesMarca,");       
-                    sb.AppendLine("U.id_unidad_medida, U.descripcion AS DesUnidadMed,"); 
+                    sb.AppendLine("C.id_categoria, C.descripcion AS DesCategoria,");
+                    sb.AppendLine("M.id_marca, M.descripcion AS DesMarca,");
+                    sb.AppendLine("U.id_unidad_medida, U.descripcion AS DesUnidadMed,");
                     sb.AppendLine("P.precio, P.ruta_imagen, P.nombre_imagen, P.estado");
                     sb.AppendLine("FROM INVENTARIO.PRODUCTO P");
                     sb.AppendLine("LEFT JOIN INVENTARIO.STOCK S ON S.PRODUCTO_id_producto = P.id_producto");
@@ -49,14 +35,16 @@ namespace CapaDatos
                     sb.AppendLine("INNER JOIN INVENTARIO.CATEGORIA C ON C.id_categoria = P.CATEGORIA_id_categoria");
                     sb.AppendLine("INNER JOIN INVENTARIO.MARCA M ON M.id_marca = P.MARCA_id_marca");
                     sb.AppendLine("INNER JOIN INVENTARIO.UNIDAD_MEDIDA U ON U.id_unidad_medida = P.UNIDAD_MEDIDA_id_unidad_medida");
-
+                    //sb.AppendLine("WHERE T.id_tienda = @id_tienda");
 
                     SqlCommand cmd = new SqlCommand(sb.ToString(), oconexion);
                     cmd.CommandType = CommandType.Text;
 
+                    //cmd.Parameters.AddWithValue("@id_tienda", 1);
+
                     oconexion.Open();
 
-                    using (SqlDataReader dr = cmd.ExecuteReader()) 
+                    using (SqlDataReader dr = cmd.ExecuteReader())
                     {
                         while (dr.Read())
                         {
@@ -70,7 +58,7 @@ namespace CapaDatos
                                     id_stock = dr["id_stock"] != DBNull.Value ? Convert.ToInt32(dr["id_stock"]) : 0,
                                     cantidad = dr["stock_actual"] != DBNull.Value ? Convert.ToInt32(dr["stock_actual"]) : 0
                                 },
-                                oTienda = new Tienda() 
+                                oTienda = new Tienda()
                                 {
                                     id_tienda = dr["id_tienda"] != DBNull.Value ? Convert.ToInt32(dr["id_tienda"]) : 0,
                                     nombre = dr["nombre_tienda"] != DBNull.Value ? dr["nombre_tienda"].ToString() : "No asignada"
@@ -97,7 +85,6 @@ namespace CapaDatos
                             });
                         }
                     }
-
                 }
             }
             catch
@@ -107,6 +94,7 @@ namespace CapaDatos
 
             return lista;
         }
+
 
         /*CREATE PROCEDURE INVENTARIO.sp_RegistrarProducto
         (

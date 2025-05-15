@@ -36,6 +36,8 @@ namespace CapaEntidad
         public Categoria oCategoria { get; set; }
         public UnidadMedida oUnidadMedida { get; set; }
         public Stock oStock { get; set; }
+        public int id_stock { get; set; }
+        public int cantidad { get; set; }   
         public Tienda oTienda { get; set; }
 
         public int MARCA_id_marca { get; set; }
