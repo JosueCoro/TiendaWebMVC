@@ -69,7 +69,6 @@ namespace CapaNegocio
             }
             return resultado;
         }
-
         public static string ConvertirBase64(string ruta, out bool conversion)
         {
             string textoBase64 = string.Empty;
@@ -78,16 +77,34 @@ namespace CapaNegocio
             {
                 byte[] bytes = File.ReadAllBytes(ruta);
                 textoBase64 = Convert.ToBase64String(bytes);
-
+                conversion = true; // Solo marcar como true si la lectura fue exitosa
             }
-            catch
+            catch (Exception ex)
             {
                 conversion = false;
-
+                Console.WriteLine($"Error al convertir a Base64 para la ruta: {ruta} - Error: {ex.Message}");
+                // También podrías loguear el error en un archivo o sistema de logging
             }
             return textoBase64;
         }
-            
+        //public static string ConvertirBase64(string ruta, out bool conversion)
+        //{
+        //    string textoBase64 = string.Empty;
+        //    conversion = false;
+        //    try
+        //    {
+        //        byte[] bytes = File.ReadAllBytes(ruta);
+        //        textoBase64 = Convert.ToBase64String(bytes);
+
+        //    }
+        //    catch
+        //    {
+        //        conversion = false;
+
+        //    }
+        //    return textoBase64;
+        //}
+
 
 
     }

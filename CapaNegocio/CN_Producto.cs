@@ -60,7 +60,8 @@ namespace CapaNegocio
         public bool Editar(Producto obj, out string Mensaje)
         {
             Mensaje = string.Empty;
-            if (string.IsNullOrEmpty(obj.nombre) || string.IsNullOrEmpty(obj.nombre))
+
+            if (string.IsNullOrEmpty(obj.nombre))
             {
                 Mensaje = "El nombre del Producto no puede ser vacio";
             }
@@ -79,6 +80,7 @@ namespace CapaNegocio
             if (obj.UNIDAD_MEDIDA_id_unidad_medida == 0)
             {
                 Mensaje = "Debe seleccionar una unidad de medida";
+                return false;
             }
 
 

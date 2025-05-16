@@ -145,38 +145,23 @@ namespace CapaPresentacionAdmin.Controllers
                 p.descripcion,
                 p.precio,
                 p.estado,
+                //retornar ruta imagen y nombre imagen
+                p.ruta_imagen,
+                p.nombre_imagen,
 
                 oTienda = new { nombre = p.oTienda?.nombre ?? "Sin tienda" },                
                 oStock = new { cantidad = p.oStock?.cantidad ?? 0 },
-                oUnidadMedida = new { descripcion = p.oUnidadMedida?.descripcion ?? "" },
-                oCategoria = new { descripcion = p.oCategoria?.descripcion ?? "" },
-                oMarca = new { descripcion = p.oMarca?.descripcion ?? "" }
+                //oUnidadMedida = new { descripcion = p.oUnidadMedida?.descripcion ?? "" },
+                //oCategoria = new { descripcion = p.oCategoria?.descripcion ?? "" },
+                //oMarca = new { descripcion = p.oMarca?.descripcion ?? "" }
+                oUnidadMedida = p.oUnidadMedida != null ? new { p.oUnidadMedida.descripcion, id_unidad_medida = (int?)p.oUnidadMedida.id_unidad_medida } : new { descripcion = (string)null, id_unidad_medida = (int?)null },
+                oCategoria = p.oCategoria != null ? new { p.oCategoria.descripcion, id_categoria = (int?)p.oCategoria.id_categoria } : new { descripcion = (string)null, id_categoria = (int?)null },
+                oMarca = p.oMarca != null ? new { p.oMarca.descripcion, id_marca = (int?)p.oMarca.id_marca } : new { descripcion = (string)null, id_marca = (int?)null }
             });
 
             return Json(new { data = resultado }, JsonRequestBehavior.AllowGet);
         }
 
-        //public JsonResult ListarProductos()
-        //{
-        //    List<Producto> olista = new CN_Producto().Listar();
-
-        //    var resultado = olista.Select(p => new
-        //    {
-        //        p.id_producto,
-        //        p.nombre,
-        //        p.descripcion,
-        //        p.precio,
-        //        p.estado,
-
-        //        oTienda = new { nombre = p.oTienda?.nombre ?? "Sin tienda" },
-        //        oStock = new { stock_actual = p.oStock?.stock_actual ?? 0 },
-        //        oUnidadMedida = new { descripcion = p.oUnidadMedida?.descripcion ?? "" },
-        //        oCategoria = new { descripcion = p.oCategoria?.descripcion ?? "" },
-        //        oMarca = new { descripcion = p.oMarca?.descripcion ?? "" }
-        //    });
-
-        //    return Json(new { data = resultado }, JsonRequestBehavior.AllowGet);
-        //}
 
         /*public JsonResult ListarProductos()
         {
@@ -257,7 +242,7 @@ namespace CapaPresentacionAdmin.Controllers
 
 
 
-            return Json(new { operacion_exitosa = operacion_exitosa, idgenerado = oproducto.id_producto, mensaje = Mensaje }, JsonRequestBehavior.AllowGet);
+            return Json(new { operacionExitosa = operacion_exitosa, idgenerado = oproducto.id_producto, mensaje = Mensaje }, JsonRequestBehavior.AllowGet);
         }
 
 
@@ -265,25 +250,47 @@ namespace CapaPresentacionAdmin.Controllers
         public JsonResult ImagenProducto(int id)
         {
             bool conversion;
-            Producto oproducto = new CN_Producto().Listar().Where(p => p.id_producto == id).FirstOrDefault();
-            if (oproducto == null)
+            var oproductoAnonimo = new CN_Producto().Listar()
+                                                .Where(p => p.id_producto == id)
+                                                .Select(p => new { p.ruta_imagen, p.nombre_imagen })
+                                                .FirstOrDefault();
+
+            if (oproductoAnonimo == null)
             {
                 return Json(new { conversion = false, mensaje = "Producto no encontrado" }, JsonRequestBehavior.AllowGet);
             }
 
-            string textoBase64 = CN_Recursos.ConvertirBase64(Path.Combine(oproducto.ruta_imagen, oproducto.nombre_imagen), out conversion);
-            //Producto oproducto = new CN_Producto().Listar().Where(p => p.id_producto == id).FirstOrDefault();
-
-            //string textoBase64 = CN_Recursos.ConvertirBase64(Path.Combine(oproducto.ruta_imagen, oproducto.nombre_imagen), out conversion);
-            return Json(new 
+            string textoBase64 = CN_Recursos.ConvertirBase64(Path.Combine(oproductoAnonimo.ruta_imagen, oproductoAnonimo.nombre_imagen), out conversion);
+            return Json(new
             {
                 conversion = conversion,
                 textoBase64 = textoBase64,
-                nombre_imagen = Path.GetExtension(oproducto.nombre_imagen)
+                Extension = Path.GetExtension(oproductoAnonimo.nombre_imagen)
             },
             JsonRequestBehavior.AllowGet);
-
         }
+        //public JsonResult ImagenProducto(int id)
+        //{
+        //    bool conversion;
+        //    Producto oproducto = new CN_Producto().Listar().Where(p => p.id_producto == id).FirstOrDefault();
+        //    if (oproducto == null)
+        //    {
+        //        return Json(new { conversion = false, mensaje = "Producto no encontrado" }, JsonRequestBehavior.AllowGet);
+        //    }
+
+        //    string textoBase64 = CN_Recursos.ConvertirBase64(Path.Combine(oproducto.ruta_imagen, oproducto.nombre_imagen), out conversion);
+        //    //Producto oproducto = new CN_Producto().Listar().Where(p => p.id_producto == id).FirstOrDefault();
+
+        //    //string textoBase64 = CN_Recursos.ConvertirBase64(Path.Combine(oproducto.ruta_imagen, oproducto.nombre_imagen), out conversion);
+        //    return Json(new 
+        //    {
+        //        conversion = conversion,
+        //        textoBase64 = textoBase64,
+        //        Extension = Path.GetExtension(oproducto.nombre_imagen)
+        //    },
+        //    JsonRequestBehavior.AllowGet);
+
+        //}
 
         [HttpPost]
         public JsonResult EliminarProducto(int id)
