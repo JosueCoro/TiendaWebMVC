@@ -4,5 +4,280 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Stock</h2>
+
+<ol class="breadcrumb mb-4 mt-4">
+    <li class="breadcrumb-item"><a href="@Url.Action("Index","Home")">Resumen</a></li>
+    <li class="breadcrumb-item active">Stock</li>
+</ol>
+
+<div class="card">
+    <div class="card-header">
+        <i class="fas fa-warehouse"></i> Lista de Stock
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-12">
+                <button type="button" class="btn btn-success" onclick="abrirModal(null)">Crear Nuevo</button>
+            </div>
+        </div>
+
+        <hr />
+
+        <table id="tablaStock" class="display cell-border" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Tienda</th>
+                    <th>Cantidad</th>
+                    <th>Stock Mínimo</th>
+                    <th>Fecha de Actualización</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="FormModalStock" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title" id="exampleModalLabel">Stock</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <input id="txtid" type="text" value="0" />
+                <input id="txtidproducto" type="text" value="0" />
+                <input id="txtidtienda" type="text" value="0" />
+
+                <form id="formStock" class="row">
+                    <div class="col-sm-6">
+                        <div class="mb-3">
+                            <label class="form-label">Producto</label>
+                            <select id="cboProducto" class="form-select">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="mb-3">
+                            <label class="form-label">Tienda</label>
+                            <select id="cboTienda" class="form-select">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="mb-3">
+                            <label class="form-label">Cantidad</label>
+                            <input type="number" class="form-control" id="txtCantidad" name="Cantidad" value="0" />
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="mb-3">
+                            <label class="form-label">Stock Mínimo</label>
+                            <input type="number" class="form-control" id="txtStockMinimo" name="StockMinimo" value="0" />
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="mb-3">
+                            <label class="form-label">Fecha de Actualización</label>
+                            <input type="date" class="form-control" id="txtFechaActualizacion" name="FechaActualizacion" />
+                        </div>
+                    </div>
+
+                </form>
+
+                <div class="row mt-2">
+                    <div class="col-12">
+                        <div id="mensajeError" class="alert alert-danger" role="alert">
+                            A simple danger alert—check it out!
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" onclick="Guardar()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+        var tablaStock;
+        var filaSeleccionada;
+
+        jQuery.ajax({
+            url: '@Url.Action("ListarProductos", "Mantenedor")', //cambiar por el action de producto
+            type: 'GET',
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                $.each(data.data, function (index, valor) {
+                    $("<option>").attr("value", valor.id_producto).text(valor.nombre).appendTo("#cboProducto");
+                })
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+
+        jQuery.ajax({
+            url: '@Url.Action("ListarTiendas", "Mantenedor")',  //cambiar por el action de Tienda
+            type: 'GET',
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                $.each(data.data, function (index, valor) {
+                    $("<option>").attr("value", valor.id_tienda).text(valor.nombre).appendTo("#cboTienda");
+                })
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+
+
+
+        tablaStock = $('#tablaStock').DataTable({
+            responsive: true,
+            ordering: false,
+            "ajax": {
+                "url": '@Url.Action("ListarStock", "Operaciones")', 
+                "type": "GET",
+                "datatype": "json"
+            },
+            "columns": [
+                { "data": "nombreProducto" },
+                { "data": "nombreTienda" },
+                { "data": "cantidad" },
+                { "data": "stock_minimo" },
+                {
+                    "data": "fecha_actualizacion",
+                    "render": function (data) {
+                        var date = new Date(data);
+                        var formattedDate = date.toLocaleDateString('es-CL');
+                        return formattedDate;
+                    }
+                },
+                {
+                    "defaultContent": '<button type="button" class="btn btn-warning btn-sm btn-editar">Editar</button>',
+                    "oderrable": false,
+                    "searchable": false,
+                    "width": "130px"
+                }
+            ],
+            "language": {
+                "url": '//cdn.datatables.net/plug-ins/2.2.1/i18n/es-ES.json',
+            },
+        });
+
+        function abrirModal(json) {
+            $("#txtid").val(0);
+            $("#txtidproducto").val(0);
+            $("#txtidtienda").val(0);
+            $("#cboProducto").val(2);
+            $("#cboTienda").val(1);
+            $("#txtCantidad").val(0);
+            $("#txtStockMinimo").val(0);
+            //poner la fecha del dia siempre
+            //$("#txtFechaActualizacion").val("");
+            $("#txtFechaActualizacion").val(new Date().toISOString().split('T')[0]);
+            $("#mensajeError").hide();
+
+            if (json != null) {
+                $("#txtid").val(json.id_stock);
+                $("#txtidproducto").val(json.PRODUCTO_id_producto);
+                $("#txtidtienda").val(json.TIENDA_id_tienda);
+                $("#cboProducto").val(json.PRODUCTO_id_producto);
+                $("#cboTienda").val(json.TIENDA_id_tienda);
+                $("#txtCantidad").val(json.cantidad);
+                $("#txtStockMinimo").val(json.stock_minimo);
+                //$("#txtFechaActualizacion").val(json.fecha_actualizacion);
+                var fecha = new Date(json.fecha_actualizacion);
+                var formattedDate = fecha.toISOString().split('T')[0];
+                $("#txtFechaActualizacion").val(formattedDate);
+            }
+
+            $('#FormModalStock').modal('show');
+        }
+
+        $("#tablaStock tbody").on("click", '.btn-editar', function () {
+            filaSeleccionada = $(this).closest("tr");
+            var data = tablaStock.row(filaSeleccionada).data();
+            console.log(data);
+            abrirModal(data);
+        });
+
+        function Guardar() {
+            var stock = {
+                id_stock: $("#txtid").val(),
+                PRODUCTO_id_producto: $("#cboProducto").val(),
+                TIENDA_id_tienda: $("#cboTienda").val(),
+                cantidad: $("#txtCantidad").val(),
+                stock_minimo: $("#txtStockMinimo").val(),
+                fecha_actualizacion: $("#txtFechaActualizacion").val()
+            };
+
+             if (stock.cantidad < 0) {
+                $("#mensajeError").text("La cantidad no puede ser negativa.");
+                $("#mensajeError").show();
+                return;
+            }
+             if (stock.stock_minimo < 0) {
+                $("#mensajeError").text("El stock mínimo no puede ser negativo.");
+                $("#mensajeError").show();
+                return;
+            }
+            if (!stock.fecha_actualizacion)
+             {
+                $("#mensajeError").text("La fecha de actualizacion es obligatoria.");
+                $("#mensajeError").show();
+                return;
+             }
+
+
+            jQuery.ajax({
+                url: '@Url.Action("GuardarStock", "Operaciones")',
+                type: 'POST',
+                data: JSON.stringify({ objeto: JSON.stringify(stock) }),
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+
+                    $(".modal-body").LoadingOverlay("hide");
+
+                    if (data.operacionExitosa) {
+                        ActualizarTabla();
+                        $('#FormModalStock').modal("hide");
+                    } else {
+                        $("#mensajeError").text(data.mensaje);
+                        $("#mensajeError").show();
+                    }
+                },
+                error: function (error) {
+                    console.log(error);
+                    $(".modal-body").LoadingOverlay("hide");
+                    $('#mensajeError').text("Error Ajax");
+                    $('#mensajeError').show();
+                },
+                beforeSend: function () {
+                    $(".modal-body").LoadingOverlay("show", {
+                        imageResizeFactor: 2,
+                        text: "Cargando...",
+                        size: 24
+                    });
+                }
+            });
+        }
+
+        function ActualizarTabla() {
+            tablaStock.ajax.reload(null, false);
+        }
+    </script>
+}
 

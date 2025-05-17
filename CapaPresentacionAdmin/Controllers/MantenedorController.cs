@@ -1,4 +1,5 @@
-﻿using CapaEntidad;
+﻿using CapaDatos;
+using CapaEntidad;
 using CapaNegocio;
 using Newtonsoft.Json;
 using System;
@@ -417,11 +418,46 @@ namespace CapaPresentacionAdmin.Controllers
 
 
 
-
+        //TIENDAS
         public ActionResult Tiendas()
         {
             return View();
         }
+        [HttpGet]
+        public JsonResult ListarTiendas()
+        {
+            List<Tienda> lista = new List<Tienda>();
+            lista = new CN_Tiendas().Listar();
+            return Json(new { data = lista }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public JsonResult GuardarTienda(Tienda objeto)
+        {
+            object resultado;
+            string Mensaje = string.Empty;
+
+            if (objeto.id_tienda == 0)
+            {
+                resultado = new CN_Tiendas().Registrar(objeto, out Mensaje);
+            }
+            else
+            {
+                resultado = new CN_Tiendas().Editar(objeto, out Mensaje);
+            }
+            return Json(new { resultado = resultado, mensaje = Mensaje }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public JsonResult EliminarTienda(int id)
+        {
+            bool respuesta = false;
+            string Mensaje = string.Empty;
+            respuesta = new CN_Tiendas().Eliminar(id, out Mensaje);
+            return Json(new { resultado = respuesta, mensaje = Mensaje }, JsonRequestBehavior.AllowGet);
+        }
+
+
 
         //UNIDAD DE MEDIDA
         public ActionResult UnidadMedida()

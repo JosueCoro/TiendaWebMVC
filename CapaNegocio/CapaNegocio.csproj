@@ -50,6 +50,8 @@
     <Compile Include="CN_Reporte.cs" />
     <Compile Include="CN_Roles.cs" />
     <Compile Include="CN_Servicios.cs" />
+    <Compile Include="CN_Stocks.cs" />
+    <Compile Include="CN_Tiendas.cs" />
     <Compile Include="CN_TipoPago.cs" />
     <Compile Include="CN_UnidadMedida.cs" />
     <Compile Include="CN_Usuarios.cs" />
