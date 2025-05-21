@@ -34,8 +34,8 @@
                     <th>Nombre</th>
                     <th>Descripcion</th>
                     <th>Cantidad</th>
-                    <th>Sucursal</th>
                     <th>Unidad de Medida</th>
+                    <th>Sucursal</th>
                     <th>Categoria</th>
                     <th>Marca</th>
                     <th>Precio</th>
@@ -250,15 +250,15 @@
                     }
                 },
                 {
-                    "data": "oTienda",
-                    "render": function (data) {
-                        return data && data.nombre != null ? data.nombre : "No asignada";
-                    }
-                },
-                {
                     "data": "oUnidadMedida",
                     "render": function (data) {
                         return data.descripcion;
+                    }
+                },
+                {
+                    "data": "oTienda",
+                    "render": function (data) {
+                        return data && data.nombre != null ? data.nombre : "No asignada";
                     }
                 },
                 {

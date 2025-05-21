@@ -1,9 +1,9 @@
-﻿
-@{
+﻿@{
     ViewBag.Title = "Compras";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <ol class="breadcrumb mb-4 mt-4">
     <li class="breadcrumb-item"><a href="@Url.Action("Index","Home")">Resumen</a></li>
@@ -16,17 +16,14 @@
     </div>
     <div class="card-body">
         <form id="formRegistroCompra">
+            <input id="txtidTIENDA" type="hidden" value="1" />
+            <input id="txtidUSUARIO" type="hidden" value="6" />
+
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label class="form-label">Proveedor</label>
-                    <div class="input-group">
-                        <select id="cboProveedor" class="form-select">
-                        </select>
-                        <input type="text" class="form-control" id="txtBuscarProveedor" placeholder="Buscar proveedor..." />                
-                        <button type="button" class="btn btn-outline-secondary" id="btnBuscarProveedor">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </div>
+                    <select id="cboProveedor" class="form-select" required>
+                    </select>
                 </div>
                 <div class="col-sm-6">
                     <label class="form-label">Tipo de Pago</label>
@@ -39,11 +36,10 @@
                 <div class="col-sm-6">
                     <label class="form-label">Producto</label>
                     <div class="input-group">
-                        <select id="cboProducto" class="form-select">
-                        </select>
-                        <input type="text" class="form-control" id="txtBuscarProducto" placeholder="Buscar producto..." />                       
-                        <button type="button" class="btn btn-outline-secondary" id="btnBuscarProducto">
-                            <i class="fas fa-search"></i>
+                        <input type="hidden" id="txtIdProductoSeleccionado" value="0" />
+                        <input type="text" class="form-control" id="txtNombreProductoSeleccionado" placeholder="Seleccione un producto" readonly />
+                        <button type="button" class="btn btn-primary" id="btnAbrirModalProductos">
+                            <i class="fas fa-search"></i> Buscar Producto
                         </button>
                     </div>
                 </div>
@@ -111,55 +107,394 @@
     </div>
 </div>
 
+<div class="modal fade" id="modalBuscarProducto" tabindex="-1" aria-labelledby="modalBuscarProductoLabel" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title" id="modalBuscarProductoLabel">Buscar Producto</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" id="txtBuscarProductoModal" placeholder="Escriba el nombre del producto..." />
+                    <button type="button" class="btn btn-outline-secondary" id="btnFiltrarProductoModal">
+                        <i class="fas fa-filter"></i> Filtrar
+                    </button>
+                </div>
+                <table id="tablaProductosModal" class="display cell-border" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Descripción</th>
+                            <th>Unidad de Medida</th>
+                            <th>Precio</th>
+                            <th>Estado</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script>
-        // Aquí va el código JavaScript
+        var listaProductosGlobal = []; 
+        var tablaDetalleCompra; 
+        var tablaProductosModal; 
+
+        tablaDetalleCompra = $('#tablaDetalleCompra').DataTable({
+            responsive: true,
+            ordering: false,
+            "columns": [
+                { "data": "nombreProducto" },
+                { "data": "cantidad" },
+                {
+                    "data": "precio_compra",
+                    "render": function (data) {
+                        return 'Bs./ ' + parseFloat(data).toFixed(2);
+                    }
+                },
+                {
+                    "data": "sub_total",
+                    "render": function (data) {
+                        return 'Bs./ ' + parseFloat(data).toFixed(2);
+                    }
+                },
+                {
+                    "defaultContent": '<button type="button" class="btn btn-danger btn-sm btn-eliminar-detalle"><i class="fas fa-trash-alt"></i></button>',
+                    "orderable": false,
+                    "searchable": false,
+                    "width": "80px"
+                }
+            ],
+            "language": {
+                "url": '//cdn.datatables.net/plug-ins/2.2.1/i18n/es-ES.json',
+            },
+            "paging": false, 
+            "info": false,   
+            "searching": false 
+        });
+
         jQuery.ajax({
-            url: '@Url.Action("ListarProductos", "Mantenedor")', 
+            url: '@Url.Action("ListarProductos", "Mantenedor")',
             type: 'GET',
             dataType: 'json',
             contentType: 'application/json; charset=utf-8',
             success: function (data) {
-                $.each(data.data, function (index, valor) {
-                    $("<option>").attr("value", valor.id_producto).text(valor.nombre).appendTo("#cboProducto");
-                })
+                listaProductosGlobal = data.data; 
+
+                tablaProductosModal = $('#tablaProductosModal').DataTable({
+                    data: listaProductosGlobal, 
+                    responsive: true,
+                    ordering: false,
+                    "columns": [
+                        { "data": "id_producto" },
+                        { "data": "nombre" },
+                        { "data": "descripcion" },
+                        {
+                            "data": "oUnidadMedida",
+                            "render": function (data) {
+                                return data.descripcion;
+                            }
+                        },
+                        {
+                            "data": "precio",
+                            "render": function (data) {
+                                return 'Bs./ ' + parseFloat(data).toFixed(2);
+                            }
+                        },
+                        {
+                            "data": "estado",
+                            "render": function (valor) {
+                                if (valor) {
+                                    return '<span class="badge bg-success">Activo</span>';
+                                } else {
+                                    return '<span class="badge bg-danger">Inactivo</span>';
+                                }
+                            }
+                        },
+                        {
+                            "defaultContent": '<button type="button" class="btn btn-success btn-sm btn-seleccionar-producto"><i class="fas fa-check"></i> Seleccionar</button>',
+                            "orderable": false,
+                            "searchable": false,
+                            "width": "100px"
+                        }
+                    ],
+                    "language": {
+                        "url": '//cdn.datatables.net/plug-ins/2.2.1/i18n/es-ES.json',
+                    },
+                    "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Todos"]] // Opciones de paginación
+                });
+
             },
             error: function (error) {
                 console.log(error);
             }
         });
 
-        //ListarProveedores()
         jQuery.ajax({
-            url: '@Url.Action("ListarProveedores", "Mantenedor")',
+            url: '@Url.Action("ListarProveedores", "Operaciones")',
             type: 'GET',
             dataType: 'json',
             contentType: 'application/json; charset=utf-8',
             success: function (data) {
                 $.each(data.data, function (index, valor) {
                     $("<option>").attr("value", valor.id_proveedor).text(valor.nombre).appendTo("#cboProveedor");
-                })
+                });
             },
             error: function (error) {
                 console.log(error);
             }
         });
 
-        //ListarTP()
         jQuery.ajax({
-            url: '@Url.Action("ListarTipoPago", "Mantenedor")',
+            url: '@Url.Action("ListarTP", "Mantenedor")', 
             type: 'GET',
             dataType: 'json',
             contentType: 'application/json; charset=utf-8',
             success: function (data) {
                 $.each(data.data, function (index, valor) {
-                    $("<option>").attr("value", valor.id_tipo_pago).text(valor.nombre).appendTo("#cboTP");
-                })
+                    $("<option>").attr("value", valor.id_tipo_pago).text(valor.descripcion).appendTo("#cboTP");
+                });
             },
             error: function (error) {
                 console.log(error);
             }
         });
+
+        // Función para mostrar mensajes de error
+        function mostrarMensajeError(mensaje) {
+            $("#mensajeError").text(mensaje);
+            $("#mensajeError").show();
+        }
+
+        function ocultarMensajeError() {
+            $("#mensajeError").hide();
+        }
+
+        function calcularTotalCompra() {
+            let total = 0;
+            tablaDetalleCompra.rows().every(function () {
+                let data = this.data();
+                total += parseFloat(data.sub_total);
+            });
+            $("#txtTotalCompra").val(total.toFixed(2));
+        }
+
+        $("#btnAbrirModalProductos").on("click", function () {
+            $("#txtBuscarProductoModal").val("");
+            tablaProductosModal.search('').columns().search('').draw(); 
+            $('#modalBuscarProducto').modal('show');
+        });
+
+        $("#txtBuscarProductoModal").on("keyup", function () {
+            tablaProductosModal.search($(this).val()).draw();
+        });
+
+        $("#btnFiltrarProductoModal").on("click", function () {
+            tablaProductosModal.search($("#txtBuscarProductoModal").val()).draw();
+        });
+
+        $('#tablaProductosModal tbody').on('click', '.btn-seleccionar-producto', function () {
+            let data = tablaProductosModal.row($(this).parents('tr')).data();
+
+            $("#txtIdProductoSeleccionado").val(data.id_producto);
+            $("#txtNombreProductoSeleccionado").val(data.nombre);
+            $("#txtPrecioCompra").val(parseFloat(data.precio).toFixed(2)); 
+            $("#txtCantidad").val("1");
+
+            $('#modalBuscarProducto').modal('hide'); 
+        });
+
+
+        $("#btnAgregarProducto").on("click", function () {
+            ocultarMensajeError();
+
+            let idProducto = $("#txtIdProductoSeleccionado").val(); 
+            let nombreProducto = $("#txtNombreProductoSeleccionado").val(); 
+            let cantidad = parseInt($("#txtCantidad").val());
+            let precioCompra = parseFloat($("#txtPrecioCompra").val());
+
+            // Validaciones
+            if (idProducto === "" || idProducto === "0") {
+                mostrarMensajeError("Debe seleccionar un producto.");
+                return;
+            }
+            if (isNaN(cantidad) || cantidad <= 0) {
+                mostrarMensajeError("La cantidad debe ser un número mayor a cero.");
+                return;
+            }
+            if (isNaN(precioCompra) || precioCompra <= 0) {
+                mostrarMensajeError("El precio de compra debe ser un número mayor a cero.");
+                return;
+            }
+
+            let productoYaEnTabla = false;
+            tablaDetalleCompra.rows().every(function () {
+                let data = this.data();
+                if (data.id_producto == idProducto) {
+                    productoYaEnTabla = true;
+                    return false; 
+                }
+            });
+
+            if (productoYaEnTabla) {
+                mostrarMensajeError("El producto ya ha sido agregado al detalle de la compra.");
+                return;
+            }
+
+
+            let productoSeleccionado = listaProductosGlobal.find(p => p.id_producto == idProducto);
+            let precioVenta = productoSeleccionado ? parseFloat(productoSeleccionado.precio) : 0; // Asumiendo 'precio' es el precio de venta
+
+            let subTotal = cantidad * precioCompra;
+
+            let fila = {
+                id_producto: idProducto,
+                nombreProducto: nombreProducto,
+                cantidad: cantidad,
+                precio_compra: precioCompra,
+                precio_venta: precioVenta, 
+                sub_total: subTotal
+            };
+
+            tablaDetalleCompra.row.add(fila).draw();
+
+            calcularTotalCompra();
+
+            $("#txtIdProductoSeleccionado").val("0");
+            $("#txtNombreProductoSeleccionado").val("");
+            $("#txtCantidad").val("1");
+            $("#txtPrecioCompra").val("0.00");
+        });
+
+        $('#tablaDetalleCompra tbody').on('click', '.btn-eliminar-detalle', function () {
+            tablaDetalleCompra.row($(this).parents('tr')).remove().draw();
+            calcularTotalCompra(); 
+        });
+
+        $("#btnRegistrarCompra").on("click", function () {
+            ocultarMensajeError();
+
+            let idProveedor = $("#cboProveedor").val();
+            let idTipoPago = $("#cboTP").val();
+            let idUsuario = $("#txtidUSUARIO").val(); 
+            let idTienda = $("#txtidTIENDA").val();   
+            let montoTotal = parseFloat($("#txtTotalCompra").val());
+
+            if (idProveedor === "" || idProveedor === "0") {
+                mostrarMensajeError("Debe seleccionar un proveedor.");
+                return;
+            }
+            if (idTipoPago === "" || idTipoPago === "0") {
+                mostrarMensajeError("Debe seleccionar un tipo de pago.");
+                return;
+            }
+            if (tablaDetalleCompra.rows().count() === 0) {
+                mostrarMensajeError("Debe agregar al menos un producto al detalle de la compra.");
+                return;
+            }
+            if (isNaN(montoTotal) || montoTotal <= 0) {
+                 mostrarMensajeError("El monto total de la compra debe ser mayor a cero.");
+                 return;
+            }
+
+
+            let oCompra = {
+                PROVEEDOR_id_proveedor: parseInt(idProveedor),
+                TIPO_PAGO_id_tipo_pago: parseInt(idTipoPago),
+                USUARIO_id_usuario: parseInt(idUsuario),
+                TIENDA_id_tienda: parseInt(idTienda),
+                monto_total: montoTotal,
+                oDetalleCompra: []
+            };
+
+            tablaDetalleCompra.rows().every(function () {
+                let data = this.data();
+                oCompra.oDetalleCompra.push({
+                    PRODUCTO_id_producto: parseInt(data.id_producto),
+                    cantidad: parseInt(data.cantidad),
+                    precio_compra: parseFloat(data.precio_compra),
+                    precio_venta: parseFloat(data.precio_venta), 
+                    sub_total: parseFloat(data.sub_total)
+                });
+            });
+
+            // Llamada AJAX para registrar la compra
+            jQuery.ajax({
+                url: '@Url.Action("RegistrarCompra", "Operaciones")', 
+                type: 'POST',
+                data: JSON.stringify({ objetoCompra: JSON.stringify(oCompra) }),
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    $(".card-body").LoadingOverlay("hide");
+
+                    if (data.operacionExitosa) {
+                        Swal.fire({
+                            title: '¡Éxito!',
+                            text: 'Compra registrada exitosamente. ID: ' + data.idCompra,
+                            icon: 'success',
+                            confirmButtonText: 'Aceptar'
+                        });
+                        limpiarFormularioCompra();
+                    } else {
+                        Swal.fire({
+                            title: 'Error',
+                            text: data.mensaje,
+                            icon: 'error',
+                            confirmButtonText: 'Aceptar'
+                        });
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log(jqXHR.responseText); 
+                    $(".card-body").LoadingOverlay("hide");
+                    Swal.fire({
+                        title: 'Error de Conexión',
+                        text: 'Error al registrar la compra: ' + textStatus + ' - ' + errorThrown,
+                        icon: 'error',
+                        confirmButtonText: 'Aceptar'
+                    });
+                },
+                beforeSend: function () {
+                    $(".card-body").LoadingOverlay("show", {
+                        imageResizeFactor: 2,
+                        text: "Registrando compra...",
+                        size: 24
+                    });
+                }
+            });
+        });
+
+        function limpiarFormularioCompra() {
+            console.log("limpiarFormularioCompra called.");
+            console.log("tablaDetalleCompra instance:", tablaDetalleCompra); 
+
+            //$("#cboProveedor").val("");
+            //$("#cboTP").val("");
+            $("#txtNombreProductoSeleccionado").val(""); 
+            $("#txtIdProductoSeleccionado").val("0");    
+            $("#txtCantidad").val("1");
+            $("#txtPrecioCompra").val("0.00");
+
+            if ($.fn.DataTable.isDataTable('#tablaDetalleCompra')) {
+                tablaDetalleCompra.clear().draw(); 
+            } else {
+                console.warn("tablaDetalleCompra no es una instancia de DataTable. No se pudo limpiar.");
+                $('#tablaDetalleCompra tbody').empty();
+            }
+
+            calcularTotalCompra(); 
+            ocultarMensajeError();
+        }
     </script>
 }
-

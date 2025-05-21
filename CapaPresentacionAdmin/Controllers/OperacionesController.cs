@@ -17,9 +17,41 @@ namespace CapaPresentacionAdmin.Controllers
         {
             return View();
         }
+
+        //Compras
         public ActionResult Compras()
         {
             return View();
+        }
+        // --- Métodos para el Registro de Compra ---
+        [HttpPost]
+        public JsonResult RegistrarCompra(string objetoCompra)
+        {
+            string Mensaje = string.Empty;
+            int idCompraGenerada = 0; 
+
+            try
+            {
+                // Deserializar el objeto JSON de la compra que viene del frontend
+                // Asegúrate de que la estructura JSON coincida con la clase Compra y sus DetalleCompra
+                Compra oCompra = JsonConvert.DeserializeObject<Compra>(objetoCompra);
+
+                
+
+                // Llamar a la capa de negocio para registrar la compra
+                idCompraGenerada = new CN_Compra().Registrar(oCompra, out Mensaje);
+
+                // Determinar si la operación fue exitosa
+                bool operacionExitosa = (idCompraGenerada != 0);
+
+                return Json(new { operacionExitosa = operacionExitosa, idCompra = idCompraGenerada, mensaje = Mensaje }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                // Capturar cualquier excepción inesperada y devolver un mensaje de error
+                Mensaje = "Error inesperado al registrar la compra: " + ex.Message;
+                return Json(new { operacionExitosa = false, idCompra = 0, mensaje = Mensaje }, JsonRequestBehavior.AllowGet);
+            }
         }
 
 
