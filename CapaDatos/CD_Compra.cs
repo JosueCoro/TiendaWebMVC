@@ -49,10 +49,10 @@ namespace CapaDatos
                     }
 
                     SqlParameter paramDetalleCompra = new SqlParameter();
-                    paramDetalleCompra.ParameterName = "@DetalleCompra"; // Nombre del parámetro en el SP
-                    paramDetalleCompra.SqlDbType = SqlDbType.Structured; // Indicar que es un tipo de tabla
-                    paramDetalleCompra.TypeName = "DetalleCompraTipo"; // Nombre del tipo de tabla definido en la BD
-                    paramDetalleCompra.Value = dtDetalleCompra; // Asignar el DataTable como valor
+                    paramDetalleCompra.ParameterName = "@DetalleCompra"; 
+                    paramDetalleCompra.SqlDbType = SqlDbType.Structured; 
+                    paramDetalleCompra.TypeName = "DetalleCompraTipo"; 
+                    paramDetalleCompra.Value = dtDetalleCompra; 
                     cmd.Parameters.Add(paramDetalleCompra);
 
                     SqlParameter parMensaje = new SqlParameter("@Mensaje", SqlDbType.VarChar, 500);
@@ -72,10 +72,8 @@ namespace CapaDatos
             }
             catch (Exception ex)
             {
-                // En caso de error, establecer el ID a 0 y el mensaje con la excepción
                 idCompraGenerada = 0;
                 mensaje = "Error en la capa de datos al registrar la compra: " + ex.Message;
-                // Opcional: Registrar el error en un sistema de logging
                 Console.WriteLine(mensaje);
             }
 

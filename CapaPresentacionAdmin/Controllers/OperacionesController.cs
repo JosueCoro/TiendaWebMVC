@@ -7,15 +7,254 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using QuestPDF.Fluent; // Necesario para QuestPDF
+using QuestPDF.Helpers; // Necesario para QuestPDF (ej. Colors, PageSizes)
+using QuestPDF.Infrastructure; // Necesario para QuestPDF (ej. IContainer)
+using System.IO; // Necesario para MemoryStream
 
 namespace CapaPresentacionAdmin.Controllers
 {
     public class OperacionesController : Controller
     {
         // GET: Operaciones
+
+        //Ventas
         public ActionResult Ventas()
         {
             return View();
+        }
+        [HttpPost]
+        public JsonResult RegistrarVenta(string objetoVenta)
+        {
+            string Mensaje = string.Empty;
+            int idVentaGenerada = 0; 
+
+            try
+            {
+                Venta oVenta = JsonConvert.DeserializeObject<Venta>(objetoVenta);
+
+
+                idVentaGenerada = new CN_Venta().Registrar(oVenta, out Mensaje);
+
+                bool operacionExitosa = (idVentaGenerada != 0);
+
+                return Json(new { operacionExitosa = operacionExitosa, idVenta = idVentaGenerada, mensaje = Mensaje }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                Mensaje = "Error inesperado al registrar la venta: " + ex.Message;
+                return Json(new { operacionExitosa = false, idVenta = 0, mensaje = Mensaje }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        [HttpGet]
+        public ActionResult GenerarFacturaFormal(int idVenta)
+        {
+            string mensaje = string.Empty;
+            Venta oVenta = new CN_Venta().ObtenerVenta(idVenta, out mensaje);
+
+            if (oVenta == null)
+            {
+                return Content($"<script>alert('Error al obtener los datos de la venta: {mensaje}'); window.close();</script>", "text/html");
+            }
+            byte[] logoBytes = null;
+            string logoPath = Server.MapPath("~/Content/Imagenes/Logo_Factura.png"); 
+
+            if (System.IO.File.Exists(logoPath))
+            {
+                logoBytes = System.IO.File.ReadAllBytes(logoPath); 
+            }
+
+            //generar el  PDF
+            byte[] pdfBytes = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.Letter);
+                    page.Margin(40); 
+                    page.DefaultTextStyle(x => x.FontSize(9));
+
+                    page.Header()
+                        .PaddingBottom(10)
+                        .Column(column =>
+                        {
+                            if (logoBytes != null)
+                            {
+                                column.Item()
+                                    .AlignCenter()
+                                    .Width(200)
+                                    .Height(100)
+                                    .Image(logoBytes) 
+                                    .FitArea();
+                            }
+                            else
+                            {
+                                column.Item().AlignCenter().Text("LOGO NO DISPONIBLE").FontSize(8).FontColor(Colors.Red.Medium);
+                            }
+                            column.Item().AlignCenter().Text("AUTOPARTES DOS HERMANOS").FontSize(16).Bold();
+                            column.Item().AlignCenter().Text("NIT: 000000000").FontSize(10);
+                            column.Item().AlignCenter().Text("Dirección: Av. Principal El Bisito").FontSize(10);
+                            column.Item().AlignCenter().Text("Teléfono: 71015570").FontSize(10);
+                            column.Item().LineHorizontal(1);
+                        });
+
+                    page.Content()
+                        .Column(column =>
+                        {
+                            column.Item().PaddingBottom(10).Row(row =>
+                            {
+                                row.RelativeItem().Column(col =>
+                                {
+                                    col.Item().Text($"Factura Nro: {oVenta.id_venta}").Bold();
+                                    col.Item().Text($"Fecha: {oVenta.fecha.ToString("dd/MM/yyyy")}");
+                                    col.Item().Text($"Hora: {DateTime.Now.ToString("HH:mm")}");
+                                    col.Item().Text($"Tipo de Pago: {oVenta.oTipoPago?.descripcion ?? "N/A"}");
+                                });
+                                row.RelativeItem().Column(col =>
+                                {
+                                    col.Item().Text("Datos del Cliente:").Bold();
+                                    col.Item().Text($"Nombre: {oVenta.oCliente?.nombres ?? "N/A"} {oVenta.oCliente?.apellidos ?? ""}");
+                                    col.Item().Text($"Teléfono: {oVenta.oCliente?.telefono ?? "N/A"}");
+                                    col.Item().Text($"Correo: {oVenta.oCliente?.correo ?? "N/A"}");
+                                });
+                            });
+
+                            column.Item().PaddingVertical(10).Table(table =>
+                            {
+                                table.ColumnsDefinition(columns =>
+                                {
+                                    columns.RelativeColumn(1); 
+                                    columns.RelativeColumn(3); 
+                                    columns.RelativeColumn(1); 
+                                    columns.RelativeColumn(1.5f); 
+                                    columns.RelativeColumn(1.5f);
+                                });
+
+                                table.Header(header =>
+                                {
+                                    header.Cell().BorderBottom(1).Padding(5).Text("Tipo").Bold();
+                                    header.Cell().BorderBottom(1).Padding(5).Text("Ítem").Bold();
+                                    header.Cell().BorderBottom(1).Padding(5).AlignRight().Text("Cantidad").Bold();
+                                    header.Cell().BorderBottom(1).Padding(5).AlignRight().Text("P. Unitario").Bold();
+                                    header.Cell().BorderBottom(1).Padding(5).AlignRight().Text("Subtotal").Bold();
+                                });
+
+                                foreach (var detalle in oVenta.oDetalleVenta)
+                                {
+                                    table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Padding(5).Text(detalle.tipo_item);
+                                    table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Padding(5).Text(detalle.tipo_item == "PRODUCTO" ? detalle.oProducto?.nombre ?? "Producto Desconocido" : detalle.oServicio?.nombre ?? "Servicio Desconocido");
+                                    table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Padding(5).AlignRight().Text(detalle.cantidad.ToString());
+                                    table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Padding(5).AlignRight().Text($"Bs./ {detalle.precio.ToString("N2")}");
+                                    table.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Padding(5).AlignRight().Text($"Bs./ {detalle.sub_total.ToString("N2")}");
+                                }
+                            });
+
+                            column.Item().AlignRight().Text($"Total Venta: Bs./ {oVenta.monto_total.ToString("N2")}").FontSize(12).Bold();
+                        });
+
+                    page.Footer()
+                        .PaddingTop(10)
+                        .Column(column =>
+                        {
+                            column.Item().LineHorizontal(1);
+                            column.Item().AlignCenter().Text($"Atendido por: {oVenta.oUsuario?.nombres ?? "N/A"} {oVenta.oUsuario?.apellidos ?? ""}").FontSize(8);
+                            column.Item().AlignCenter().Text(text =>
+                            {
+                                text.Span("Página ").FontSize(8);
+                                text.CurrentPageNumber().FontSize(8);
+                                text.Span(" de ").FontSize(8);
+                                text.TotalPages().FontSize(8);
+                            });
+                        });
+                });
+            }).GeneratePdf();
+
+            return File(pdfBytes, "application/pdf", $"Factura_Venta_{oVenta.id_venta}.pdf");
+        }
+
+        [HttpGet]
+        public ActionResult GenerarReciboTermico(int idVenta)
+        {
+            string mensaje = string.Empty;
+            Venta oVenta = new CN_Venta().ObtenerVenta(idVenta, out mensaje);
+
+            if (oVenta == null)
+            {
+                return Content($"<script>alert('Error al obtener los datos de la venta: {mensaje}'); window.close();</script>", "text/html");
+            }
+
+            const float mmToPoints = 2.83465f;
+            const float width80mm = 80 * mmToPoints; 
+            const float heightLarge = 1000 * mmToPoints;
+
+            // Generar el documento PDF
+            byte[] pdfBytes = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(new PageSize(width80mm, heightLarge));
+                    page.Margin(10); 
+                    page.DefaultTextStyle(x => x.FontSize(8)); 
+
+                    page.Header()
+                        .PaddingBottom(5)
+                        .Column(column =>
+                        {
+                            column.Item().AlignCenter().Text("AUTOPARTES DOS HERMANOS").FontSize(10).Bold();
+                            column.Item().AlignCenter().Text("RECIBO DE VENTA").FontSize(9).Bold();
+                            column.Item().AlignCenter().Text($"Nro: {oVenta.id_venta}").FontSize(9);
+                            column.Item().AlignCenter().Text($"Fecha: {oVenta.fecha.ToString("dd/MM/yyyy")}").FontSize(8);
+                            column.Item().AlignCenter().Text($"Hora: {DateTime.Now.ToString("HH:mm")}");
+                            column.Item().LineHorizontal(0.5f);
+                        });
+
+                    page.Content()
+                        .Column(column =>
+                        {
+                            column.Item().PaddingBottom(5).Text($"Cliente: {oVenta.oCliente?.nombres ?? "N/A"} {oVenta.oCliente?.apellidos ?? ""}").FontSize(8);
+                            column.Item().PaddingBottom(5).Text($"Tipo Pago: {oVenta.oTipoPago?.descripcion ?? "N/A"}").FontSize(8);
+                            column.Item().LineHorizontal(0.5f);
+
+                            column.Item().PaddingVertical(5).Table(table =>
+                            {
+                                table.ColumnsDefinition(columns =>
+                                {
+                                    columns.RelativeColumn(4); 
+                                    columns.RelativeColumn(2); 
+                                });
+
+                                table.Header(header =>
+                                {
+                                    header.Cell().Padding(2).Text("Ítem").Bold();
+                                    header.Cell().Padding(2).AlignRight().Text("Subtotal").Bold();
+                                });
+
+                                foreach (var detalle in oVenta.oDetalleVenta)
+                                {
+                                    string itemName = detalle.tipo_item == "PRODUCTO" ? detalle.oProducto?.nombre ?? "Producto Desconocido" : detalle.oServicio?.nombre ?? "Servicio Desconocido";
+                                    table.Cell().Padding(2).Text($"{detalle.cantidad} x {itemName} (Bs./ {detalle.precio.ToString("N2")})");
+                                    table.Cell().Padding(2).AlignRight().Text($"Bs./ {detalle.sub_total.ToString("N2")}");
+                                }
+                            });
+
+                            column.Item().LineHorizontal(0.5f);
+                            column.Item().AlignRight().Text($"TOTAL: Bs./ {oVenta.monto_total.ToString("N2")}").FontSize(10).Bold();
+                            column.Item().LineHorizontal(0.5f);
+
+                            column.Item().PaddingTop(10).AlignCenter().Text("¡Gracias por su compra!").FontSize(8);
+                            column.Item().AlignCenter().Text($"Atendido por: {oVenta.oUsuario?.nombres ?? "N/A"}").FontSize(7);
+                            column.Item().AlignCenter().Text(text =>
+                            {
+                                text.Span("Página ").FontSize(7);
+                                text.CurrentPageNumber().FontSize(7);
+                                text.Span(" de ").FontSize(7);
+                                text.TotalPages().FontSize(7);
+                            });
+                        });
+                });
+            }).GeneratePdf();
+
+            return File(pdfBytes, "application/pdf", $"Recibo_Venta_{oVenta.id_venta}.pdf");
         }
 
         //Compras
@@ -23,7 +262,6 @@ namespace CapaPresentacionAdmin.Controllers
         {
             return View();
         }
-        // --- Métodos para el Registro de Compra ---
         [HttpPost]
         public JsonResult RegistrarCompra(string objetoCompra)
         {
@@ -33,22 +271,18 @@ namespace CapaPresentacionAdmin.Controllers
             try
             {
                 // Deserializar el objeto JSON de la compra que viene del frontend
-                // Asegúrate de que la estructura JSON coincida con la clase Compra y sus DetalleCompra
                 Compra oCompra = JsonConvert.DeserializeObject<Compra>(objetoCompra);
 
                 
 
-                // Llamar a la capa de negocio para registrar la compra
                 idCompraGenerada = new CN_Compra().Registrar(oCompra, out Mensaje);
 
-                // Determinar si la operación fue exitosa
                 bool operacionExitosa = (idCompraGenerada != 0);
 
                 return Json(new { operacionExitosa = operacionExitosa, idCompra = idCompraGenerada, mensaje = Mensaje }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {
-                // Capturar cualquier excepción inesperada y devolver un mensaje de error
                 Mensaje = "Error inesperado al registrar la compra: " + ex.Message;
                 return Json(new { operacionExitosa = false, idCompra = 0, mensaje = Mensaje }, JsonRequestBehavior.AllowGet);
             }
