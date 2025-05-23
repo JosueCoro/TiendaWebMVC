@@ -186,7 +186,9 @@
             $("#txtStockMinimo").val(0);
             //poner la fecha del dia siempre
             //$("#txtFechaActualizacion").val("");
-            $("#txtFechaActualizacion").val(new Date().toISOString().split('T')[0]);
+            //$("#txtFechaActualizacion").val(new Date().toISOString().split('T')[0]);
+            var fechaActual = new Date().toISOString().split('T')[0];
+            $("#txtFechaActualizacion").val(fechaActual);
             $("#mensajeError").hide();
 
             if (json != null) {
@@ -201,6 +203,7 @@
                 var fecha = new Date(json.fecha_actualizacion);
                 var formattedDate = fecha.toISOString().split('T')[0];
                 $("#txtFechaActualizacion").val(formattedDate);
+                
             }
 
             $('#FormModalStock').modal('show');

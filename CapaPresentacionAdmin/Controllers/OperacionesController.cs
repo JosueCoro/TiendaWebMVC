@@ -7,10 +7,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using QuestPDF.Fluent; // Necesario para QuestPDF
-using QuestPDF.Helpers; // Necesario para QuestPDF (ej. Colors, PageSizes)
-using QuestPDF.Infrastructure; // Necesario para QuestPDF (ej. IContainer)
-using System.IO; // Necesario para MemoryStream
+using QuestPDF.Fluent; //libreria QuestPDF
+using QuestPDF.Helpers; //colores para el pdf
+using QuestPDF.Infrastructure; 
+using System.IO; 
 
 namespace CapaPresentacionAdmin.Controllers
 {
@@ -187,7 +187,7 @@ namespace CapaPresentacionAdmin.Controllers
             const float width80mm = 80 * mmToPoints; 
             const float heightLarge = 1000 * mmToPoints;
 
-            // Generar el documento PDF
+            //documento para la imprresora termica
             byte[] pdfBytes = Document.Create(container =>
             {
                 container.Page(page =>
@@ -270,7 +270,6 @@ namespace CapaPresentacionAdmin.Controllers
 
             try
             {
-                // Deserializar el objeto JSON de la compra que viene del frontend
                 Compra oCompra = JsonConvert.DeserializeObject<Compra>(objetoCompra);
 
                 
@@ -385,7 +384,6 @@ namespace CapaPresentacionAdmin.Controllers
         [HttpGet]
         public JsonResult ListarStock()
         {
-            // Usar la capa de datos (CD_Stock) para obtener la lista de stock
             List<Stock> olista = new CD_Stock().ListarStock();
 
             // Formatear la respuesta para que coincida con lo que espera tu vista/javascript

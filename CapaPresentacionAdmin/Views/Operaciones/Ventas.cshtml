@@ -115,7 +115,7 @@
         </div>
     </div>
 </div>
-
+@*Modal para el cliente*@
 <div class="modal fade" id="modalBuscarCliente" tabindex="-1" aria-labelledby="modalBuscarClienteLabel" aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -192,25 +192,20 @@
 
 @section Scripts {
     <script>
-        var listaClientesGlobal = []; // Para almacenar los clientes
-        var listaProductosGlobal = []; // Para almacenar los productos
-        var listaServiciosGlobal = []; // Para almacenar los servicios
-        var listaItemsGlobal = []; // Combinación de productos y servicios para el modal de ítems
+        var listaClientesGlobal = []; 
+        var listaProductosGlobal = []; 
+        var listaServiciosGlobal = [];
+        var listaItemsGlobal = [];
 
-        var tablaDetalleVenta; // DataTable del detalle de venta
-        var tablaClientesModal; // DataTable del modal de clientes
-        var tablaItemsModal; // DataTable del modal de productos/servicios
+        var tablaDetalleVenta; 
+        var tablaClientesModal; 
+        var tablaItemsModal; 
 
-        // =======================================================================================
-        // 1. INICIALIZACIÓN DE DATATABLES
-        // =======================================================================================
-
-        // Inicializar DataTable para el detalle de venta
         tablaDetalleVenta = $('#tablaDetalleVenta').DataTable({
             responsive: true,
             ordering: false,
             "columns": [
-                { "data": "tipo_item" }, // Nueva columna para el tipo de ítem
+                { "data": "tipo_item" },
                 { "data": "nombreItem" },
                 { "data": "cantidad" },
                 {
@@ -235,23 +230,19 @@
             "language": {
                 "url": '//cdn.datatables.net/plug-ins/2.2.1/i18n/es-ES.json',
             },
-            "paging": false, // No paginación para el detalle de venta
-            "info": false,   // No información de filas para el detalle de venta
-            "searching": false // No búsqueda para el detalle de venta
+            "paging": false, 
+            "info": false,   
+            "searching": false 
         });
 
-        // =======================================================================================
-        // 2. CARGA INICIAL DE DATOS (AJAX)
-        // =======================================================================================
-
-        // Cargar clientes en una variable global y en el DataTable del modal de clientes
+        
         jQuery.ajax({
             url: '@Url.Action("ListarClientes", "Operaciones")',
             type: 'GET',
             dataType: 'json',
             contentType: 'application/json; charset=utf-8',
             success: function (data) {
-                listaClientesGlobal = data.data; // Almacenar todos los clientes
+                listaClientesGlobal = data.data; 
 
                 tablaClientesModal = $('#tablaClientesModal').DataTable({
                     data: listaClientesGlobal,
@@ -287,8 +278,6 @@
             }
         });
 
-        // Cargar productos y servicios y combinarlos para el modal de ítems
-        // Se usan $.when para esperar que ambas llamadas AJAX se completen
         $.when(
             jQuery.ajax({
                 url: '@Url.Action("ListarProductos", "Mantenedor")',
@@ -297,7 +286,7 @@
                 contentType: 'application/json; charset=utf-8'
             }),
             jQuery.ajax({
-                url: '@Url.Action("ListarServicios", "Mantenedor")', // Asumiendo que tienes un ListarServicios en MantenedorController
+                url: '@Url.Action("ListarServicios", "Mantenedor")', 
                 type: 'GET',
                 dataType: 'json',
                 contentType: 'application/json; charset=utf-8'
@@ -306,7 +295,6 @@
             listaProductosGlobal = productosResponse[0].data;
             listaServiciosGlobal = serviciosResponse[0].data;
 
-            // Combinar productos y servicios en una sola lista, añadiendo el tipo de ítem
             listaItemsGlobal = [];
             $.each(listaProductosGlobal, function (index, p) {
                 listaItemsGlobal.push({
@@ -316,7 +304,7 @@
                     descripcion: p.descripcion,
                     precio: p.precio,
                     estado: p.estado,
-                    oUnidadMedida: p.oUnidadMedida // Mantener si es relevante para mostrar
+                    oUnidadMedida: p.oUnidadMedida 
                 });
             });
             $.each(listaServiciosGlobal, function (index, s) {
@@ -327,11 +315,9 @@
                     descripcion: s.descripcion,
                     precio: s.precio,
                     estado: s.estado
-                    // Los servicios no tienen unidad de medida ni imágenes en tu esquema actual
                 });
             });
 
-            // Inicializar DataTable del modal de productos/servicios
             tablaItemsModal = $('#tablaItemsModal').DataTable({
                 data: listaItemsGlobal,
                 responsive: true,
@@ -370,7 +356,6 @@
         });
 
 
-        // Cargar tipos de pago en el ComboBox
         jQuery.ajax({
             url: '@Url.Action("ListarTP", "Mantenedor")',
             type: 'GET',
@@ -386,22 +371,16 @@
             }
         });
 
-        // =======================================================================================
-        // 3. FUNCIONES DE UTILIDAD
-        // =======================================================================================
-
-        // Función para mostrar mensajes de error en el div #mensajeError
+        
         function mostrarMensajeError(mensaje) {
             $("#mensajeError").text(mensaje);
             $("#mensajeError").show();
         }
 
-        // Función para ocultar mensajes de error
         function ocultarMensajeError() {
             $("#mensajeError").hide();
         }
 
-        // Función para calcular el total de la venta
         function calcularTotalVenta() {
             let total = 0;
             tablaDetalleVenta.rows().every(function () {
@@ -411,7 +390,6 @@
             $("#txtTotalVenta").val(total.toFixed(2));
         }
 
-        // Función para limpiar el formulario después de registrar una venta
         function limpiarFormularioVenta() {
             $("#txtIdClienteSeleccionado").val("0");
             $("#txtNombreClienteSeleccionado").val("");
@@ -421,19 +399,16 @@
             $("#txtNombreItemSeleccionado").val("");
             $("#txtCantidad").val("1");
             $("#txtPrecioUnitario").val("0.00");
-            tablaDetalleVenta.clear().draw(); // Limpiar la tabla de detalles
-            calcularTotalVenta(); // Resetear el total a 0.00
+            tablaDetalleVenta.clear().draw(); 
+            calcularTotalVenta(); 
             ocultarMensajeError();
         }
 
-        // =======================================================================================
-        // 4. LÓGICA DE MODALES Y SELECCIÓN
-        // =======================================================================================
-
-        // --- Lógica para el Modal de Clientes ---
+       
+        //clientes
         $("#btnAbrirModalClientes").on("click", function () {
             $("#txtBuscarClienteModal").val("");
-            tablaClientesModal.search('').columns().search('').draw(); // Limpiar búsqueda y filtro
+            tablaClientesModal.search('').columns().search('').draw(); 
             $('#modalBuscarCliente').modal('show');
         });
 
@@ -449,12 +424,11 @@
             let data = tablaClientesModal.row($(this).parents('tr')).data();
 
             $("#txtIdClienteSeleccionado").val(data.id_cliente);
-            $("#txtNombreClienteSeleccionado").val(data.nombres + " " + (data.apellidos || "")); // Concatenar nombre y apellido
+            $("#txtNombreClienteSeleccionado").val(data.nombres + " " + (data.apellidos || ""));
 
             $('#modalBuscarCliente').modal('hide');
         });
 
-        // --- Lógica para el Modal de Productos/Servicios (Ítems) ---
         $("#btnAbrirModalItems").on("click", function () {
             $("#txtBuscarItemModal").val("");
             tablaItemsModal.search('').columns().search('').draw();
@@ -481,11 +455,7 @@
             $('#modalBuscarItem').modal('hide');
         });
 
-        // =======================================================================================
-        // 5. LÓGICA DE AGREGAR Y REGISTRAR VENTA
-        // =======================================================================================
-
-        // Evento click para el botón "Agregar a Venta"
+        
         $("#btnAgregarItem").on("click", function () {
             ocultarMensajeError();
 
@@ -495,7 +465,7 @@
             let cantidad = parseInt($("#txtCantidad").val());
             let precioUnitario = parseFloat($("#txtPrecioUnitario").val());
 
-            // Validaciones
+            //validaciones
             if (idItem === "" || idItem === "0" || tipoItem === "") {
                 mostrarMensajeError("Debe seleccionar un producto o servicio.");
                 return;
@@ -509,14 +479,12 @@
                 return;
             }
 
-            // Verificar si el ítem ya existe en la tabla de detalle para evitar duplicados
             let itemYaEnTabla = false;
             tablaDetalleVenta.rows().every(function () {
                 let data = this.data();
-                // Compara por ID y por TIPO de ítem
                 if (data.id_item == idItem && data.tipo_item == tipoItem) {
                     itemYaEnTabla = true;
-                    return false; // Salir del bucle early
+                    return false;
                 }
             });
 
@@ -527,9 +495,8 @@
 
             let subTotal = cantidad * precioUnitario;
 
-            // Crear el objeto para la fila del DataTable
             let fila = {
-                id_item: idItem, // Usamos un ID genérico para el frontend
+                id_item: idItem, 
                 tipo_item: tipoItem,
                 nombreItem: nombreItem,
                 cantidad: cantidad,
@@ -539,13 +506,10 @@
                 SERVICIO_id_servicio: (tipoItem === 'SERVICIO' ? parseInt(idItem) : null)
             };
 
-            // Añadir la fila a la tabla
             tablaDetalleVenta.row.add(fila).draw();
 
-            // Recalcular el total de la venta
             calcularTotalVenta();
 
-            // Limpiar campos del ítem para agregar el siguiente
             $("#txtIdItemSeleccionado").val("0");
             $("#txtTipoItemSeleccionado").val("");
             $("#txtNombreItemSeleccionado").val("");
@@ -553,13 +517,11 @@
             $("#txtPrecioUnitario").val("0.00");
         });
 
-        // Evento click para eliminar un ítem del detalle
         $('#tablaDetalleVenta tbody').on('click', '.btn-eliminar-detalle', function () {
             tablaDetalleVenta.row($(this).parents('tr')).remove().draw();
-            calcularTotalVenta(); // Recalcular total después de eliminar
+            calcularTotalVenta(); 
         });
 
-        // Evento click para el botón "Registrar Venta"
         $("#btnRegistrarVenta").on("click", function () {
             ocultarMensajeError();
 
@@ -569,7 +531,6 @@
             let idTienda = $("#txtidTIENDA").val();
             let montoTotal = parseFloat($("#txtTotalVenta").val());
 
-            // Validaciones de encabezado
             if (idCliente === "" || idCliente === "0") {
                 mostrarMensajeError("Debe seleccionar un cliente.");
                 return;
@@ -587,7 +548,6 @@
                  return;
             }
 
-            // Construir el objeto Venta para enviar al controlador
             let oVenta = {
                 CLIENTE_id_cliente: parseInt(idCliente),
                 TIPO_PAGO_id_tipo_pago: parseInt(idTipoPago),
@@ -597,12 +557,11 @@
                 oDetalleVenta: []
             };
 
-            // Llenar los detalles de la venta desde el DataTable
             tablaDetalleVenta.rows().every(function () {
                 let data = this.data();
                 oVenta.oDetalleVenta.push({
-                    PRODUCTO_id_producto: data.PRODUCTO_id_producto, // Será null si es servicio
-                    SERVICIO_id_servicio: data.SERVICIO_id_servicio, // Será null si es producto
+                    PRODUCTO_id_producto: data.PRODUCTO_id_producto, 
+                    SERVICIO_id_servicio: data.SERVICIO_id_servicio, 
                     cantidad: parseInt(data.cantidad),
                     precio: parseFloat(data.precio),
                     sub_total: parseFloat(data.sub_total),
@@ -610,7 +569,6 @@
                 });
             });
 
-            // Llamada AJAX para registrar la venta
             jQuery.ajax({
                 url: '@Url.Action("RegistrarVenta", "Operaciones")',
                 type: 'POST',
@@ -621,37 +579,31 @@
                     $(".card-body").LoadingOverlay("hide");
 
                     if (data.operacionExitosa) {
-                        // Usar SweetAlert2 con botones personalizados para opciones de impresión
                         Swal.fire({
                             title: '¡Venta Registrada!',
                             text: 'La venta se ha registrado exitosamente. ¿Desea imprimir un comprobante?',
                             icon: 'success',
-                            showDenyButton: true, // Mostrar botón "Imprimir Recibo"
-                            showCancelButton: true, // Mostrar botón "Cerrar"
+                            showDenyButton: true, 
+                            showCancelButton: true, 
                             confirmButtonText: 'Imprimir Factura Formal',
                             denyButtonText: 'Imprimir Recibo Térmico',
                             cancelButtonText: 'Cerrar',
-                            reverseButtons: true // Opcional: invierte el orden de los botones
+                            reverseButtons: true 
                         }).then((result) => {
                             if (result.isConfirmed) {
-                                // El usuario hizo clic en "Imprimir Factura Formal"
                                 window.open('@Url.Action("GenerarFacturaFormal", "Operaciones")?idVenta=' + data.idVenta, '_blank');
                             } else if (result.isDenied) {
-                                // El usuario hizo clic en "Imprimir Recibo Térmico"
                                 window.open('@Url.Action("GenerarReciboTermico", "Operaciones")?idVenta=' + data.idVenta, '_blank');
                             }
-                            // Si result.isDismissed (cancelButton o clic fuera), no hace nada más que cerrar el modal
-                            limpiarFormularioVenta(); // Limpiar el formulario después de la acción de SweetAlert2
+                            limpiarFormularioVenta(); 
                         });
                     } else {
-                        // Mensaje de error si la operación no fue exitosa
                         Swal.fire({
                             title: 'Error al Registrar Venta',
                             text: data.mensaje,
                             icon: 'error',
                             confirmButtonText: 'Aceptar'
                         });
-                        // No limpiar el formulario en caso de error para que el usuario pueda corregir
                     }
                 },
                 error: function (jqXHR, textStatus, errorThrown) {

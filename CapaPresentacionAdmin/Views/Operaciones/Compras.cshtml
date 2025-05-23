@@ -231,7 +231,7 @@
                     "language": {
                         "url": '//cdn.datatables.net/plug-ins/2.2.1/i18n/es-ES.json',
                     },
-                    "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Todos"]] // Opciones de paginación
+                    "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Todos"]] 
                 });
 
             },
@@ -270,7 +270,7 @@
             }
         });
 
-        // Función para mostrar mensajes de error
+        //mostrar mensajes de error
         function mostrarMensajeError(mensaje) {
             $("#mensajeError").text(mensaje);
             $("#mensajeError").show();
@@ -323,7 +323,6 @@
             let cantidad = parseInt($("#txtCantidad").val());
             let precioCompra = parseFloat($("#txtPrecioCompra").val());
 
-            // Validaciones
             if (idProducto === "" || idProducto === "0") {
                 mostrarMensajeError("Debe seleccionar un producto.");
                 return;
@@ -353,7 +352,7 @@
 
 
             let productoSeleccionado = listaProductosGlobal.find(p => p.id_producto == idProducto);
-            let precioVenta = productoSeleccionado ? parseFloat(productoSeleccionado.precio) : 0; // Asumiendo 'precio' es el precio de venta
+            let precioVenta = productoSeleccionado ? parseFloat(productoSeleccionado.precio) : 0; 
 
             let subTotal = cantidad * precioCompra;
 
@@ -428,7 +427,6 @@
                 });
             });
 
-            // Llamada AJAX para registrar la compra
             jQuery.ajax({
                 url: '@Url.Action("RegistrarCompra", "Operaciones")', 
                 type: 'POST',
