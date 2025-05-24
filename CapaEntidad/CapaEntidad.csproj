@@ -57,6 +57,7 @@
     <Compile Include="Tienda.cs" />
     <Compile Include="TipoPago.cs" />
     <Compile Include="UnidadMedida.cs" />
+    <Compile Include="User_activo.cs" />
     <Compile Include="Usuario.cs" />
     <Compile Include="Venta.cs" />
   </ItemGroup>

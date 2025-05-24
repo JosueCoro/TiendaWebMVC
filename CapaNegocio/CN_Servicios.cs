@@ -18,7 +18,7 @@ namespace CapaNegocio
             return objServicios.ListarServicios();
         }
 
-        public int Registrar(Servicio obj, out string Mensaje)
+        public int Registrar(Servicio obj, int idUsuarioLogeado, out string Mensaje)
         {
             Mensaje = string.Empty;
             if (obj.precio <= 0)
@@ -31,11 +31,12 @@ namespace CapaNegocio
                 Mensaje = "El nombre del servicio no puede estar vacío.";
                 return 0;
             }
+            obj.USUARIO_id_usuario = idUsuarioLogeado;
             return objServicios.Registrar(obj, out Mensaje);
             
 
         }
-        public bool Editar(Servicio obj, out string Mensaje)
+        public bool Editar(Servicio obj, int idUsuarioLogeado,out string Mensaje)
         {
             Mensaje = string.Empty;
             if (obj.precio <= 0)
@@ -48,7 +49,7 @@ namespace CapaNegocio
                 Mensaje = "El nombre del servicio no puede estar vacío.";
                 return false;
             }
-            else         
+            obj.USUARIO_id_usuario = idUsuarioLogeado;
             return objServicios.Editar(obj, out Mensaje);
             
         }

@@ -46,6 +46,7 @@
                     <th>Telefono</th>
                     <th>Estado</th>
                     <th>Rol</th>
+                    <th>Tienda</th>
                     <th></th>
                 </tr>
             </thead>
@@ -69,6 +70,7 @@
                 <!-- <input id ="txtid" type="hidden" name="name" value="0" /> -->
                 <input id="txtid" type="text" name="name" value="0" />
                 <input id="txtid_rol" type="text" name="name" value="0" />
+                <input id="txtid_tienda" type="text" name="name" value="0" />
 
                 <div class="row g-2">
 
@@ -106,6 +108,12 @@
                         </select>
                     </div>
 
+                    <div class="col-sm-12">
+                        <label for="cdtienda" class="form-label">Tienda</label>
+                        <select class="form-select" aria-label="Default select example" id="cdtienda">
+                        </select>
+                    </div>
+
 
 
                 </div>
@@ -120,17 +128,20 @@
                 </div>
 
                 <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                     <button type="button" class="btn btn-primary" onclick="Guardar()">Guardar</button>
                 </div>
                 <hr />
-                <h5>Actualizar Contraseña</h5>
-                <div class="col-sm-6">
-                    <label for="txtContraseña" class="form-label">Nueva Contraseña</label>
-                    <input type="text" class="form-control" id="txtContraseña" autocomplete="off">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-primary" onclick="ActualizarContraseña()">Actualizar</button>
+                <div id="seccionActualizarClave" style="display:none">
+                    <h5>Actualizar Contraseña del Usuario</h5>
+                    <div class="col-sm-6">
+                        <label for="txtContraseña" class="form-label">Nueva Contraseña</label>
+                        <input type="text" class="form-control" id="txtContraseña" autocomplete="off">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="button" class="btn btn-primary" onclick="ActualizarContraseña()">Actualizar</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -183,6 +194,7 @@
                     }
                 },
                 { "data": "rol" },
+                { "data": "tienda"},
                 {
                     "defaultContent": '<button type="button" class="btn btn-warning btn-sm btn-editar">Editar</button> <button type="button" class="btn btn-danger btn-sm btn-eliminar">Eliminar</button>',
                     "oderrable": false,
@@ -213,6 +225,24 @@
                 console.log(error);
             }
         });
+        //Lista de tiendas
+        //ListarTiendas de Mantenedor
+        jQuery.ajax({
+            url: '@Url.Action("ListarTiendas", "Mantenedor")',
+            type: 'GET',
+            data: null,
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                console.log(data);
+                $.each(data.data, function (index, valor) {
+                    $("<option>").attr("value", valor.id_tienda).text(valor.nombre).appendTo("#cdtienda");
+                })
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
 
 
 
@@ -220,6 +250,7 @@
 
             $("#txtid").val(0);
             $("#txtid_rol").val(0);
+            $("#txtid_tienda").val(0);
             $("#txtNombre").val("");
             $("#txtApellidos").val("");
             $("#txtCorreo").val("");
@@ -227,6 +258,7 @@
             $("#txtTelefono").val("");
             $("#cdactivo").val(1);
             $("#cdrol").val(1);
+            $("#cdtienda").val(1);
 
             $("#mensajeError").hide();
 
@@ -236,6 +268,7 @@
 
                 $("#txtid").val(json.id_usuario);
                 $("#txtid_rol").val(json.id_rol);
+                $("#txtid_tienda").val(json.id_tienda);
                 $("#txtNombre").val(json.nombres);
                 $("#txtApellidos").val(json.apellidos);
                 $("#txtCorreo").val(json.correo);
@@ -243,9 +276,16 @@
                 $("#txtTelefono").val(json.telefono);
                 $("#cdactivo").val(json.estado == true ? 1 : 0);
                 $("#cdrol").val(json.id_rol);
+                $("#cdtienda").val(json.id_tienda);
             }
 
             $('#FormModal1').modal('show');
+            if ($("#txtid").val() != 0) {
+                $("#seccionActualizarClave").show();
+            } else {
+                $("#seccionActualizarClave").hide();
+            }
+
         }
 
         $("#tablausuario tbody").on("click", '.btn-editar', function () {
@@ -347,7 +387,8 @@
                 //contraseña: $("#txtContraseña").val(),
                 telefono: $("#txtTelefono").val(),
                 estado: $("#cdactivo").val() == 1 ? true : false,
-                id_rol: $("#cdrol").val()
+                id_rol: $("#cdrol").val(),
+                id_tienda: $("#cdtienda").val()
             }
 
             jQuery.ajax({
@@ -408,6 +449,8 @@
                     })
                 }
             });
+            
+
         }
         //funcion que actualiza el datatable
         function ActualizarTabla() {

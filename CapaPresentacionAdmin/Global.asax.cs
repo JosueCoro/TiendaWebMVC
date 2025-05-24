@@ -7,7 +7,6 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 
-using QuestPDF.Infrastructure; 
 using QuestPDF.Fluent;
 
 namespace CapaPresentacionAdmin

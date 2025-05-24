@@ -13,6 +13,20 @@ namespace CapaPresentacionAdmin.Controllers
     {
         public ActionResult Index()
         {
+            //validar que id_user_activo no sea null osea que el usuario haya iniciado sesion para poder entrar aqui
+            if (Session["Usuario"] == null)
+            {
+                return RedirectToAction("Index", "Acceso");
+            }
+            else
+            {
+                //validar que el usuario tenga un rol asignado
+                User_activo oUserActivo = (User_activo)Session["Usuario"];
+                if (oUserActivo.id_user_activo == 0)
+                {
+                    return RedirectToAction("Index", "Acceso");
+                }
+            }
             return View();
         }
 
@@ -21,6 +35,20 @@ namespace CapaPresentacionAdmin.Controllers
         //USUARIO
         public ActionResult Usuarios()
         {
+            //validar que id_user_activo no sea null osea que el usuario haya iniciado sesion para poder entrar aqui
+            if (Session["Usuario"] == null)
+            {
+                return RedirectToAction("Index", "Acceso");
+            }
+            else
+            {
+                //validar que el usuario tenga un rol asignado
+                User_activo oUserActivo = (User_activo)Session["Usuario"];
+                if (oUserActivo.id_user_activo == 0)
+                {
+                    return RedirectToAction("Index", "Acceso");
+                }
+            }
             return View();
         }
 
@@ -80,6 +108,20 @@ namespace CapaPresentacionAdmin.Controllers
         //ROLES
         public ActionResult Roles()
         {
+            //validar que id_user_activo no sea null osea que el usuario haya iniciado sesion para poder entrar aqui
+            if (Session["Usuario"] == null)
+            {
+                return RedirectToAction("Index", "Acceso");
+            }
+            else
+            {
+                //validar que el usuario tenga un rol asignado
+                User_activo oUserActivo = (User_activo)Session["Usuario"];
+                if (oUserActivo.id_user_activo == 0)
+                {
+                    return RedirectToAction("Index", "Acceso");
+                }
+            }
             return View();
         }
 
@@ -132,6 +174,20 @@ namespace CapaPresentacionAdmin.Controllers
         //PERMISOS
         public ActionResult Permisos()
         {
+            //validar que id_user_activo no sea null osea que el usuario haya iniciado sesion para poder entrar aqui
+            if (Session["Usuario"] == null)
+            {
+                return RedirectToAction("Index", "Acceso");
+            }
+            else
+            {
+                //validar que el usuario tenga un rol asignado
+                User_activo oUserActivo = (User_activo)Session["Usuario"];
+                if (oUserActivo.id_user_activo == 0)
+                {
+                    return RedirectToAction("Index", "Acceso");
+                }
+            }
             return View();
         }
 

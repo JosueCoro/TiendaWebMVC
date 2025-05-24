@@ -8,14 +8,15 @@ namespace CapaEntidad
 {
     //CREATE TABLE SEGURIDAD.USUARIO 
     //(
-     //id_usuario INTEGER NOT NULL IDENTITY(1,1), 
-     //nombres VARCHAR(150) NOT NULL,
-     //apellidos VARCHAR(150) NOT NULL,
-     //correo VARCHAR(20) NOT NULL,
-     //contraseña VARCHAR(150) NOT NULL,
-     //telefono VARCHAR(20) NOT NULL,
-     //estado BIT DEFAULT 1 NOT NULL,
-     //ROLES_id_rol INTEGER NOT NULL 
+    //id_usuario INTEGER NOT NULL IDENTITY(1,1), 
+    //nombres VARCHAR(150) NOT NULL,
+    //apellidos VARCHAR(150) NOT NULL,
+    //correo VARCHAR(20) NOT NULL,
+    //contraseña VARCHAR(150) NOT NULL,
+    //telefono VARCHAR(20) NOT NULL,
+    //estado BIT DEFAULT 1 NOT NULL,
+    //ROLES_id_rol INTEGER NOT NULL,
+    //TIENDA_id_tienda INTEGER NOT NULL
     //)
     //GO 
     public class Usuario
@@ -29,6 +30,8 @@ namespace CapaEntidad
         public bool estado { get; set; }
         public int id_rol { get; set; }
         public string rol { get; set; }
+        public int id_tienda { get; set; }
+        public string tienda { get; set; }
 
     }
 }

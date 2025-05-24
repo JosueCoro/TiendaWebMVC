@@ -49,8 +49,10 @@ namespace CapaDatos
                             telefono = lectura["telefono"].ToString(),
                             estado = Convert.ToBoolean(lectura["estado"]),
                             id_rol = Convert.ToInt32(lectura["ROLES_id_rol"]),
-                            rol = lectura["nombre_rol"] != DBNull.Value ? lectura["nombre_rol"].ToString() : "Sin Rol"
+                            rol = lectura["nombre_rol"] != DBNull.Value ? lectura["nombre_rol"].ToString() : "Sin Rol",
                             //rol = lectura["nombre_rol"].ToString() 
+                            id_tienda = Convert.ToInt32(lectura["TIENDA_id_tienda"]),
+                            tienda = lectura["nombre_tienda"] != DBNull.Value ? lectura["nombre_tienda"].ToString() : "Sin Tienda"
                         });
                     }
                 }               
@@ -80,6 +82,7 @@ namespace CapaDatos
                     cmd.Parameters.AddWithValue("@Telefono", obj.telefono);
                     cmd.Parameters.AddWithValue("@Estado", obj.estado);
                     cmd.Parameters.AddWithValue("@RolId", obj.id_rol);
+                    cmd.Parameters.AddWithValue("@TiendaId", obj.id_tienda);
                     cmd.Parameters.Add("@Mensaje", SqlDbType.VarChar, 500).Direction = ParameterDirection.Output;
                     cmd.Parameters.Add("@Resultado", SqlDbType.Int).Direction = ParameterDirection.Output;
                     cmd.CommandType = CommandType.StoredProcedure;
@@ -158,6 +161,7 @@ namespace CapaDatos
                     cmd.Parameters.AddWithValue("@Telefono", obj.telefono);
                     cmd.Parameters.AddWithValue("@Estado", obj.estado);
                     cmd.Parameters.AddWithValue("@RolId", obj.id_rol);
+                    cmd.Parameters.AddWithValue("@TiendaId", obj.id_tienda);
                     cmd.Parameters.Add("@Mensaje", SqlDbType.VarChar, 500).Direction = ParameterDirection.Output;
                     cmd.Parameters.Add("@Resultado", SqlDbType.Int).Direction = ParameterDirection.Output;
                     cmd.CommandType = CommandType.StoredProcedure;
@@ -228,7 +232,8 @@ namespace CapaDatos
             return resultado;
         }
 
-        /*CREATE PROCEDURE SEGURIDAD.PA_ValidarLogin
+        /*--LOGIN
+        CREATE PROCEDURE SEGURIDAD.PA_ValidarLogin
         (
             @Correo VARCHAR(50),
             @Contraseña VARCHAR(150)
@@ -237,11 +242,15 @@ namespace CapaDatos
         BEGIN
             -- Declarar variables para almacenar el ID del usuario y el resultado
             DECLARE @ID_Usuario INT;
+	        DECLARE @ID_Tienda INT;
             DECLARE @Resultado INT;
 
             -- Comprobar si el usuario existe con el correo y la contraseña proporcionados
-            SELECT @ID_Usuario = id_usuario
-            FROM SEGURIDAD.USUARIO
+            SELECT 
+		        @ID_Usuario = id_usuario,
+		        @ID_Tienda = TIENDA_id_tienda
+            FROM 
+		        SEGURIDAD.USUARIO
             WHERE correo = @Correo
               AND contraseña = @Contraseña
               AND estado = 1;  -- Solo usuarios activos
@@ -260,13 +269,13 @@ namespace CapaDatos
             END
 
             -- Retornar los valores de ID_Usuario y Resultado
-            SELECT @ID_Usuario AS ID_Usuario, @Resultado AS Resultado;
+            SELECT @ID_Usuario AS ID_Usuario, @ID_Tienda AS ID_Tienda, @Resultado AS Resultado;
         END;
         GO
         */
-        public Usuario ValidarUsuario(string correo, string contraseña)
+        public User_activo ValidarUsuario(string correo, string contraseña)
         {
-            Usuario oUsuario = null;
+            User_activo oUsuario = null;
             try
             {
                 using (SqlConnection oconexion = new SqlConnection(Conexion.cn))
@@ -283,13 +292,15 @@ namespace CapaDatos
                     if (lectura.Read())
                     {
                         int idUsuario = Convert.ToInt32(lectura["ID_Usuario"]);
+                        int idTienda = Convert.ToInt32(lectura["ID_Tienda"]);
                         int resultado = Convert.ToInt32(lectura["Resultado"]); 
 
                         if (resultado == 1)
                         {
-                            oUsuario = new Usuario()
+                            oUsuario = new User_activo()
                             {
-                                id_usuario = idUsuario
+                                id_user_activo = idUsuario,
+                                id_tienda_user = idTienda
                             };
                         }
                         else

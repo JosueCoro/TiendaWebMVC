@@ -17,6 +17,17 @@ namespace CapaPresentacionAdmin.Controllers
             return View();
         }
 
+        public ActionResult CerrarSesion()
+        {
+            //cerrar  session
+            Session["Usuario"] = null;
+            Session.Abandon();
+            Session.Clear();
+            //vista de login
+            return RedirectToAction("Index", "Acceso");
+            //return View();
+        }
+
         public ActionResult CambiarContraseña()
         {
             return View();
@@ -27,7 +38,7 @@ namespace CapaPresentacionAdmin.Controllers
         {
             string mensaje = string.Empty;
 
-            // Validaciones
+            //validaciones
             if (string.IsNullOrWhiteSpace(correo) ||
                 string.IsNullOrWhiteSpace(contraseñaActual) ||
                 string.IsNullOrWhiteSpace(nuevaContraseña) ||
@@ -67,26 +78,34 @@ namespace CapaPresentacionAdmin.Controllers
         [HttpPost]
         public ActionResult Index(string correo, string contraseña)
         {
-            Usuario oUsuario = new Usuario();
+
+            User_activo oUserActivo = new User_activo();
 
             string contraseñaEncriptada = CN_Recursos.ConvertirSha256(contraseña);
 
-            oUsuario = new CN_Usuarios().ValidarUsuario(correo, contraseñaEncriptada);
+            oUserActivo = new CN_Usuarios().ValidarUsuario(correo, contraseñaEncriptada);
 
-            if (oUsuario == null)
+            
+            if (oUserActivo == null)
             {
-                ViewBag.Error = "Correo o contraseña no corecta";
+                ViewBag.Error = "Correo o contraseña incorrectos, o el usuario se encuentra inactivo. Por favor, verifique sus datos e intente nuevamente.";
                 return View();
             }
             else
             {
-                Session["Usuario"] = oUsuario;
-                //Session["id_usuario"] = oUsuario.id_usuario;
-                return RedirectToAction("Index", "Home");
-                //MOSTRAR EL ID DEL USUARIO QUE INICIO SESION
-                
-                //ViewBag.Error = null;
-                //return RedirectToAction("Index", "Home");
+                Session["Usuario"] = oUserActivo;
+                //Session["Usuario"] = oUsuario; guarda el objeto en la session para poder usarlo en otras vistas
+                //validar que id_user_activo no sea null
+                if (oUserActivo.id_user_activo == 0 && oUserActivo.id_tienda_user == 0)
+                {
+                    ViewBag.Error = "El usuario no tiene permisos para acceder al sistema.";
+                    return View();
+                }
+                else
+                {
+                    return RedirectToAction("Index", "Home");
+                }
+
             }
         }
     }

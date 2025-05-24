@@ -13,7 +13,7 @@ namespace CapaNegocio
     {
         private CD_Compra objCdCompra = new CD_Compra();
 
-        public int Registrar(Compra oCompra, out string Mensaje)
+        public int Registrar(Compra oCompra, int idUsuarioLogeado, int idTienda, out string Mensaje)
         {
             Mensaje = string.Empty; 
 
@@ -26,10 +26,10 @@ namespace CapaNegocio
             {
                 Mensaje = "Debe seleccionar un tipo de pago.";
             }
-            else if (oCompra.TIENDA_id_tienda == 0)
-            {
-                Mensaje = "Debe seleccionar una tienda para la compra.";
-            }
+            //else if (oCompra.TIENDA_id_tienda == 0)
+            //{
+            //    Mensaje = "Debe seleccionar una tienda para la compra.";
+            //}
             else if (oCompra.monto_total <= 0)
             {
                 Mensaje = "El monto total de la compra debe ser mayor a cero.";
@@ -49,6 +49,8 @@ namespace CapaNegocio
 
             if (string.IsNullOrEmpty(Mensaje))
             {
+                oCompra.USUARIO_id_usuario = idUsuarioLogeado;
+                oCompra.TIENDA_id_tienda = idTienda;
                 return objCdCompra.RegistrarCompra(oCompra, out Mensaje);
             }
             else

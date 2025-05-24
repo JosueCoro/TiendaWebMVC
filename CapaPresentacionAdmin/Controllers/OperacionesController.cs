@@ -21,6 +21,20 @@ namespace CapaPresentacionAdmin.Controllers
         //Ventas
         public ActionResult Ventas()
         {
+            //validar que id_user_activo no sea null osea que el usuario haya iniciado sesion para poder entrar aqui
+            if (Session["Usuario"] == null)
+            {
+                return RedirectToAction("Index", "Acceso");
+            }
+            else
+            {
+                //validar que el usuario tenga un rol asignado
+                User_activo oUserActivo = (User_activo)Session["Usuario"];
+                if (oUserActivo.id_user_activo == 0)
+                {
+                    return RedirectToAction("Index", "Acceso");
+                }
+            }
             return View();
         }
         [HttpPost]
@@ -260,13 +274,40 @@ namespace CapaPresentacionAdmin.Controllers
         //Compras
         public ActionResult Compras()
         {
+            //validar que id_user_activo no sea null osea que el usuario haya iniciado sesion para poder entrar aqui
+            if (Session["Usuario"] == null)
+            {
+                return RedirectToAction("Index", "Acceso");
+            }
+            else
+            {
+                //validar que el usuario tenga un rol asignado
+                User_activo oUserActivo = (User_activo)Session["Usuario"];
+                if (oUserActivo.id_user_activo == 0)
+                {
+                    return RedirectToAction("Index", "Acceso");
+                }
+            }
             return View();
         }
         [HttpPost]
         public JsonResult RegistrarCompra(string objetoCompra)
         {
             string Mensaje = string.Empty;
-            int idCompraGenerada = 0; 
+            int idCompraGenerada = 0;
+
+           
+
+            User_activo usuarioActivo = Session["Usuario"] as User_activo;
+
+            if (usuarioActivo == null || usuarioActivo.id_user_activo == 0)
+            {
+                Mensaje = "No se ha encontrado el ID del usuario logeado. Por favor, inicie sesión nuevamente.";
+                return Json(new { resultado = 0, mensaje = Mensaje }, JsonRequestBehavior.AllowGet);
+            }
+
+            int idUsuarioLogeado = usuarioActivo.id_user_activo;
+            int idTienda = usuarioActivo.id_tienda_user;
 
             try
             {
@@ -274,7 +315,7 @@ namespace CapaPresentacionAdmin.Controllers
 
                 
 
-                idCompraGenerada = new CN_Compra().Registrar(oCompra, out Mensaje);
+                idCompraGenerada = new CN_Compra().Registrar(oCompra, idUsuarioLogeado, idTienda, out Mensaje);
 
                 bool operacionExitosa = (idCompraGenerada != 0);
 
@@ -292,6 +333,20 @@ namespace CapaPresentacionAdmin.Controllers
         //clientes
         public ActionResult Clientes()
         {
+            //validar que id_user_activo no sea null osea que el usuario haya iniciado sesion para poder entrar aqui
+            if (Session["Usuario"] == null)
+            {
+                return RedirectToAction("Index", "Acceso");
+            }
+            else
+            {
+                //validar que el usuario tenga un rol asignado
+                User_activo oUserActivo = (User_activo)Session["Usuario"];
+                if (oUserActivo.id_user_activo == 0)
+                {
+                    return RedirectToAction("Index", "Acceso");
+                }
+            }
             return View();
         }
 
@@ -338,6 +393,20 @@ namespace CapaPresentacionAdmin.Controllers
         //proveedores
         public ActionResult Proveedores()
         {
+            //validar que id_user_activo no sea null osea que el usuario haya iniciado sesion para poder entrar aqui
+            if (Session["Usuario"] == null)
+            {
+                return RedirectToAction("Index", "Acceso");
+            }
+            else
+            {
+                //validar que el usuario tenga un rol asignado
+                User_activo oUserActivo = (User_activo)Session["Usuario"];
+                if (oUserActivo.id_user_activo == 0)
+                {
+                    return RedirectToAction("Index", "Acceso");
+                }
+            }
             return View();
         }
 
@@ -378,6 +447,20 @@ namespace CapaPresentacionAdmin.Controllers
         //Stock
         public ActionResult Stock()
         {
+            //validar que id_user_activo no sea null osea que el usuario haya iniciado sesion para poder entrar aqui
+            if (Session["Usuario"] == null)
+            {
+                return RedirectToAction("Index", "Acceso");
+            }
+            else
+            {
+                //validar que el usuario tenga un rol asignado
+                User_activo oUserActivo = (User_activo)Session["Usuario"];
+                if (oUserActivo.id_user_activo == 0)
+                {
+                    return RedirectToAction("Index", "Acceso");
+                }
+            }
             return View();
         }
 

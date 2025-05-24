@@ -37,6 +37,14 @@ namespace CapaNegocio
             {
                 Mensaje = "El telefono del usuario no puede ser vacio";
             }
+            else if (obj.id_rol == 0)
+            {
+                Mensaje = "El rol del usuario no puede ser vacio";
+            }
+            else if (obj.id_tienda == 0)
+            {
+                Mensaje = "La tienda del usuario no puede ser vacio";
+            }
 
             if (string.IsNullOrEmpty(Mensaje))
             {
@@ -84,6 +92,14 @@ namespace CapaNegocio
             {
                 Mensaje = "El telefono del usuario no puede ser vacio";
             }
+            else if (obj.id_rol == 0)
+            {
+                Mensaje = "El rol del usuario no puede ser vacio";
+            }
+            else if (obj.id_tienda == 0)
+            {
+                Mensaje = "La tienda del usuario no puede ser vacio";
+            }
 
             if (string.IsNullOrEmpty(Mensaje))
             {
@@ -101,7 +117,7 @@ namespace CapaNegocio
         }
 
         //validar usuario
-        public Usuario ValidarUsuario(string correo, string contraseña)
+        public User_activo ValidarUsuario(string correo, string contraseña)
         {
             //contraseña = CN_Recursos.ConvertirSha256(contraseña);
 
@@ -114,7 +130,7 @@ namespace CapaNegocio
         {
             Mensaje = string.Empty;
 
-            // Validaciones
+            //validaciones
             if (string.IsNullOrWhiteSpace(correo))
             {
                 Mensaje = "El correo del usuario no puede estar vacío.";
@@ -131,14 +147,14 @@ namespace CapaNegocio
             if (!string.IsNullOrEmpty(Mensaje))
                 return false;
 
-            // Encriptar contraseñas
+            //encriptar contraseñas
             string contraseñaActualHash = CN_Recursos.ConvertirSha256(contraseñaActual);
             string nuevaContraseñaHash = CN_Recursos.ConvertirSha256(nuevaContraseña);
 
-            // Llamar a capa de datos
+            //capa de datos
             bool resultado = objUsuario.CambiarContraseña(correo, contraseñaActualHash, nuevaContraseñaHash, out Mensaje);
 
-            // Si fue exitosa la actualización, enviar correo
+            //enviar correo
             if (resultado)
             {
                 string asunto = "Cambio de contraseña"; 
@@ -176,13 +192,13 @@ namespace CapaNegocio
             if (!string.IsNullOrEmpty(Mensaje))
                 return false;
 
-            // Encriptar la nueva contraseña
+            //encriptar la nueva contraseña
             string nuevaContraseñaHash = CN_Recursos.ConvertirSha256(nuevaContraseña);
 
-            // Llamar a la capa de datos
+            //capa de datos
             bool resultado = objUsuario.ActualizarContraseñaUsuario(idUsuario, correo, nuevaContraseñaHash, out Mensaje);
 
-            // Si se actualizó correctamente, enviar correo
+            //enviar correo
             if (resultado)
             {
                 string asunto = "Actualización de contraseña";
