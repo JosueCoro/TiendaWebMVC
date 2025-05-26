@@ -13,6 +13,7 @@ namespace CapaDatos
 {
     public class CD_Producto
     {
+        private User_activo user_Activo = new User_activo();
         public List<Producto> Listar()
         {
             List<Producto> lista = new List<Producto>();
@@ -40,7 +41,8 @@ namespace CapaDatos
                     SqlCommand cmd = new SqlCommand(sb.ToString(), oconexion);
                     cmd.CommandType = CommandType.Text;
 
-                    //cmd.Parameters.AddWithValue("@id_tienda", 1);
+                    //int id_tienda_activa = user_Activo.id_tienda_user;
+                    //cmd.Parameters.AddWithValue("@id_tienda", id_tienda_activa);
 
                     oconexion.Open();
 

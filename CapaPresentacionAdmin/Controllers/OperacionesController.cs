@@ -14,6 +14,7 @@ using System.IO;
 
 namespace CapaPresentacionAdmin.Controllers
 {
+    [Authorize]
     public class OperacionesController : Controller
     {
         // GET: Operaciones
@@ -41,14 +42,25 @@ namespace CapaPresentacionAdmin.Controllers
         public JsonResult RegistrarVenta(string objetoVenta)
         {
             string Mensaje = string.Empty;
-            int idVentaGenerada = 0; 
+            int idVentaGenerada = 0;
+
+            User_activo usuarioActivo = Session["Usuario"] as User_activo;
+
+            if (usuarioActivo == null || usuarioActivo.id_user_activo == 0)
+            {
+                Mensaje = "No se ha encontrado el ID del usuario logeado. Por favor, inicie sesión nuevamente.";
+                return Json(new { resultado = 0, mensaje = Mensaje }, JsonRequestBehavior.AllowGet);
+            }
+
+            int idUsuarioLogeado = usuarioActivo.id_user_activo;
+            int idTienda = usuarioActivo.id_tienda_user;
 
             try
             {
                 Venta oVenta = JsonConvert.DeserializeObject<Venta>(objetoVenta);
 
 
-                idVentaGenerada = new CN_Venta().Registrar(oVenta, out Mensaje);
+                idVentaGenerada = new CN_Venta().Registrar(oVenta,  idUsuarioLogeado,  idTienda,out Mensaje);
 
                 bool operacionExitosa = (idVentaGenerada != 0);
 

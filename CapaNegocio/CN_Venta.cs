@@ -15,7 +15,7 @@ namespace CapaNegocio
     {
         private CD_Venta objCdVenta = new CD_Venta();
 
-        public int Registrar(Venta oVenta, out string Mensaje)
+        public int Registrar(Venta oVenta, int idUsuarioLogeado, int idTienda, out string Mensaje)
         {
             Mensaje = string.Empty; 
 
@@ -28,14 +28,14 @@ namespace CapaNegocio
             {
                 Mensaje = "Debe seleccionar un tipo de pago.";
             }
-            else if (oVenta.USUARIO_id_usuario == 0)
-            {
-                Mensaje = "El ID de usuario que registra la venta no es válido.";
-            }
-            else if (oVenta.TIENDA_id_tienda == 0)
-            {
-                Mensaje = "Debe seleccionar una tienda para la venta.";
-            }
+            //else if (oVenta.USUARIO_id_usuario == 0)
+            //{
+            //    Mensaje = "El ID de usuario que registra la venta no es válido.";
+            //}
+            //else if (oVenta.TIENDA_id_tienda == 0)
+            //{
+            //    Mensaje = "Debe seleccionar una tienda para la venta.";
+            //}
             else if (oVenta.monto_total <= 0)
             {
                 Mensaje = "El monto total de la venta debe ser mayor a cero.";
@@ -95,6 +95,8 @@ namespace CapaNegocio
 
             if (string.IsNullOrEmpty(Mensaje))
             {
+                oVenta.USUARIO_id_usuario = idUsuarioLogeado;
+                oVenta.TIENDA_id_tienda = idTienda;
                 return objCdVenta.RegistrarVenta(oVenta, out Mensaje);
             }
             else

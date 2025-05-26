@@ -18,8 +18,8 @@
     </div>
     <div class="card-body">
         <form id="formRegistroVenta">
-            <input id="txtidTIENDA" type="hidden" value="1" />
-            <input id="txtidUSUARIO" type="hidden" value="6" />
+            @*<input id="txtidTIENDA" type="hidden" value="1" />
+            <input id="txtidUSUARIO" type="hidden" value="6" />*@
 
             <div class="row mb-3">
                 <div class="col-md-6">
@@ -527,8 +527,8 @@
 
             let idCliente = $("#txtIdClienteSeleccionado").val();
             let idTipoPago = $("#cboTP").val();
-            let idUsuario = $("#txtidUSUARIO").val();
-            let idTienda = $("#txtidTIENDA").val();
+            //let idUsuario = $("#txtidUSUARIO").val();
+            //let idTienda = $("#txtidTIENDA").val();
             let montoTotal = parseFloat($("#txtTotalVenta").val());
 
             if (idCliente === "" || idCliente === "0") {
@@ -551,8 +551,8 @@
             let oVenta = {
                 CLIENTE_id_cliente: parseInt(idCliente),
                 TIPO_PAGO_id_tipo_pago: parseInt(idTipoPago),
-                USUARIO_id_usuario: parseInt(idUsuario),
-                TIENDA_id_tienda: parseInt(idTienda),
+                //USUARIO_id_usuario: parseInt(idUsuario),
+                //TIENDA_id_tienda: parseInt(idTienda),
                 monto_total: montoTotal,
                 oDetalleVenta: []
             };

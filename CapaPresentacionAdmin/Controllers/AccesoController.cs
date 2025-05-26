@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Security;
 
 using CapaEntidad;
 using CapaNegocio;
@@ -23,6 +24,7 @@ namespace CapaPresentacionAdmin.Controllers
             Session["Usuario"] = null;
             Session.Abandon();
             Session.Clear();
+            FormsAuthentication.SignOut();
             //vista de login
             return RedirectToAction("Index", "Acceso");
             //return View();
@@ -30,6 +32,20 @@ namespace CapaPresentacionAdmin.Controllers
 
         public ActionResult CambiarContraseña()
         {
+            //validar que id_user_activo no sea null osea que el usuario haya iniciado sesion para poder entrar aqui
+            if (Session["Usuario"] == null)
+            {
+                return RedirectToAction("Index", "Acceso");
+            }
+            else
+            {
+                //validar que el usuario tenga un rol asignado
+                User_activo oUserActivo = (User_activo)Session["Usuario"];
+                if (oUserActivo.id_user_activo == 0)
+                {
+                    return RedirectToAction("Index", "Acceso");
+                }
+            }
             return View();
         }
 
@@ -103,6 +119,7 @@ namespace CapaPresentacionAdmin.Controllers
                 }
                 else
                 {
+                    FormsAuthentication.SetAuthCookie(oUserActivo.correo, false);
                     return RedirectToAction("Index", "Home");
                 }
 
