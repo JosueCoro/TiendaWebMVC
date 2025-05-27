@@ -147,6 +147,7 @@
     <Content Include="Content\bootstrap.rtl.min.css" />
     <Content Include="Content\brands.css" />
     <Content Include="Content\brands.min.css" />
+    <Content Include="Content\CustomTheme.css" />
     <Content Include="Content\DataTables\css\autoFill.bootstrap.css" />
     <Content Include="Content\DataTables\css\autoFill.bootstrap.min.css" />
     <Content Include="Content\DataTables\css\autoFill.bootstrap4.css" />
@@ -306,6 +307,7 @@
     <Content Include="Content\DataTables\swf\flashExport.swf" />
     <Content Include="Content\fontawesome.css" />
     <Content Include="Content\fontawesome.min.css" />
+    <Content Include="Content\Imagenes\Logo_Dashboard.png" />
     <Content Include="Content\Imagenes\Logo_Factura.png" />
     <Content Include="Content\Imagenes\Logo.png" />
     <Content Include="Content\jquery-ui.css" />
@@ -526,6 +528,8 @@
     <Content Include="Views\Acceso\CambiarContraseña.cshtml" />
     <Content Include="Views\Mantenedor\UnidadMedida.cshtml" />
     <Content Include="Scripts\loadingoverlay.min.js.map" />
+    <Content Include="Views\Home\PrivacyPolicy.cshtml" />
+    <Content Include="Views\Home\TermsAndConditions.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

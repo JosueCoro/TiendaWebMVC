@@ -13,7 +13,7 @@ using System.Web.Mvc;
 
 namespace CapaPresentacionAdmin.Controllers
 {
-    [Authorize]
+    //[Authorize]
     public class MantenedorController : Controller
     {
         // GET: Mantenedor

@@ -119,7 +119,7 @@ namespace CapaPresentacionAdmin.Controllers
                 }
                 else
                 {
-                    FormsAuthentication.SetAuthCookie(oUserActivo.correo, false);
+                    //FormsAuthentication.SetAuthCookie(oUserActivo.correo, false);
                     return RedirectToAction("Index", "Home");
                 }
 

@@ -28,7 +28,7 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-sm-9">
-                        <h6>Cantidad de Ventas</h6>
+                        <h6>Cantidad de Ventas (Transacciones)</h6>
                         <h6 id="totalventa">0</h6>
                     </div>
                     <div class="col-sm-3">
@@ -38,6 +38,39 @@
             </div>
         </div>
     </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-info text-white mb-4">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-9">
+                        <h6>Monto Ventas Hoy</h6>
+                        <h6 id="montoVentasHoy">Bs./ 0.00</h6>
+                    </div>
+                    <div class="col-sm-3">
+                        <i class="fas fa-dollar-sign fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-success text-white mb-4">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-9">
+                        <h6>Monto Ventas Mes</h6>
+                        <h6 id="montoVentasMes">Bs./ 0.00</h6>
+                    </div>
+                    <div class="col-sm-3">
+                        <i class="fas fa-chart-line fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
     <div class="col-xl-3 col-md-6">
         <div class="card bg-danger text-white mb-4">
             <div class="card-body">
@@ -68,7 +101,79 @@
             </div>
         </div>
     </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-secondary text-white mb-4">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-9">
+                        <h6>Cantidad Servicios</h6>
+                        <h6 id="totalservicio">0</h6>
+                    </div>
+                    <div class="col-sm-3">
+                        <i class="fas fa-concierge-bell fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-dark text-white mb-4">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-9">
+                        <h6>Cantidad Proveedores</h6>
+                        <h6 id="totalproveedor">0</h6>
+                    </div>
+                    <div class="col-sm-3">
+                        <i class="fas fa-truck fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<div class="row mt-4">
+    <div class="col-xl-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-chart-area me-1"></i>
+                Tendencia de Ventas (Semanal)
+            </div>
+            <div class="card-body">
+                <canvas id="salesTrendChart" width="100%" height="40"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-chart-bar me-1"></i>
+                Top 5 Productos/Servicios Más Vendidos
+            </div>
+            <div class="card-body">
+                <canvas id="topItemsChart" width="100%" height="40"></canvas>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row">
+    <div class="col-xl-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-users me-1"></i>
+                Top 5 Clientes por Volumen de Compra
+            </div>
+            <div class="card-body">
+                <canvas id="topClientsChart" width="100%" height="40"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <div class="card mb-4">
     <div class="card-header">
@@ -81,14 +186,14 @@
                 <div class="col-sm-2">
                     <div class="mb-2">
                         <label class="form-label">Fecha de Inicio:</label>
-                        <input class="form-control" type="text" id="txtfechainicio" name="fechainicio" />
+                        <input class="form-control" type="date" id="txtfechainicio" name="fechainicio" />
                     </div>
                 </div>
 
                 <div class="col-sm-2">
                     <div class="mb-2">
                         <label class="form-label">Fecha Fin:</label>
-                        <input class="form-control" type="text" id="txtfechafin" name="fechafin" />
+                        <input class="form-control" type="date" id="txtfechafin" name="fechafin" />
                     </div>
                 </div>
 
@@ -121,12 +226,13 @@
                         <tr>
                             <th>Fecha Venta</th>
                             <th>Cliente</th>
-                            <th>Producto</th>
-                            <th>Precio</th>
+                            <th>Producto/Servicio</th>
+                            <th>Tipo Ítem</th>
+                            <th>Precio Unitario</th>
                             <th>Cantidad</th>
-                            <th>Unidad Medida</th>
-                            <th>Total</th>
+                            <th>Subtotal</th>
                             <th>ID Venta</th>
+                            <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -140,12 +246,19 @@
 </div>
 
 @section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+
 
     <script>
+        //poner automaticamente la fecha del dia a los campos de fecha
+        $("#txtfechainicio").val(new Date().toISOString().split('T')[0]);
+        $("#txtfechafin").val(new Date().toISOString().split('T')[0]);
 
-        $("#txtfechainicio").datepicker({ dateFormat: 'dd/mm/yy' }).datepicker("setDate", new Date());
-        $("#txtfechafin").datepicker({ dateFormat: 'dd/mm/yy' }).datepicker("setDate", new Date());
-
+        // =======================================================================================
+        // 1. CARGA DE DATOS DE RESUMEN DEL DASHBOARD
+        // =======================================================================================
         jQuery.ajax({
             url: '@Url.Action("VistaDashBoard", "Home")',
             type: 'GET',
@@ -155,15 +268,126 @@
                 var objeto = data.resultado;
 
                 $("#totalcliente").text(objeto.TotalCliente);
-                $("#totalventa").text(objeto.TotalVenta);
+                $("#totalventa").text(objeto.TotalVenta); // Conteo de transacciones
+                $("#montoVentasHoy").text('Bs./ ' + parseFloat(objeto.MontoTotalVentasHoy).toFixed(2)); // Nuevo
+                $("#montoVentasMes").text('Bs./ ' + parseFloat(objeto.MontoTotalVentasMes).toFixed(2)); // Nuevo
                 $("#totalcompra").text(objeto.TotalCompra);
                 $("#totalproducto").text(objeto.TotalProducto);
+                $("#totalservicio").text(objeto.TotalServicio); // Nuevo
+                $("#totalproveedor").text(objeto.TotalProveedor); // Nuevo
+            },
+            error: function (error) {
+                console.log("Error al cargar datos del dashboard:", error);
             }
         });
 
+        // =======================================================================================
+        // 2. INICIALIZACIÓN Y CARGA DE DATOS PARA LA TABLA DE HISTORIAL DE VENTAS
+        // =======================================================================================
+        var tablaHistorialVentas; // Definir la variable global para el DataTable
+
+        $(document).ready(function () {
+            // Inicializar DataTable para el historial de ventas
+            tablaHistorialVentas = $('#tabla').DataTable({
+                responsive: true,
+                "ajax": {
+                    url: '@Url.Action("ObtenerHistorialVentas", "Home")', // Nuevo endpoint para el historial
+                    type: "GET",
+                    dataType: "json",
+                    data: function (d) { // Parámetros para la solicitud AJAX
+                        d.fechaInicio = $("#txtfechainicio").val();
+                        d.fechaFin = $("#txtfechafin").val();
+                        d.idVenta = $("#txtidtransaccion").val();
+                    },
+                    dataSrc: "data" // La propiedad que contiene los datos en la respuesta JSON
+                },
+                "columns": [
+                    {
+                        "data": "fechaVenta",
+                        "render": function (data) {
+                            // Usar Moment.js para parsear y formatear la fecha
+                            if (data) {
+                                var date = moment(data); // Moment.js puede parsear varios formatos, incluyendo /Date(timestamp)/
+                                if (date.isValid()) { // Verificar si la fecha es válida
+                                    return date.format('DD/MM/YYYY'); // Formato deseado
+                                }
+                            }
+                            return ''; // Retornar vacío si la fecha no es válida o nula
+                        }
+                    },
+                    { "data": "nombreCliente" },
+                    { "data": "nombreItem" },
+                    { "data": "tipoItem" }, // Nueva columna
+                    {
+                        "data": "precioUnitario",
+                        "render": function (data) {
+                            return 'Bs./ ' + parseFloat(data).toFixed(2);
+                        }
+                    },
+                    { "data": "cantidad" },
+                    {
+                        "data": "subTotal",
+                        "render": function (data) {
+                            return 'Bs./ ' + parseFloat(data).toFixed(2);
+                        }
+                    },
+                    { "data": "idVenta" },
+                    {
+                        "defaultContent": '<button type="button" class="btn btn-info btn-sm btn-ver-detalle"><i class="fas fa-eye"></i></button>',
+                        "orderable": false,
+                        "searchable": false,
+                        "width": "80px"
+                    }
+                ],
+                "language": {
+                    "url": '//cdn.datatables.net/plug-ins/2.2.1/i18n/es-ES.json',
+                },
+                "ordering": false,
+                "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "Todos"]]
+            });
+
+            // Evento click para el botón "Buscar" del historial de ventas
+            $("#btnbuscar").on("click", function () {
+                tablaHistorialVentas.ajax.reload(); // Recargar los datos de la tabla
+            });
+
+            // Evento click para el botón "Ver Detalle" en la tabla de historial
+            $('#tabla tbody').on('click', '.btn-ver-detalle', function () {
+                let data = tablaHistorialVentas.row($(this).parents('tr')).data();
+                if (data && data.idVenta) {
+                    // Abrir un SweetAlert2 con opciones de impresión, similar a la venta
+                    Swal.fire({
+                        title: 'Comprobante de Venta',
+                        text: '¿Qué tipo de comprobante desea imprimir para la Venta ID: ' + data.idVenta + '?',
+                        icon: 'info',
+                        showDenyButton: true,
+                        showCancelButton: true,
+                        confirmButtonText: 'Factura Formal',
+                        denyButtonText: 'Recibo Térmico',
+                        cancelButtonText: 'Cerrar',
+                        reverseButtons: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.open('@Url.Action("GenerarFacturaFormal", "Operaciones")?idVenta=' + data.idVenta, '_blank');
+                        } else if (result.isDenied) {
+                            window.open('@Url.Action("GenerarReciboTermico", "Operaciones")?idVenta=' + data.idVenta, '_blank');
+                        }
+                    });
+                } else {
+                    Swal.fire('Error', 'No se pudo obtener el ID de la venta para el comprobante.', 'error');
+                }
+            });
+
+            // =======================================================================================
+            // 3. INICIALIZACIÓN Y CARGA DE DATOS PARA GRÁFICOS (Chart.js)
+            // =======================================================================================
+
+            
+
+
+            
+        });
+
+
     </script>
-
-
-
-
 }

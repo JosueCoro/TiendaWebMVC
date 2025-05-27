@@ -14,7 +14,7 @@ using System.IO;
 
 namespace CapaPresentacionAdmin.Controllers
 {
-    [Authorize]
+    //[Authorize]
     public class OperacionesController : Controller
     {
         // GET: Operaciones

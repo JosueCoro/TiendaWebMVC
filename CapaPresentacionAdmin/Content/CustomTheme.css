@@ -1,0 +1,113 @@
+﻿/* Colores de tu marca */
+:root {
+    --color-rojo-marca: #e7333a;
+    --color-azul-oscuro-marca: #2b3c56;
+    --color-blanco-texto: #ffffff;
+    --color-gris-claro-texto: #ecf0f1;
+}
+
+/* 1. Barra de Navegación Superior (Navbar) */
+.sb-topnav.navbar {
+    background-color: var(--color-azul-oscuro-marca) !important; /* Fondo azul oscuro de tu marca */
+    height: 65px; /* Ajuste opcional para la altura del navbar */
+    box-shadow: 0 2px 4px rgba(0,0,0,.1); /* Sombra sutil para un efecto moderno */
+}
+
+/* Color del texto del usuario en el navbar */
+.sb-topnav .navbar-nav .nav-link {
+    color: var(--color-blanco-texto) !important;
+}
+
+    /* Color del icono de usuario al pasar el ratón */
+    .sb-topnav .navbar-nav .nav-link:hover {
+        color: var(--color-rojo-marca) !important; /* Rojo de tu marca al pasar el ratón */
+    }
+
+/* Separador del menú desplegable de usuario */
+.sb-topnav .dropdown-menu .dropdown-divider {
+    border-top-color: rgba(255, 255, 255, 0.2); /* Blanco transparente para el separador */
+}
+
+/* Elementos del menú desplegable de usuario */
+.sb-topnav .dropdown-menu .dropdown-item {
+    color: #333; /* Color de texto predeterminado para los items del dropdown */
+}
+
+    /* Hover en los items del menú desplegable de usuario */
+    .sb-topnav .dropdown-menu .dropdown-item:hover {
+        background-color: var(--color-rojo-marca); /* Fondo rojo de tu marca al pasar el ratón */
+        color: var(--color-blanco-texto); /* Texto blanco */
+    }
+
+
+/* 2. Barra Lateral (Sidebar) */
+#layoutSidenav_nav .sb-sidenav {
+    background-color: var(--color-azul-oscuro-marca) !important; /* Fondo azul oscuro de tu marca */
+}
+
+/* Encabezados de sección de la barra lateral (Resumen, Administración, etc.) */
+.sb-sidenav-menu-heading {
+    color: var(--color-rojo-marca) !important; /* Texto rojo de tu marca */
+    padding-top: 15px;
+    padding-bottom: 5px;
+}
+
+/* Enlaces de navegación de la barra lateral */
+#layoutSidenav_nav .nav-link {
+    color: var(--color-gris-claro-texto) !important; /* Gris claro para los enlaces */
+}
+
+/* Iconos de los enlaces de la barra lateral */
+#layoutSidenav_nav .sb-nav-link-icon {
+    color: var(--color-rojo-marca) !important; /* Iconos en rojo de tu marca */
+}
+
+/* Hover en los enlaces de la barra lateral */
+#layoutSidenav_nav .nav-link:hover {
+    background-color: #34495e !important; /* Un azul un poco más claro al pasar el ratón */
+    color: var(--color-blanco-texto) !important; /* Texto blanco al pasar el ratón */
+}
+
+/* Estado activo de los enlaces de la barra lateral (si los hay) */
+/* .sb-sidenav .nav-link.active {
+    background-color: var(--color-rojo-marca) !important;
+    color: var(--color-blanco-texto) !important;
+} */
+
+/* Footer de la barra lateral */
+.sb-sidenav-footer {
+    background-color: #1f2a3a !important; /* Un tono ligeramente más oscuro que el azul de la marca */
+    color: var(--color-gris-claro-texto) !important;
+}
+
+    .sb-sidenav-footer .small {
+        color: #95a5a6 !important; /* Color más sutil para "Logged in as:" */
+    }
+
+/* Ajustes para el botón de alternar la barra lateral (hamburguesa) */
+#sidebarToggle {
+    color: var(--color-blanco-texto) !important; /* Color blanco para el icono de la barra */
+}
+
+    #sidebarToggle:hover {
+        color: var(--color-rojo-marca) !important; /* Rojo al pasar el ratón */
+    }
+
+
+/* Pie de página principal (footer) */
+footer.py-4 {
+    background-color: #f8f9fa !important; /* Mantener un color claro o ajustarlo */
+    border-top: 1px solid #dee2e6;
+}
+
+    footer.py-4 .text-muted {
+        color: #6c757d !important;
+    }
+
+    footer.py-4 a {
+        color: var(--color-azul-oscuro-marca) !important; /* Enlaces del footer en azul de la marca */
+    }
+
+        footer.py-4 a:hover {
+            color: var(--color-rojo-marca) !important; /* Enlaces del footer en rojo al pasar el ratón */
+        }

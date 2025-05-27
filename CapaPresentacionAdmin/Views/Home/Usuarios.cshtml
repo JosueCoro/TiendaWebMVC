@@ -3,18 +3,6 @@
     ViewBag.Title = "Usuarios";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-@*CREATE TABLE SEGURIDAD.USUARIO
-    (
-    id_usuario INTEGER NOT NULL IDENTITY(1,1),
-    nombres VARCHAR(150) NOT NULL,
-    apellidos VARCHAR(150) NOT NULL,
-    correo VARCHAR(20) NOT NULL,
-    contraseña VARCHAR(150) NOT NULL,
-    telefono VARCHAR(20) NOT NULL,
-    estado BIT DEFAULT 1 NOT NULL,
-    ROLES_id_rol INTEGER NOT NULL
-    )
-    GO *@
 
 <ol class="breadcrumb mb-4 mt-4">
     <li class="breadcrumb-item"><a href="@Url.Action("Index","Home")">Resumen</a></li>

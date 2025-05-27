@@ -9,7 +9,7 @@ using CapaNegocio;
 
 namespace CapaPresentacionAdmin.Controllers
 {
-    [Authorize]
+    //[Authorize]
     public class HomeController : Controller
     {
         public ActionResult Index()
@@ -194,12 +194,72 @@ namespace CapaPresentacionAdmin.Controllers
 
 
         //DASHBOARD
+        //DashboardResumen
         [HttpGet]
         public JsonResult VistaDashBoard()
         {
-            DashBoard objeto = new CN_Reporte().VerDashBoard();
-            return Json(new { resultado = objeto }, JsonRequestBehavior.AllowGet);
+            // Instancia de la capa de negocio de reportes
+            CN_Reporte objCnReporte = new CN_Reporte();
 
+            // Obtener los datos resumidos del dashboard
+            DashboardResumen oResumen = objCnReporte.ObtenerDatosDashboardResumen();
+
+            // Devolver los datos como JSON
+            // Se usa JsonRequestBehavior.AllowGet para permitir solicitudes GET
+            return Json(new { resultado = oResumen }, JsonRequestBehavior.AllowGet);
+        }
+
+        // Nuevo método para obtener el historial de ventas para el DataTable
+        [HttpGet]
+        public JsonResult ObtenerHistorialVentas(string fechaInicio, string fechaFin, string idVenta)
+        {
+            List<ReporteVentaDetalle> lista = new List<ReporteVentaDetalle>();
+            CN_Reporte objCnReporte = new CN_Reporte();
+
+            lista = objCnReporte.ObtenerHistorialVentas(fechaInicio, fechaFin, idVenta);
+
+            // DataTables espera un objeto con una propiedad 'data' que sea un array
+            return Json(new { data = lista }, JsonRequestBehavior.AllowGet);
+        }
+
+        //PrivacyPolicy
+        public ActionResult PrivacyPolicy()
+        {
+            //validar que id_user_activo no sea null osea que el usuario haya iniciado sesion para poder entrar aqui
+            if (Session["Usuario"] == null)
+            {
+                return RedirectToAction("Index", "Acceso");
+            }
+            else
+            {
+                //validar que el usuario tenga un rol asignado
+                User_activo oUserActivo = (User_activo)Session["Usuario"];
+                if (oUserActivo.id_user_activo == 0)
+                {
+                    return RedirectToAction("Index", "Acceso");
+                }
+            }
+            return View();
+        }
+
+        //TermsAndConditions
+        public ActionResult TermsAndConditions()
+        {
+            //validar que id_user_activo no sea null osea que el usuario haya iniciado sesion para poder entrar aqui
+            if (Session["Usuario"] == null)
+            {
+                return RedirectToAction("Index", "Acceso");
+            }
+            else
+            {
+                //validar que el usuario tenga un rol asignado
+                User_activo oUserActivo = (User_activo)Session["Usuario"];
+                if (oUserActivo.id_user_activo == 0)
+                {
+                    return RedirectToAction("Index", "Acceso");
+                }
+            }
+            return View();
         }
     }
 }
