@@ -147,6 +147,7 @@
     <Content Include="Content\bootstrap.rtl.min.css" />
     <Content Include="Content\brands.css" />
     <Content Include="Content\brands.min.css" />
+    <Content Include="Content\css\reporte-ventas.css" />
     <Content Include="Content\CustomTheme.css" />
     <Content Include="Content\DataTables\css\autoFill.bootstrap.css" />
     <Content Include="Content\DataTables\css\autoFill.bootstrap.min.css" />
@@ -530,6 +531,8 @@
     <Content Include="Scripts\loadingoverlay.min.js.map" />
     <Content Include="Views\Home\PrivacyPolicy.cshtml" />
     <Content Include="Views\Home\TermsAndConditions.cshtml" />
+    <Content Include="Views\Operaciones\ReporteVentas.cshtml" />
+    <Content Include="Views\Operaciones\ReporteCompras.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

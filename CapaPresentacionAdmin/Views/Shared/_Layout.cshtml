@@ -4,11 +4,13 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - Mi aplicación ASP.NET</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-xrBntoYltDgRLMC0NPLTYbfkFiR8x91K1HRe6UVHjqMZ1pbMkOnGgRVBXcFFkUETbPmr8s15x7mPlkz8f44I3A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="SHA512-D2F3Q9v+/0eD8vhfFWbpW6SzEv78lO1MYzIHVdPDTUqI5+PWTceQxi+ydbzDQZQyJfNltnDUGFwxyHAYn9IcVg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>@ViewBag.Title - Autopartes Dos Hermanos</title>
+    @*<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-xrBntoYltDgRLMC0NPLTYbfkFiR8x91K1HRe6UVHjqMZ1pbMkOnGgRVBXcFFkUETbPmr8s15x7mPlkz8f44I3A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="SHA512-D2F3Q9v+/0eD8vhfFWbpW6SzEv78lO1MYzIHVdPDTUqI5+PWTceQxi+ydbzDQZQyJfNltnDUGFwxyHAYn9IcVg==" crossorigin="anonymous" referrerpolicy="no-referrer" />*@
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-xrBntoYltDgRLMC0NPLTYbfkFiR8x91K1HRe6UVHjqMZ1pbMkOnGgRVBXcFFkUETbPmr8s15x7mPlkz8f44I3A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 
 
 
@@ -50,7 +52,11 @@
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                <li><a class="dropdown-item" href="#!">Datos del Usuario</a></li>
+                <li>
+                    <a class="dropdown-item" href="#!">
+                        <i class="fa-solid fa-user"></i>Datos del Usuario
+                    </a>
+                </li>
                 <li><a class="dropdown-item" href="#!">ID: @Session["IdUsuario"]</a></li>
                 <li><a class="dropdown-item" href="#!">Nombre: @Session["NombreUsuario"]</a></li>
                 <li><a class="dropdown-item" href="#!">Email: @Session["Email"]</a></li>
@@ -70,28 +76,33 @@
             <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
                 <div class="sb-sidenav-menu">
                     <div class="nav">
-                        <a class="navbar-brand ps-3" href="@Url.Action("Index", "Home")">
-                            <img src="@Url.Content("~/Content/imagenes/Logo_Dashboard.png")" alt="Autopartes Dos Hermanos Logo" style="height: 80px; margin-right: 40px;" />
-                        </a>
+                        <div class="d-flex justify-content-center my-3">
+                            <a href="@Url.Action("Index", "Home")">
+                                <img src="@Url.Content("~/Content/imagenes/Logo_Dashboard.png")" alt="Autopartes Dos Hermanos Logo" style="height: 80px;" />
+                            </a>
+                        </div>
+
                         <div class="sb-sidenav-menu-heading">Resumen</div>
                         <a class="nav-link" href=@Url.Action("Index","Home")>
                             <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                             Dashboard
                         </a>
 
-                        <div class="sb-sidenav-menu-heading">Administracion</div>
-                        <a class="nav-link" href="@Url.Action("Usuarios","Home")">
-                            <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
-                            Usuarios
+                        <div class="sb-sidenav-menu-heading">Administración</div>
+
+                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseAdministracion" aria-expanded="false" aria-controls="collapseAdministracion">
+                            <div class="sb-nav-link-icon"><i class="fas fa-user-cog"></i></div>
+                            Administración
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                         </a>
-                        <a class="nav-link" href="@Url.Action("Roles","Home")">
-                            <div class="sb-nav-link-icon"><i class="fas fa-address-book"></i></div>
-                            Roles
-                        </a>
-                        <a class="nav-link" href="@Url.Action("Permisos","Home")">
-                            <div class="sb-nav-link-icon"><i class="fas fa-user-edit"></i></div>
-                            Permisos
-                        </a>
+                        <div class="collapse" id="collapseAdministracion" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav">
+                                <a class="nav-link" href="@Url.Action("Usuarios","Home")"><i class="fas fa-users me-2"></i>Usuarios</a>
+                                <a class="nav-link" href="@Url.Action("Roles","Home")"><i class="fas fa-user-tag me-2"></i>Roles</a>
+                                <a class="nav-link" href="@Url.Action("Permisos","Home")"><i class="fas fa-user-shield me-2"></i>Permisos</a>
+                            </nav>
+                        </div>
+
 
 
                         <div class="sb-sidenav-menu-heading">MANTENEDOR</div>
@@ -112,9 +123,8 @@
                             </nav>
                         </div>
 
-
-
                         <div class="sb-sidenav-menu-heading">Operaciones</div>
+
                         <a class="nav-link" href="@Url.Action("Ventas","Operaciones")">
                             <div class="sb-nav-link-icon"><i class="fas fa-shopping-bag"></i></div>
                             Ventas
@@ -124,17 +134,31 @@
                             Compras
                         </a>
                         <a class="nav-link" href="@Url.Action("Clientes","Operaciones")">
-                            <div class="sb-nav-link-icon"><i class="fas fa-user-clock"></i></div>
+                            <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
                             Clientes
                         </a>
                         <a class="nav-link" href="@Url.Action("Proveedores","Operaciones")">
-                            <div class="sb-nav-link-icon"><i class="fas fa-user-cog"></i></div>
+                            <div class="sb-nav-link-icon"><i class="fas fa-truck"></i></div>
                             Proveedores
                         </a>
                         <a class="nav-link" href="@Url.Action("Stock","Operaciones")">
-                            <div class="sb-nav-link-icon"><i class="fas fa-layer-group"></i></div>
+                            <div class="sb-nav-link-icon"><i class="fas fa-boxes"></i></div>
                             Stock / Inventario
                         </a>
+
+
+                        <div class="sb-sidenav-menu-heading">REPORTES</div>
+                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseReportes" aria-expanded="false" aria-controls="collapseReportes">
+                            <div class="sb-nav-link-icon"><i class="fas fa-chart-line"></i></div>
+                            Reportes
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse" id="collapseReportes" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav">
+                                <a class="nav-link" href="@Url.Action("ReporteVentas","Operaciones")"><i class="fas fa-file-invoice-dollar me-2"></i>Reporte de Ventas</a>
+                                <a class="nav-link" href="@Url.Action("ReporteCompras","Operaciones")"><i class="fas fa-receipt me-2"></i>Reporte de Compras</a>
+                            </nav>
+                        </div>
 
 
                     </div>

@@ -1,0 +1,33 @@
+﻿.fade-in {
+    animation: fadeIn 0.8s ease-in-out forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card-header i {
+    color: #0d6efd;
+    margin-right: 6px;
+}
+
+.card {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
+    border-radius: 0.75rem;
+}
+
+.table th, .table td {
+    vertical-align: middle !important;
+}
+
+.btn i {
+    margin-right: 4px;
+}

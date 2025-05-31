@@ -525,5 +525,45 @@ namespace CapaPresentacionAdmin.Controllers
             return Json(new { operacionExitosa = operacion_exitosa, mensaje = Mensaje }, JsonRequestBehavior.AllowGet);
         }
 
+        //Reporte de Ventas
+        public ActionResult ReporteVentas()
+        {
+            //validar que id_user_activo no sea null osea que el usuario haya iniciado sesion para poder entrar aqui
+            if (Session["Usuario"] == null)
+            {
+                return RedirectToAction("Index", "Acceso");
+            }
+            else
+            {
+                //validar que el usuario tenga un rol asignado
+                User_activo oUserActivo = (User_activo)Session["Usuario"];
+                if (oUserActivo.id_user_activo == 0)
+                {
+                    return RedirectToAction("Index", "Acceso");
+                }
+            }
+            return View();
+        }
+
+        //Reporte de Compras
+        public ActionResult ReporteCompras()
+        {
+            //validar que id_user_activo no sea null osea que el usuario haya iniciado sesion para poder entrar aqui
+            if (Session["Usuario"] == null)
+            {
+                return RedirectToAction("Index", "Acceso");
+            }
+            else
+            {
+                //validar que el usuario tenga un rol asignado
+                User_activo oUserActivo = (User_activo)Session["Usuario"];
+                if (oUserActivo.id_user_activo == 0)
+                {
+                    return RedirectToAction("Index", "Acceso");
+                }
+            }
+            return View();
+        }
+
     }
 }
