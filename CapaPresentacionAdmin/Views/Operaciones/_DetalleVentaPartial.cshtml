@@ -1,0 +1,84 @@
+﻿@model CapaEntidad.Venta
+
+@if (Model != null)
+{
+    <div class="row">
+        <div class="col-md-6">
+            <p><strong>Nº de Factura:</strong> @Model.id_venta</p>
+            <p><strong>Fecha:</strong> @Model.fecha.ToString("dd/MM/yyyy")</p>
+            <p><strong>Tipo de Pago:</strong> @(Model.oTipoPago?.descripcion ?? "N/A")</p>
+        </div>
+        <div class="col-md-6">
+            <p><strong>Datos del Cliente:</strong></p>
+            <p><strong>Nombre Cliente:</strong> @(Model.oCliente?.nombres ?? "N/A") @(Model.oCliente?.apellidos ?? "")</p>
+            <p><strong>Teléfono Cliente:</strong> @(Model.oCliente?.telefono ?? "N/A")</p>
+            <p><strong>Correo Cliente:</strong> @(Model.oCliente?.correo ?? "N/A")</p>
+        </div>
+    </div>
+
+    <hr />
+
+    <h5>Detalle de Ítems</h5>
+    if (Model.oDetalleVenta != null && Model.oDetalleVenta.Any()) 
+    {
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead class="bg-light">
+                    <tr>
+                        <th>Tipo</th>
+                        <th>Ítem</th>
+                        <th class="text-end">Cantidad</th>
+                        <th class="text-end">P. Unitario</th>
+                        <th class="text-end">Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var detalle in Model.oDetalleVenta) // Este @foreach sí está bien
+                    {
+                        <tr>
+                            <td>@detalle.tipo_item</td>
+                            <td>
+                                @if (detalle.tipo_item == "PRODUCTO") // Este @if sí está bien
+                                {
+                                    @(detalle.oProducto?.nombre ?? "Producto Desconocido")
+                                }
+                                else if (detalle.tipo_item == "SERVICIO") // Este @else if sí está bien
+                                {
+                                    @(detalle.oServicio?.nombre ?? "Servicio Desconocido")
+                                }
+                                else
+                                {
+                                    <span>Ítem Desconocido</span>
+                                }
+                            </td>
+                            <td class="text-end">@detalle.cantidad.ToString()</td>
+                            <td class="text-end">Bs./ @detalle.precio.ToString("N2")</td>
+                            <td class="text-end">Bs./ @detalle.sub_total.ToString("N2")</td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="4" class="text-end"><strong>Total Venta:</strong></td>
+                        <td class="text-end"><strong>Bs./ @Model.monto_total.ToString("N2")</strong></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    }
+    else
+    {
+        <p class="text-muted">No hay detalles de ítems para esta venta.</p>
+    }
+
+    <div class="row mt-3">
+        <div class="col-12 text-end">
+            <p class="lead"><strong>Total de la Venta: Bs./ @Model.monto_total.ToString("N2")</strong></p>
+        </div>
+    </div>
+}
+else
+{
+    <p class="text-danger">@ViewBag.ErrorMessage</p>
+    <p class="text-danger">No se pudo cargar el detalle de la venta.</p>
+}

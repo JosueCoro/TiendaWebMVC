@@ -1,8 +1,148 @@
-﻿
-@{
+﻿@{
     ViewBag.Title = "Reporte de Compras";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>ReporteCompras</h2>
+<h1 class="mt-4">Reporte de Compras</h1>
+<ol class="breadcrumb mb-4">
+    <li class="breadcrumb-item active">Reporte de Compras</li>
+</ol>
 
+<div class="card shadow-sm animate__animated animate__fadeIn mb-4">
+    <div class="card-header text-primary">
+        <i class="fa-solid fa-clock-rotate-left me-2"></i> Historial de Compras
+    </div>
+    <div class="card-body">
+        <form>
+            <div class="row align-items-end">
+                <div class="col-sm-2 mb-2">
+                    <label class="form-label">Fecha de Inicio:</label>
+                    <input class="form-control" type="date" id="txtfechainicio" name="fechainicio" />
+                </div>
+
+                <div class="col-sm-2 mb-2">
+                    <label class="form-label">Fecha Fin:</label>
+                    <input class="form-control" type="date" id="txtfechafin" name="fechafin" />
+                </div>
+
+                <div class="col-sm-2 mb-2">
+                    <label class="form-label">Nº de Compra:</label>
+                    <input class="form-control" type="text" id="txtidcompra" name="idcompra" />
+                </div>
+
+                <div class="col-sm-2 mb-2">
+                    <button class="btn btn-outline-primary w-100" id="btnbuscar" type="button">
+                        <i class="fas fa-search"></i> Buscar
+                    </button>
+                </div>
+
+                <div class="col-sm-2 mb-2">
+                    <button class="btn btn-outline-success w-100" id="btnExportarExcel" type="button">
+                        <i class="fas fa-file-excel"></i> Exportar
+                    </button>
+                </div>
+
+
+            </div>
+        </form>
+
+        <hr />
+        <div class="table-responsive">
+            <table id="tabla" class="display cell-border" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Fecha Compra</th>
+                        <th>Usuario</th>
+                        <th>Proveedor</th>
+                        <th>Tipo Pago</th>
+                        <th>Producto</th>
+                        <th>Cantidad</th>
+                        <th>Precio Compra Unitario</th>
+                        <th>Subtotal Ítem</th>
+                        <th>Monto Total Compra</th>
+                        <th>Nº de Compra</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+
+    <script>
+        $(function () {
+            const tablaHistorialCompras = $('#tabla').DataTable({
+                responsive: true,
+                ajax: {
+                    url: '@Url.Action("ObtenerHistorialCompras", "Home")',
+                    type: "GET",
+                    dataType: "json",
+                    data: function (d) {
+                        d.fechaInicio = $("#txtfechainicio").val();
+                        d.fechaFin = $("#txtfechafin").val();
+                        d.idCompra = $("#txtidcompra").val();
+                    },
+                    dataSrc: "data"
+                },
+                columns: [
+                    {
+                        data: "fechaCompra",
+                        render: function (data) {
+                            return data ? moment(data).format('DD/MM/YYYY') : '';
+                        }
+                    },
+                    { data: "nombreUsuario" },
+                    { data: "nombreProveedor" },
+                    { data: "tipoPago" },
+                    { data: "nombreProducto" },
+                    { data: "cantidad" },
+                    {
+                        data: "precioCompraUnitario",
+                        render: d => 'Bs./ ' + parseFloat(d).toFixed(2)
+                    },
+                    {
+                        data: "subTotalItem",
+                        render: d => 'Bs./ ' + parseFloat(d).toFixed(2)
+                    },
+                    {
+                        data: "montoTotalCompra",
+                        render: d => 'Bs./ ' + parseFloat(d).toFixed(2)
+                    },
+                    { data: "idCompra" }
+                ],
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/2.2.1/i18n/es-ES.json'
+                },
+                ordering: false,
+                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Todos"]],
+                pageLength: -1
+            });
+
+            $("#btnbuscar").on("click", () => tablaHistorialCompras.ajax.reload());
+            $("#btnExportarExcel").on("click", function () {
+                const fechaInicio = $("#txtfechainicio").val();
+                const fechaFin = $("#txtfechafin").val();
+                const idCompra = $("#txtidcompra").val();
+
+                const url = '@Url.Action("ExportarHistorialComprasExcel", "Home")' +
+                            '?fechaInicio=' + encodeURIComponent(fechaInicio) +
+                            '&fechaFin=' + encodeURIComponent(fechaFin) +
+                            '&idCompra=' + encodeURIComponent(idCompra);
+
+                window.location.href = url;
+            });
+
+
+        });
+    </script>
+}

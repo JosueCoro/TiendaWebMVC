@@ -12,6 +12,9 @@ namespace CapaEntidad
         public DateTime fecha { get; set; }
         public decimal monto_total { get; set; }
 
+        public decimal monto_pagado { get; set; } // <--- ¡Añade esto!
+        public decimal cambio { get; set; }     // <--- ¡Añade esto!
+
         public int CLIENTE_id_cliente { get; set; }
         public int TIPO_PAGO_id_tipo_pago { get; set; }
         public int USUARIO_id_usuario { get; set; }
@@ -35,6 +38,7 @@ namespace CapaEntidad
             public int cantidad { get; set; }
             public decimal precio { get; set; } 
             public decimal sub_total { get; set; }
+
 
             public int? PRODUCTO_id_producto { get; set; } 
             public int? SERVICIO_id_servicio { get; set; }  

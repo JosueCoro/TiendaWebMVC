@@ -80,7 +80,7 @@ namespace CapaDatos
                 Console.WriteLine(mensaje);
             }
 
-            return idVentaGenerada; // Devolvemos el ID de la venta generada o 0 si hubo un error
+            return idVentaGenerada; 
         }
 
         public Venta ObtenerVentaCompleta(int idVenta, out string mensaje)

@@ -73,6 +73,25 @@ namespace CapaPresentacionAdmin.Controllers
             }
         }
 
+
+        // Método existente para el historial de ventas
+        [HttpGet]
+        public PartialViewResult ObtenerDetalleVenta(int idVenta)
+        {
+            string mensaje = string.Empty;
+            Venta oVenta = new CN_Venta().ObtenerVenta(idVenta, out mensaje);
+
+            if (oVenta == null)
+            {
+                ViewBag.ErrorMessage = mensaje; 
+                return PartialView("_DetalleVentaPartial", null); 
+            }
+
+            return PartialView("_DetalleVentaPartial", oVenta);
+
+        }
+
+
         [HttpGet]
         public ActionResult GenerarFacturaFormal(int idVenta)
         {
@@ -544,6 +563,8 @@ namespace CapaPresentacionAdmin.Controllers
             }
             return View();
         }
+
+        
 
         //Reporte de Compras
         public ActionResult ReporteCompras()

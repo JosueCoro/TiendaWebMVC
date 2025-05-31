@@ -3,13 +3,11 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<!-- Encabezado -->
 <h1 class="mt-4">Reporte de Ventas</h1>
 <ol class="breadcrumb mb-4">
     <li class="breadcrumb-item active">Reporte de Ventas</li>
 </ol>
 
-<!-- Gráficos -->
 <div class="row mt-4 animate__animated animate__fadeIn">
     <div class="col-xl-6">
         <div class="card shadow-sm mb-4">
@@ -47,7 +45,6 @@
     </div>
 </div>
 
-<!-- Filtros y Tabla -->
 <div class="card shadow-sm animate__animated animate__fadeIn mb-4">
     <div class="card-header text-primary">
         <i class="fa-solid fa-clock-rotate-left me-2"></i> Historial de Ventas
@@ -66,19 +63,19 @@
                 </div>
 
                 <div class="col-sm-2 mb-2">
-                    <label class="form-label">Id Venta:</label>
+                    <label class="form-label">Nº de Factura:</label>
                     <input class="form-control" type="text" id="txtidtransaccion" name="idtransaccion" />
                 </div>
 
                 <div class="col-sm-2 mb-2">
                     <button class="btn btn-outline-primary w-100" id="btnbuscar" type="button">
-                        <i class="fa-solid fa-magnifying-glass me-1"></i> Buscar
+                        <i class="fas fa-search"></i> Buscar
                     </button>
                 </div>
 
                 <div class="col-sm-2 mb-2">
                     <button class="btn btn-outline-success w-100" type="submit">
-                        <i class="fa-solid fa-file-export me-1"></i> Exportar
+                        <i class="fas fa-file-excel"></i> Exportar
                     </button>
                 </div>
             </div>
@@ -86,8 +83,8 @@
 
         <hr />
         <div class="table-responsive">
-            <table id="tabla" class="table table-striped table-bordered nowrap" style="width:100%">
-                <thead class="table-primary">
+            <table id="tabla" class="display cell-border" style="width:100%">
+                <thead>
                     <tr>
                         <th>Fecha Venta</th>
                         <th>Cliente</th>
@@ -96,114 +93,125 @@
                         <th>Precio Unitario</th>
                         <th>Cantidad</th>
                         <th>Subtotal</th>
-                        <th>ID Venta</th>
+                        <th>Nº de Factura</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <!-- Datos dinámicos -->
-                </tbody>
+                <tbody></tbody>
             </table>
         </div>
     </div>
 </div>
 
+<div class="modal fade" id="modalDetalleVenta" tabindex="-1" aria-labelledby="modalDetalleVentaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="modalDetalleVentaLabel">Detalle de Venta <span id="modalIdVenta"></span></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="modalContentLoader" class="text-center my-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                    <p class="mt-2">Cargando detalle de venta...</p>
+                </div>
+                <div id="invoiceDetailContainer">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
-    <!-- Animate.css -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 
-    <!-- Librerías -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
     <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
 
-    <!-- Inicialización de Gráficos y Tabla -->
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-
-            // Chart: Tendencia de Ventas
-            new Chart(document.getElementById('salesTrendChart'), {
-                type: 'line',
-                data: {
-                    labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
-                    datasets: [{
-                        label: 'Ventas',
-                        data: [120, 150, 180, 100, 220, 160, 130],
-                        borderColor: '#0d6efd',
-                        backgroundColor: 'rgba(13,110,253,0.2)',
-                        tension: 0.4,
-                        fill: true
-                    }]
-                },
-                options: {
-                    plugins: {
-                        datalabels: { display: false },
-                        legend: { labels: { color: '#000' } }
-                    },
-                    scales: {
-                        x: { ticks: { color: '#6c757d' } },
-                        y: { ticks: { color: '#6c757d' } }
-                    }
-                },
-                plugins: [ChartDataLabels]
-            });
-
-            // Chart: Top Productos
-            new Chart(document.getElementById('topItemsChart'), {
-                type: 'bar',
-                data: {
-                    labels: ['Producto A', 'Producto B', 'Producto C', 'Producto D', 'Producto E'],
-                    datasets: [{
-                        label: 'Ventas',
-                        data: [40, 35, 30, 25, 20],
-                        backgroundColor: '#198754'
-                    }]
-                },
-                options: {
-                    plugins: {
-                        datalabels: { anchor: 'end', align: 'top' },
-                        legend: { display: false }
-                    },
-                    scales: {
-                        x: { ticks: { color: '#6c757d' } },
-                        y: { ticks: { color: '#6c757d' } }
-                    }
-                },
-                plugins: [ChartDataLabels]
-            });
-
-            // Chart: Top Clientes
-            new Chart(document.getElementById('topClientsChart'), {
-                type: 'bar',
-                data: {
-                    labels: ['Cliente 1', 'Cliente 2', 'Cliente 3', 'Cliente 4', 'Cliente 5'],
-                    datasets: [{
-                        label: 'Volumen de Compra',
-                        data: [500, 450, 420, 400, 390],
-                        backgroundColor: '#ffc107'
-                    }]
-                },
-                options: {
-                    plugins: {
-                        datalabels: { anchor: 'end', align: 'top' },
-                        legend: { display: false }
-                    },
-                    scales: {
-                        x: { ticks: { color: '#6c757d' } },
-                        y: { ticks: { color: '#6c757d' } }
-                    }
-                },
-                plugins: [ChartDataLabels]
-            });
-
-            // Tabla
-            $('#tabla').DataTable({
+        $(function () {
+            const tablaHistorialVentas = $('#tabla').DataTable({
                 responsive: true,
+                ajax: {
+                    url: '@Url.Action("ObtenerHistorialVentas", "Home")',
+                    type: "GET",
+                    dataType: "json",
+                    data: function (d) {
+                        d.fechaInicio = $("#txtfechainicio").val();
+                        d.fechaFin = $("#txtfechafin").val();
+                        d.idVenta = $("#txtidtransaccion").val();
+                    },
+                    dataSrc: "data"
+                },
+                columns: [
+                    {
+                        data: "fechaVenta",
+                        render: function (data) {
+                            return data ? moment(data).format('DD/MM/YYYY') : '';
+                        }
+                    },
+                    { data: "nombreCliente" },
+                    { data: "nombreItem" },
+                    { data: "tipoItem" },
+                    {
+                        data: "precioUnitario",
+                        render: d => 'Bs./ ' + parseFloat(d).toFixed(2)
+                    },
+                    { data: "cantidad" },
+                    {
+                        data: "subTotal",
+                        render: d => 'Bs./ ' + parseFloat(d).toFixed(2)
+                    },
+                    { data: "idVenta" },
+                    {
+                        data: "idVenta",
+                        render: function (data, type, row) {
+                            return `<button class="btn btn-info btn-sm btn-detalle-venta" data-idventa="${data}" data-bs-toggle="modal" data-bs-target="#modalDetalleVenta"><i class="fas fa-eye"></i></button>`;
+                        },
+                        orderable: false,
+                        searchable: false
+                    }
+                ],
                 language: {
-                    url: '//cdn.datatables.net/plug-ins/1.13.1/i18n/es-ES.json'
-                }
+                    url: '//cdn.datatables.net/plug-ins/2.2.1/i18n/es-ES.json'
+                },
+                ordering: false,
+                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Todos"]],
+                pageLength: -1
+            });
+
+            $("#btnbuscar").on("click", () => tablaHistorialVentas.ajax.reload());
+
+            $('#tabla tbody').on('click', '.btn-detalle-venta', function () {
+                const idVenta = $(this).data('idventa');
+                console.log('ID de Venta:', idVenta);
+
+                $('#modalContentLoader').show();
+                $('#invoiceDetailContainer').empty();
+                $('#modalIdVenta').text(idVenta);
+
+                $.ajax({
+                    url: '@Url.Action("ObtenerDetalleVenta", "Operaciones")', 
+                    type: 'GET',
+                    data: { idVenta: idVenta },
+                    success: function (response) {
+                        $('#modalContentLoader').hide();
+                        $('#invoiceDetailContainer').html(response);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error al cargar el detalle de venta:", error);
+                        $('#modalContentLoader').hide();
+                        $('#invoiceDetailContainer').html('<p class="text-danger">Error al cargar el detalle de la venta. Inténtelo de nuevo.</p>');
+                    }
+                });
             });
         });
     </script>

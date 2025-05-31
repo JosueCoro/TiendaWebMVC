@@ -29,47 +29,11 @@ namespace CapaDatos
         (SELECT COUNT(*) FROM TRANSACCIONES.DETALLE_VENTA) [TotalVenta]
 
         END*/
-        public DashBoard VerDashBoard()
-        {
-            DashBoard objeto = new DashBoard();
-
-            try
-            {
-                using (SqlConnection oconexion = new SqlConnection(Conexion.cn))
-                {
-                    SqlCommand cmd = new SqlCommand("PA_REPORTEDASHBOARD", oconexion);
-                    cmd.CommandType = CommandType.StoredProcedure;
-
-                    oconexion.Open();
-                    using (SqlDataReader dr = cmd.ExecuteReader()) 
-                    {
-                        while (dr.Read())
-                        {
-                            objeto = new DashBoard(){
-                                TotalCliente = Convert.ToInt32(dr["TotalCliente"]),
-                                TotalCompra = Convert.ToInt32(dr["TotalCompra"]),
-                                TotalProducto = Convert.ToInt32(dr["TotalProducto"]),
-                                TotalVenta = Convert.ToInt32(dr["TotalVenta"])
-                                
-                            };
-
-                        }
-                    }
-
-                    
-                }
-            }
-            catch
-            {
-                objeto = new DashBoard();
-            }
-
-            return objeto;
-        }
+        
         public DashboardResumen ObtenerDatosDashboardResumen()
         {
             DashboardResumen oResumen = new DashboardResumen();
-            string mensaje = string.Empty; // Para capturar mensajes de error si los hubiera
+            string mensaje = string.Empty;
 
             try
             {
@@ -78,20 +42,18 @@ namespace CapaDatos
                     SqlCommand cmd = new SqlCommand("SP_Reporte_DashboardResumen", oconexion); // Usaremos un SP
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    // Parámetros de salida para los resultados
                     cmd.Parameters.Add("@TotalCliente", SqlDbType.Int).Direction = ParameterDirection.Output;
                     cmd.Parameters.Add("@TotalVenta", SqlDbType.Int).Direction = ParameterDirection.Output;
                     cmd.Parameters.Add("@MontoTotalVentasHoy", SqlDbType.Decimal).Direction = ParameterDirection.Output;
                     cmd.Parameters.Add("@MontoTotalVentasMes", SqlDbType.Decimal).Direction = ParameterDirection.Output;
                     cmd.Parameters.Add("@TotalCompra", SqlDbType.Int).Direction = ParameterDirection.Output;
                     cmd.Parameters.Add("@TotalProducto", SqlDbType.Int).Direction = ParameterDirection.Output;
-                    cmd.Parameters.Add("@TotalServicio", SqlDbType.Int).Direction = ParameterDirection.Output; // Nuevo
-                    cmd.Parameters.Add("@TotalProveedor", SqlDbType.Int).Direction = ParameterDirection.Output; // Nuevo
+                    cmd.Parameters.Add("@TotalServicio", SqlDbType.Int).Direction = ParameterDirection.Output; 
+                    cmd.Parameters.Add("@TotalProveedor", SqlDbType.Int).Direction = ParameterDirection.Output; 
 
                     oconexion.Open();
                     cmd.ExecuteNonQuery();
 
-                    // Leer los valores de los parámetros de salida
                     oResumen.TotalCliente = Convert.ToInt32(cmd.Parameters["@TotalCliente"].Value);
                     oResumen.TotalVenta = Convert.ToInt32(cmd.Parameters["@TotalVenta"].Value);
                     oResumen.MontoTotalVentasHoy = Convert.ToDecimal(cmd.Parameters["@MontoTotalVentasHoy"].Value, CultureInfo.InvariantCulture);
@@ -104,7 +66,6 @@ namespace CapaDatos
             }
             catch (Exception ex)
             {
-                // En caso de error, inicializar el objeto con valores predeterminados y capturar el mensaje
                 oResumen = new DashboardResumen()
                 {
                     TotalCliente = 0,
@@ -117,13 +78,12 @@ namespace CapaDatos
                     TotalProveedor = 0
                 };
                 mensaje = "Error al obtener datos del dashboard: " + ex.Message;
-                Console.WriteLine(mensaje); // Para depuración
+                Console.WriteLine(mensaje); 
             }
 
             return oResumen;
         }
 
-        // Nuevo método para obtener el historial detallado de ventas
         public List<ReporteVentaDetalle> ObtenerHistorialVentas(string fechaInicio, string fechaFin, string idVenta)
         {
             List<ReporteVentaDetalle> lista = new List<ReporteVentaDetalle>();
@@ -132,7 +92,7 @@ namespace CapaDatos
             {
                 using (SqlConnection oconexion = new SqlConnection(Conexion.cn))
                 {
-                    SqlCommand cmd = new SqlCommand("SP_Reporte_ObtenerHistorialVentas", oconexion); // Usaremos un nuevo SP
+                    SqlCommand cmd = new SqlCommand("SP_Reporte_ObtenerHistorialVentas", oconexion); 
                     cmd.CommandType = CommandType.StoredProcedure;
 
                     cmd.Parameters.AddWithValue("@FechaInicio", fechaInicio);
@@ -162,8 +122,58 @@ namespace CapaDatos
             }
             catch (Exception ex)
             {
-                lista = new List<ReporteVentaDetalle>(); // Devolver lista vacía en caso de error
-                Console.WriteLine("Error al obtener historial de ventas: " + ex.Message); // Para depuración
+                lista = new List<ReporteVentaDetalle>(); 
+                Console.WriteLine("Error al obtener historial de ventas: " + ex.Message); 
+            }
+
+            return lista;
+        }
+        public List<ReporteCompraDetalle> ObtenerHistorialCompras(string fechaInicio, string fechaFin, string idCompra)
+        {
+            List<ReporteCompraDetalle> lista = new List<ReporteCompraDetalle>();
+
+            try
+            {
+                using (SqlConnection oconexion = new SqlConnection(Conexion.cn))
+                {
+                    SqlCommand cmd = new SqlCommand("SP_Reporte_ObtenerHistorialCompras", oconexion);
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.AddWithValue("@FechaInicio", fechaInicio); 
+                    cmd.Parameters.AddWithValue("@FechaFin", fechaFin); 
+                                                                            
+                    cmd.Parameters.AddWithValue("@IdCompra", string.IsNullOrEmpty(idCompra) ? (object)DBNull.Value : Convert.ToInt32(idCompra));
+
+                    oconexion.Open(); 
+
+                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            
+                            lista.Add(new ReporteCompraDetalle()
+                            {
+                                idCompra = Convert.ToInt32(dr["idCompra"]),
+                                fechaCompra = Convert.ToDateTime(dr["fechaCompra"]),
+                                nombreUsuario = dr["nombreUsuario"].ToString(),
+                                nombreProveedor = dr["nombreProveedor"].ToString(),
+                                tipoPago = dr["tipoPago"].ToString(),
+                                cantidad = Convert.ToInt32(dr["cantidad"]),
+                                nombreProducto = dr["nombreProducto"].ToString(),
+                                // Use CultureInfo.InvariantCulture for decimal conversions to avoid locale issues
+                                precioCompraUnitario = Convert.ToDecimal(dr["precioCompraUnitario"], CultureInfo.InvariantCulture),
+                                subTotalItem = Convert.ToDecimal(dr["subTotalItem"], CultureInfo.InvariantCulture),
+                                montoTotalCompra = Convert.ToDecimal(dr["montoTotalCompra"], CultureInfo.InvariantCulture)
+                            });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                lista = new List<ReporteCompraDetalle>();
+                Console.WriteLine("Error al obtener historial de compras: " + ex.Message);
+                
             }
 
             return lista;

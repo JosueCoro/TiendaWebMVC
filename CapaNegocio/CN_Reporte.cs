@@ -13,19 +13,26 @@ namespace CapaNegocio
 
         private CD_Reporte objCapaDato = new CD_Reporte();
 
-        public DashBoard VerDashBoard()
-        {
-            return objCapaDato.VerDashBoard();
-        }
+
         public DashboardResumen ObtenerDatosDashboardResumen()
         {
             return objCapaDato.ObtenerDatosDashboardResumen();
         }
+
+
+
         // Nuevo método de negocio para obtener el historial detallado de ventas
         public List<ReporteVentaDetalle> ObtenerHistorialVentas(string fechaInicio, string fechaFin, string idVenta)
         {
-            // Aquí podrías añadir validaciones de negocio adicionales si fueran necesarias
             return objCapaDato.ObtenerHistorialVentas(fechaInicio, fechaFin, idVenta);
+        }
+
+
+
+        // nuevo método de negocio para obtener el historial detallado de compras
+        public List<ReporteCompraDetalle> ObtenerHistorialCompras(string fechaInicio, string fechaFin, string idCompra)
+        {
+            return objCapaDato.ObtenerHistorialCompras(fechaInicio, fechaFin, idCompra);
         }
     }
 }
