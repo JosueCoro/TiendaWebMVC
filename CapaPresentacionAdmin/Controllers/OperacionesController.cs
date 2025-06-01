@@ -10,7 +10,10 @@ using System.Web.Mvc;
 using QuestPDF.Fluent; //libreria QuestPDF
 using QuestPDF.Helpers; //colores para el pdf
 using QuestPDF.Infrastructure; 
-using System.IO; 
+using System.IO;
+using OfficeOpenXml;
+using OfficeOpenXml.Style;
+using System.Drawing;
 
 namespace CapaPresentacionAdmin.Controllers
 {
@@ -19,6 +22,7 @@ namespace CapaPresentacionAdmin.Controllers
     {
         // GET: Operaciones
 
+        #region Ventas
         //Ventas
         public ActionResult Ventas()
         {
@@ -302,6 +306,55 @@ namespace CapaPresentacionAdmin.Controllers
             return File(pdfBytes, "application/pdf", $"Recibo_Venta_{oVenta.id_venta}.pdf");
         }
 
+        private CN_Reporte objCnReporte = new CN_Reporte();
+
+        public ActionResult ExportarHistorialVentasExcel(string fechaInicio, string fechaFin, string idVenta)
+        {
+            //usar el método de ObtenerVenta del public class CN_Venta en capa de negocio, unicamente pasando el idVenta, 
+            List<ReporteVentaDetalle> listaVentas = objCnReporte.ObtenerHistorialVentas(fechaInicio, fechaFin, idVenta);
+            ExcelPackage.License.SetNonCommercialPersonal("Josue Coro");
+
+            using (ExcelPackage package = new ExcelPackage())
+            {
+                ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("Reporte de Registro de Ventas");
+                string[] headers = new string[] {
+                "Fecha Venta", "Cliente", "Tipo Item", "Nombre Item", "Precio Unitario",
+                "Cantidad", "SubTotal Ítem", "Nº de Venta"
+            };
+                for (int i = 0; i < headers.Length; i++)
+                {
+                    worksheet.Cells[1, i + 1].Value = headers[i];
+                    worksheet.Cells[1, i + 1].Style.Font.Bold = true;
+                    worksheet.Cells[1, i + 1].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    worksheet.Cells[1, i + 1].Style.Fill.BackgroundColor.SetColor(ColorTranslator.FromHtml("#E0E6F0"));
+                    worksheet.Cells[1, i + 1].Style.Font.Color.SetColor(ColorTranslator.FromHtml("#34495E"));
+                }
+                int row = 2;
+                foreach (var venta in listaVentas)
+                {
+                    worksheet.Cells[row, 1].Value = venta.fechaVenta.ToString("dd/MM/yyyy");
+                    worksheet.Cells[row, 2].Value = venta.nombreCliente;
+                    worksheet.Cells[row, 3].Value = venta.tipoItem;
+                    worksheet.Cells[row, 4].Value = venta.nombreItem;
+                    worksheet.Cells[row, 5].Value = venta.precioUnitario;
+                    worksheet.Cells[row, 6].Value = venta.cantidad;
+                    worksheet.Cells[row, 7].Value = venta.subTotal;
+                    worksheet.Cells[row, 8].Value = venta.idVenta;
+                    row++;
+                }
+                worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
+                MemoryStream stream = new MemoryStream();
+                package.SaveAs(stream);
+                stream.Position = 0;
+                string excelName = $"Reporte_Ventas_{DateTime.Now.ToString("yyyyMMdd_HHmmss")}.xlsx";
+                return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", excelName);
+            }
+
+        }
+        #endregion
+
+
+        #region Compras
         //Compras
         public ActionResult Compras()
         {
@@ -359,8 +412,73 @@ namespace CapaPresentacionAdmin.Controllers
             }
         }
 
+        //HistorialCompras
+        [HttpGet]
+        public JsonResult ObtenerHistorialCompras(string fechaInicio, string fechaFin, string idCompra)
+        {
+            List<ReporteCompraDetalle> lista = new List<ReporteCompraDetalle>();
+            CN_Reporte objCnReporte = new CN_Reporte();
+            lista = objCnReporte.ObtenerHistorialCompras(fechaInicio, fechaFin, idCompra);
+            return Json(new { data = lista }, JsonRequestBehavior.AllowGet);
+        }
+        
+        public ActionResult ExportarHistorialComprasExcel(string fechaInicio, string fechaFin, string idCompra)
+        {
+            List<ReporteCompraDetalle> listaCompras = objCnReporte.ObtenerHistorialCompras(fechaInicio, fechaFin, idCompra);
+
+            ExcelPackage.License.SetNonCommercialPersonal("Josue Coro");
 
 
+            using (ExcelPackage package = new ExcelPackage())
+            {
+                ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("Reporte de Registro de Compras");
+
+                string[] headers = new string[] {
+                "Fecha Compra", "Usuario", "Proveedor", "Tipo Pago", "Producto",
+                "Cantidad", "Precio Unitario", "Subtotal Ítem", "Monto Total Compra", "Nº de Compra"
+            };
+
+                for (int i = 0; i < headers.Length; i++)
+                {
+                    worksheet.Cells[1, i + 1].Value = headers[i];
+                    worksheet.Cells[1, i + 1].Style.Font.Bold = true;
+                    worksheet.Cells[1, i + 1].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    worksheet.Cells[1, i + 1].Style.Fill.BackgroundColor.SetColor(ColorTranslator.FromHtml("#E0E6F0"));
+                    worksheet.Cells[1, i + 1].Style.Font.Color.SetColor(ColorTranslator.FromHtml("#34495E"));
+                }
+
+                int row = 2;
+                foreach (var compra in listaCompras)
+                {
+                    worksheet.Cells[row, 1].Value = compra.fechaCompra.ToString("dd/MM/yyyy");
+                    worksheet.Cells[row, 2].Value = compra.nombreUsuario;
+                    worksheet.Cells[row, 3].Value = compra.nombreProveedor;
+                    worksheet.Cells[row, 4].Value = compra.tipoPago;
+                    worksheet.Cells[row, 5].Value = compra.nombreProducto;
+                    worksheet.Cells[row, 6].Value = compra.cantidad;
+                    worksheet.Cells[row, 7].Value = compra.precioCompraUnitario;
+                    worksheet.Cells[row, 8].Value = compra.subTotalItem;
+                    worksheet.Cells[row, 9].Value = compra.montoTotalCompra;
+                    worksheet.Cells[row, 10].Value = compra.idCompra;
+
+                    row++;
+                }
+
+                worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
+
+                MemoryStream stream = new MemoryStream();
+                package.SaveAs(stream);
+                stream.Position = 0;
+
+                string excelName = $"Historial_Compras_{DateTime.Now.ToString("yyyyMMdd_HHmmss")}.xlsx";
+                return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", excelName);
+            }
+        }
+        #endregion
+
+
+
+        #region Clientes 
         //clientes
         public ActionResult Clientes()
         {
@@ -417,10 +535,10 @@ namespace CapaPresentacionAdmin.Controllers
             respuesta = new CN_Clientes().Eliminar(id, out Mensaje);
             return Json(new { resultado = respuesta, mensaje = Mensaje }, JsonRequestBehavior.AllowGet);
         }
+        #endregion
 
 
-
-
+        #region Proveedores
         //proveedores
         public ActionResult Proveedores()
         {
@@ -473,8 +591,10 @@ namespace CapaPresentacionAdmin.Controllers
             respuesta = new CN_Proveedores().Eliminar(id, out Mensaje);
             return Json(new { resultado = respuesta, mensaje = Mensaje }, JsonRequestBehavior.AllowGet);
         }
+        #endregion
 
 
+        #region Stock
         //Stock
         public ActionResult Stock()
         {
@@ -543,7 +663,10 @@ namespace CapaPresentacionAdmin.Controllers
 
             return Json(new { operacionExitosa = operacion_exitosa, mensaje = Mensaje }, JsonRequestBehavior.AllowGet);
         }
+        #endregion
 
+
+        #region Reportes
         //Reporte de Ventas
         public ActionResult ReporteVentas()
         {
@@ -585,6 +708,7 @@ namespace CapaPresentacionAdmin.Controllers
             }
             return View();
         }
+        #endregion
 
     }
 }

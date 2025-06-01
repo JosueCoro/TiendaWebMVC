@@ -3,6 +3,9 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.7/dist/loadingoverlay.min.js"></script>
+
 <h1 class="mt-4">Reporte de Ventas</h1>
 <ol class="breadcrumb mb-4">
     <li class="breadcrumb-item active">Reporte de Ventas</li>
@@ -74,7 +77,7 @@
                 </div>
 
                 <div class="col-sm-2 mb-2">
-                    <button class="btn btn-outline-success w-100" type="submit">
+                    <button class="btn btn-outline-success w-100" id="btnExportarExcel" type="button">
                         <i class="fas fa-file-excel"></i> Exportar
                     </button>
                 </div>
@@ -190,6 +193,42 @@
 
             $("#btnbuscar").on("click", () => tablaHistorialVentas.ajax.reload());
 
+            $("#btnExportarExcel").on("click", function () {
+                const fechaInicio = $("#txtfechainicio").val();
+                const fechaFin = $("#txtfechafin").val();
+                const idVenta = $("#txtidtransaccion").val();
+
+                // Validar que se haya ingresado una fecha de inicio y fin
+                if (!fechaInicio || !fechaFin) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Por favor, ingrese una fecha de inicio y una fecha de fin.'
+                    });
+                    return; 
+                }
+
+                // Validar que la fecha de inicio sea anterior a la fecha de fin
+                //moment.js para una comparación de fechas más robusta
+                if (moment(fechaInicio).isAfter(moment(fechaFin))) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'La fecha de inicio debe ser anterior a la fecha de fin.'
+                    });
+                    return; 
+                }
+
+
+                const url = '@Url.Action("ExportarHistorialVentasExcel", "Operaciones")' +
+                            '?fechaInicio= ' + encodeURIComponent(fechaInicio) +
+                            '&fechaFin=' + encodeURIComponent(fechaFin) +
+                    '&idTransaccion=' + encodeURIComponent(idVenta);
+
+                window.location.href = url;
+
+            });
+
             $('#tabla tbody').on('click', '.btn-detalle-venta', function () {
                 const idVenta = $(this).data('idventa');
                 console.log('ID de Venta:', idVenta);
@@ -199,7 +238,7 @@
                 $('#modalIdVenta').text(idVenta);
 
                 $.ajax({
-                    url: '@Url.Action("ObtenerDetalleVenta", "Operaciones")', 
+                    url: '@Url.Action("ObtenerDetalleVenta", "Operaciones")',
                     type: 'GET',
                     data: { idVenta: idVenta },
                     success: function (response) {

@@ -13,11 +13,48 @@ namespace CapaPresentacionAdmin.Controllers
     public class AccesoController : Controller
     {
         // GET: Acceso
+        
+        
+        //Login
         public ActionResult Index()
         {
             return View();
         }
+        
+        [HttpPost]
+        public ActionResult Index(string correo, string contraseña)
+        {
 
+            User_activo oUserActivo = new User_activo();
+
+            string contraseñaEncriptada = CN_Recursos.ConvertirSha256(contraseña);
+
+            oUserActivo = new CN_Usuarios().ValidarUsuario(correo, contraseñaEncriptada);
+
+            
+            if (oUserActivo == null)
+            {
+                ViewBag.Error = "Correo o contraseña incorrectos, o el usuario se encuentra inactivo. Por favor, verifique sus datos e intente nuevamente.";
+                return View();
+            }
+            else
+            {
+                Session["Usuario"] = oUserActivo;
+                //Session["Usuario"] = oUsuario; guarda el objeto en la session para poder usarlo en otras vistas
+                //validar que id_user_activo no sea null
+                if (oUserActivo.id_user_activo == 0 && oUserActivo.id_tienda_user == 0)
+                {
+                    ViewBag.Error = "El usuario no tiene permisos para acceder al sistema.";
+                    return View();
+                }
+                else
+                {
+                    //FormsAuthentication.SetAuthCookie(oUserActivo.correo, false);
+                    return RedirectToAction("Index", "Home");
+                }
+
+            }
+        }
         public ActionResult CerrarSesion()
         {
             //cerrar  session
@@ -90,40 +127,6 @@ namespace CapaPresentacionAdmin.Controllers
 
 
 
-        //Login
-        [HttpPost]
-        public ActionResult Index(string correo, string contraseña)
-        {
-
-            User_activo oUserActivo = new User_activo();
-
-            string contraseñaEncriptada = CN_Recursos.ConvertirSha256(contraseña);
-
-            oUserActivo = new CN_Usuarios().ValidarUsuario(correo, contraseñaEncriptada);
-
-            
-            if (oUserActivo == null)
-            {
-                ViewBag.Error = "Correo o contraseña incorrectos, o el usuario se encuentra inactivo. Por favor, verifique sus datos e intente nuevamente.";
-                return View();
-            }
-            else
-            {
-                Session["Usuario"] = oUserActivo;
-                //Session["Usuario"] = oUsuario; guarda el objeto en la session para poder usarlo en otras vistas
-                //validar que id_user_activo no sea null
-                if (oUserActivo.id_user_activo == 0 && oUserActivo.id_tienda_user == 0)
-                {
-                    ViewBag.Error = "El usuario no tiene permisos para acceder al sistema.";
-                    return View();
-                }
-                else
-                {
-                    //FormsAuthentication.SetAuthCookie(oUserActivo.correo, false);
-                    return RedirectToAction("Index", "Home");
-                }
-
-            }
-        }
+        
     }
 }

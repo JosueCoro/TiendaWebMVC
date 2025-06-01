@@ -3,6 +3,9 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.7/dist/loadingoverlay.min.js"></script>
+
 <h1 class="mt-4">Reporte de Compras</h1>
 <ol class="breadcrumb mb-4">
     <li class="breadcrumb-item active">Reporte de Compras</li>
@@ -84,7 +87,7 @@
             const tablaHistorialCompras = $('#tabla').DataTable({
                 responsive: true,
                 ajax: {
-                    url: '@Url.Action("ObtenerHistorialCompras", "Home")',
+                    url: '@Url.Action("ObtenerHistorialCompras", "Operaciones")',
                     type: "GET",
                     dataType: "json",
                     data: function (d) {
@@ -134,7 +137,31 @@
                 const fechaFin = $("#txtfechafin").val();
                 const idCompra = $("#txtidcompra").val();
 
-                const url = '@Url.Action("ExportarHistorialComprasExcel", "Home")' +
+                //Validar que se haya ingresado una fecha de inicio y fin
+                if (!fechaInicio || !fechaFin) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Por favor, ingrese una fecha de inicio y una fecha de fin.'
+                    });
+                    console.log("Validación: Fechas no ingresadas."); 
+                    return;
+                }
+                //Validar que la fecha de inicio sea anterior a la fecha de fin
+                if (moment(fechaInicio).isAfter(moment(fechaFin))) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'La fecha de inicio debe ser anterior a la fecha de fin.'
+                    });
+                    console.log("Validación: Fecha de inicio posterior a fecha fin.");
+                    return;
+                }
+
+                
+
+
+                const url = '@Url.Action("ExportarHistorialComprasExcel", "Operaciones")' +
                             '?fechaInicio=' + encodeURIComponent(fechaInicio) +
                             '&fechaFin=' + encodeURIComponent(fechaFin) +
                             '&idCompra=' + encodeURIComponent(idCompra);

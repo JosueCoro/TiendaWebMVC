@@ -18,6 +18,7 @@ namespace CapaPresentacionAdmin.Controllers
     {
         // GET: Mantenedor
 
+        #region categoria
         //CATEGORIA
         public ActionResult Categorias()
         {
@@ -75,16 +76,11 @@ namespace CapaPresentacionAdmin.Controllers
 
             return Json(new { resultado = respuesta, mensaje = Mensaje }, JsonRequestBehavior.AllowGet);
         }
+        #endregion
 
 
 
-
-
-
-
-
-
-
+        #region Marca
         //MARCAS
         public ActionResult Marcas() 
         {
@@ -141,24 +137,13 @@ namespace CapaPresentacionAdmin.Controllers
 
             respuesta = new CN_Marcas().Eliminar(id, out Mensaje);
 
-
-
             return Json(new { resultado = respuesta, mensaje = Mensaje }, JsonRequestBehavior.AllowGet);
         }
+        #endregion
 
 
 
-
-
-
-
-
-
-
-
-
-
-
+        #region Productos
         //PRODUCTOS
         public ActionResult Productos()
         {
@@ -345,12 +330,11 @@ namespace CapaPresentacionAdmin.Controllers
             respuesta = new CN_Producto().Eliminar(id, out Mensaje);
             return Json(new { resultado = respuesta, mensaje = Mensaje }, JsonRequestBehavior.AllowGet);
         }
+        #endregion
 
 
 
-
-
-
+        #region Servicios
         //SERVICIOS
         public ActionResult Servicios()
         {
@@ -419,18 +403,11 @@ namespace CapaPresentacionAdmin.Controllers
             respuesta = new CN_Servicios().Eliminar(id, out Mensaje);
             return Json(new { resultado = respuesta, mensaje = Mensaje }, JsonRequestBehavior.AllowGet);
         }
+        #endregion
 
 
 
-
-
-
-
-
-
-
-
-
+        #region Tipos de Pago
         //TIPOS DE PAGO
         public ActionResult TipoPago()
         {
@@ -490,20 +467,11 @@ namespace CapaPresentacionAdmin.Controllers
 
             return Json(new { resultado = respuesta, mensaje = Mensaje }, JsonRequestBehavior.AllowGet);
         }
+        #endregion
 
 
 
-
-
-
-
-
-
-
-
-
-
-
+        #region Tiendas
         //TIENDAS
         public ActionResult Tiendas()
         {
@@ -556,9 +524,11 @@ namespace CapaPresentacionAdmin.Controllers
             respuesta = new CN_Tiendas().Eliminar(id, out Mensaje);
             return Json(new { resultado = respuesta, mensaje = Mensaje }, JsonRequestBehavior.AllowGet);
         }
+        #endregion
 
 
 
+        #region Unidad de Medida
         //UNIDAD DE MEDIDA
         public ActionResult UnidadMedida()
         {
@@ -613,13 +583,9 @@ namespace CapaPresentacionAdmin.Controllers
             string Mensaje = string.Empty;
 
             respuesta = new CN_UnidadMedida().Eliminar(id, out Mensaje);
-
-
-
             return Json(new { resultado = respuesta, mensaje = Mensaje }, JsonRequestBehavior.AllowGet);
         }
-
-
+        #endregion
 
     }
 }
