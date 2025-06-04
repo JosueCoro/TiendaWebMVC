@@ -160,7 +160,6 @@ namespace CapaDatos
                                 tipoPago = dr["tipoPago"].ToString(),
                                 cantidad = Convert.ToInt32(dr["cantidad"]),
                                 nombreProducto = dr["nombreProducto"].ToString(),
-                                // Use CultureInfo.InvariantCulture for decimal conversions to avoid locale issues
                                 precioCompraUnitario = Convert.ToDecimal(dr["precioCompraUnitario"], CultureInfo.InvariantCulture),
                                 subTotalItem = Convert.ToDecimal(dr["subTotalItem"], CultureInfo.InvariantCulture),
                                 montoTotalCompra = Convert.ToDecimal(dr["montoTotalCompra"], CultureInfo.InvariantCulture)

@@ -1,4 +1,33 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var controlador = ViewContext.RouteData.Values["controller"]?.ToString();
+    var esAdministracion = controlador == "Home" &&
+        (ViewContext.RouteData.Values["action"]?.ToString() == "Usuarios" ||
+         ViewContext.RouteData.Values["action"]?.ToString() == "Roles" ||
+         ViewContext.RouteData.Values["action"]?.ToString() == "Permisos");
+
+
+    var esMantenedor = controlador == "Mantenedor" &&
+        (ViewContext.RouteData.Values["action"]?.ToString() == "Categorias" ||
+         ViewContext.RouteData.Values["action"]?.ToString() == "Marcas" ||
+         ViewContext.RouteData.Values["action"]?.ToString() == "productos" ||
+         ViewContext.RouteData.Values["action"]?.ToString() == "UnidadMedida" ||
+         ViewContext.RouteData.Values["action"]?.ToString() == "Servicios" ||
+         ViewContext.RouteData.Values["action"]?.ToString() == "TipoPago" ||
+         ViewContext.RouteData.Values["action"]?.ToString() == "Tiendas");
+
+    var esOperaciones = controlador == "Operaciones" &&
+        (ViewContext.RouteData.Values["action"]?.ToString() == "Ventas" ||
+         ViewContext.RouteData.Values["action"]?.ToString() == "Compras" ||
+         ViewContext.RouteData.Values["action"]?.ToString() == "Clientes" ||
+         ViewContext.RouteData.Values["action"]?.ToString() == "Proveedores" ||
+         ViewContext.RouteData.Values["action"]?.ToString() == "Stock" );
+
+    var esReporte = controlador == "Operaciones" &&
+        (ViewContext.RouteData.Values["action"]?.ToString() == "ReporteVentas" ||
+         ViewContext.RouteData.Values["action"]?.ToString() == "ReporteCompras");
+}
+
+<!DOCTYPE html>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -17,12 +46,12 @@
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
 </head>
-<body class="sb-nav-fixed" >
+<body class="sb-nav-fixed">
 
 
-    <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark" >
+    <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
         <!-- Navbar Brand-->
-        <a class="navbar-brand ps-3" >AutoGestión Web</a>
+        <a class="navbar-brand ps-3">AutoGestión Web</a>
         <!-- Sidebar Toggle-->
         <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
         <!-- Navbar Search-->
@@ -33,41 +62,41 @@
                 </div>
             </form>*@
         <!-- Navbar-->
-    <ul class="navbar-nav ms-auto me-0 me-md-3 my-2 my-md-0">
-        <li style="background-color: #212529; padding: 5px; border-radius: 5px;">
-            <p id="clock" style="color: #ffffff; font-weight: bold; "></p>
-            <script>
-                setInterval(() => {
-                    const now = new Date();
-                    const options = {
-                        hour: '2-digit',   
-                        minute: '2-digit', 
-                        second: '2-digit', 
-                        hour12: true       
-                    };
-                    clock.innerText = now.toLocaleTimeString('en-US', options);
-                }, 1000)
-            </script>
-        </li>
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                <li>
-                    <a class="dropdown-item" href="#!">
-                        <i class="fa-solid fa-user"></i>Datos del Usuario
-                    </a>
-                </li>
-                <li><a class="dropdown-item" href="#!">ID: @Session["IdUsuario"]</a></li>
-                <li><a class="dropdown-item" href="#!">Nombre: @Session["NombreUsuario"]</a></li>
-                <li><a class="dropdown-item" href="#!">Email: @Session["Email"]</a></li>
-                <li><a class="dropdown-item" href="#!">Rol: @Session["NombreRol"]</a></li>
-                <li><hr class="dropdown-divider" /></li>
-                <li><a class="dropdown-item" href="@Url.Action("CambiarContraseña","Acceso")">Cambiar contraseña</a></li>
-                <li><a class="dropdown-item" href="@Url.Action("CerrarSesion","Acceso")">Cerrar Sesion</a></li>
+        <ul class="navbar-nav ms-auto me-0 me-md-3 my-2 my-md-0">
+            <li style="background-color: #212529; padding: 5px; border-radius: 5px;">
+                <p id="clock" style="color: #ffffff; font-weight: bold; "></p>
+                <script>
+                    setInterval(() => {
+                        const now = new Date();
+                        const options = {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit',
+                            hour12: true
+                        };
+                        clock.innerText = now.toLocaleTimeString('en-US', options);
+                    }, 1000)
+                </script>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                    <li>
+                        <a class="dropdown-item" href="#!">
+                            <i class="fa-solid fa-user"></i>Datos del Usuario
+                        </a>
+                    </li>
+                    <li><a class="dropdown-item" href="#!">ID: @Session["IdUsuario"]</a></li>
+                    <li><a class="dropdown-item" href="#!">Nombre: @Session["NombreUsuario"]</a></li>
+                    <li><a class="dropdown-item" href="#!">Email: @Session["Email"]</a></li>
+                    <li><a class="dropdown-item" href="#!">Rol: @Session["NombreRol"]</a></li>
+                    <li><hr class="dropdown-divider" /></li>
+                    <li><a class="dropdown-item" href="@Url.Action("CambiarContraseña","Acceso")">Cambiar contraseña</a></li>
+                    <li><a class="dropdown-item" href="@Url.Action("CerrarSesion","Acceso")">Cerrar Sesion</a></li>
 
-            </ul>
-        </li>
-    </ul>
+                </ul>
+            </li>
+        </ul>
     </nav>
 
 
@@ -90,73 +119,121 @@
 
                         <div class="sb-sidenav-menu-heading">Administración</div>
 
-                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseAdministracion" aria-expanded="false" aria-controls="collapseAdministracion">
+                        <a class="nav-link @(esAdministracion ? "" : "collapsed")" href="#" data-bs-toggle="collapse" data-bs-target="#collapseAdministracion" aria-expanded="@(esAdministracion.ToString().ToLower())" aria-controls="collapseAdministracion">
                             <div class="sb-nav-link-icon"><i class="fas fa-user-cog"></i></div>
                             Administración
                             <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                         </a>
-                        <div class="collapse" id="collapseAdministracion" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
+                        <div class="collapse @(esAdministracion ? "show" : "")" id="collapseAdministracion" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link" href="@Url.Action("Usuarios","Home")"><i class="fas fa-users me-2"></i>Usuarios</a>
-                                <a class="nav-link" href="@Url.Action("Roles","Home")"><i class="fas fa-user-tag me-2"></i>Roles</a>
-                                <a class="nav-link" href="@Url.Action("Permisos","Home")"><i class="fas fa-user-shield me-2"></i>Permisos</a>
+
+                                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Usuarios" ? "active" : "")" href="@Url.Action("Usuarios","Home")">
+                                    <i class="fas fa-users me-2"></i>Usuarios
+                                </a>
+
+                                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Roles" ? "active" : "")" href="@Url.Action("Roles","Home")">
+                                    <i class="fas fa-user-tag me-2"></i>Roles
+
+                                </a>
+
+                                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Permisos" ? "active" : "")"href="@Url.Action("Permisos","Home")">
+                                    <i class="fas fa-shield-alt me-2"></i>Permisos
+                                </a>
                             </nav>
                         </div>
 
 
 
                         <div class="sb-sidenav-menu-heading">MANTENEDOR</div>
-                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+
+                        <a class="nav-link @(esMantenedor ? "" : "collapsed")" href="#" data-bs-toggle="collapse" data-bs-target="#collapseMantenedor" aria-expanded="@(esMantenedor.ToString().ToLower())" aria-controls="collapseMantenedor">
                             <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
                             Mantenimiento
                             <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                         </a>
-                        <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                        <div class="collapse @(esMantenedor ? "show" : "")" id="collapseMantenedor" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link" href="@Url.Action("Categorias","Mantenedor")"><i class="fas fa-table me-2"></i>Categorías</a>
-                                <a class="nav-link" href="@Url.Action("Marcas","Mantenedor")"><i class="fas fa-bookmark me-2"></i>Marcas</a>
-                                <a class="nav-link" href="@Url.Action("productos","Mantenedor")"><i class="fas fa-boxes me-2"></i>Productos</a>
-                                <a class="nav-link" href="@Url.Action("UnidadMedida","Mantenedor")"><i class="fas fa-chart-bar me-2"></i>Unidad de Medida</a>
-                                <a class="nav-link" href="@Url.Action("Servicios","Mantenedor")"><i class="fas fa-thumbtack me-2"></i>Servicios</a>
-                                <a class="nav-link" href="@Url.Action("TipoPago","Mantenedor")"><i class="fas fa-coins me-2"></i>Tipo de Pago</a>
-                                <a class="nav-link" href="@Url.Action("Tiendas","Mantenedor")"><i class="fas fa-store me-2"></i>Tiendas</a>
+                                @*ejemplo*@
+                                @*<a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Permisos" ? "active" : "")" href="@Url.Action("Permisos","Home")">
+            <i class="fas fa-shield-alt me-2"></i>Permisos
+        </a>*@
+
+
+                                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Categorias" ? "active" : "")" href="@Url.Action("Categorias","Mantenedor")">
+                                    <i class="fas fa-table me-2"></i>Categorías
+                                </a>
+                                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Marcas" ? "active" : "")" href="@Url.Action("Marcas","Mantenedor")">
+                                    <i class="fas fa-bookmark me-2"></i>Marcas
+                                </a>
+
+                                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "productos" ? "active" : "")" href="@Url.Action("productos","Mantenedor")">
+                                    <i class="fas fa-boxes me-2"></i>Productos
+                                </a>
+                                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "UnidadMedida" ? "active" : "")" href="@Url.Action("UnidadMedida","Mantenedor")">
+                                    <i class="fas fa-chart-bar me-2"></i>Unidad de Medida
+                                </a>
+                                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Servicios" ? "active" : "")" href="@Url.Action("Servicios","Mantenedor")">
+                                    <i class="fas fa-thumbtack me-2"></i>Servicios
+                                </a>
+                                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "TipoPago" ? "active" : "")" href="@Url.Action("TipoPago","Mantenedor")">
+                                    <i class="fas fa-coins me-2"></i>Tipo de Pago
+                                </a>
+                                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Tiendas" ? "active" : "")" href="@Url.Action("Tiendas","Mantenedor")">
+                                    <i class="fas fa-store me-2"></i>Tiendas
+                                </a>
+
                             </nav>
                         </div>
 
-                        <div class="sb-sidenav-menu-heading">Operaciones</div>
 
-                        <a class="nav-link" href="@Url.Action("Ventas","Operaciones")">
-                            <div class="sb-nav-link-icon"><i class="fas fa-shopping-bag"></i></div>
-                            Ventas
+                        <div class="sb-sidenav-menu-heading">OPERACIONES</div>
+
+
+                        <a class="nav-link @(esOperaciones ? "" : "collapsed")" href="#" data-bs-toggle="collapse" data-bs-target="#collapseOperaciones" aria-expanded="@(esOperaciones.ToString().ToLower())" aria-controls="collapseOperaciones">
+                            <div class="sb-nav-link-icon"><i class="fas fa-cogs"></i></div>
+                            Operaciones
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                         </a>
-                        <a class="nav-link" href="@Url.Action("Compras","Operaciones")">
-                            <div class="sb-nav-link-icon"><i class="fas fa-shopping-cart"></i></div>
-                            Compras
-                        </a>
-                        <a class="nav-link" href="@Url.Action("Clientes","Operaciones")">
-                            <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
-                            Clientes
-                        </a>
-                        <a class="nav-link" href="@Url.Action("Proveedores","Operaciones")">
-                            <div class="sb-nav-link-icon"><i class="fas fa-truck"></i></div>
-                            Proveedores
-                        </a>
-                        <a class="nav-link" href="@Url.Action("Stock","Operaciones")">
-                            <div class="sb-nav-link-icon"><i class="fas fa-boxes"></i></div>
-                            Stock / Inventario
-                        </a>
+                        <div class="collapse @(esOperaciones ? "show" : "")" id="collapseOperaciones" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav">
+                                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Ventas" ? "active" : "")" href="@Url.Action("Ventas","Operaciones")">
+                                    <i class="fas fa-shopping-bag me-2"></i>Ventas
+                                </a>
+                                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Compras" ? "active" : "")" href="@Url.Action("Compras","Operaciones")">
+                                    <i class="fas fa-shopping-cart me-2"></i>Compras
+                                </a>
+                                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Clientes" ? "active" : "")" href="@Url.Action("Clientes","Operaciones")">
+                                    <i class="fas fa-users me-2"></i>Clientes
+                                </a>
+                                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Proveedores" ? "active" : "")" href="@Url.Action("Proveedores","Operaciones")">
+                                    <i class="fas fa-truck me-2"></i>Proveedores
+                                </a>
+                                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Stock" ? "active" : "")" href="@Url.Action("Stock","Operaciones")">
+                                    <i class="fas fa-boxes me-2"></i>Stock / Inventario
+                                </a>
+
+                            </nav>
+                        </div>
+
 
 
                         <div class="sb-sidenav-menu-heading">REPORTES</div>
-                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseReportes" aria-expanded="false" aria-controls="collapseReportes">
+
+                        <a class="nav-link @(esReporte ? "" : "collapsed")" href="#" data-bs-toggle="collapse" data-bs-target="#collapseReportes" aria-expanded="@(esReporte.ToString().ToLower())" aria-controls="collapseReportes">
                             <div class="sb-nav-link-icon"><i class="fas fa-chart-line"></i></div>
                             Reportes
                             <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                         </a>
-                        <div class="collapse" id="collapseReportes" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                        <div class="collapse @(esReporte ? "show" : "")" id="collapseReportes" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link" href="@Url.Action("ReporteVentas","Operaciones")"><i class="fas fa-file-invoice-dollar me-2"></i>Reporte de Ventas</a>
-                                <a class="nav-link" href="@Url.Action("ReporteCompras","Operaciones")"><i class="fas fa-receipt me-2"></i>Reporte de Compras</a>
+
+                                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "ReporteVentas" ? "active" : "")" href="@Url.Action("ReporteVentas","Operaciones")">
+                                    <i class="fas fa-file-invoice-dollar me-2"></i>Reporte de Ventas
+                                </a>
+                                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "ReporteCompras" ? "active" : "")" href="@Url.Action("ReporteCompras","Operaciones")">
+                                    <i class="fas fa-receipt me-2"></i>Reporte de Compras
+                                </a>
+
                             </nav>
                         </div>
 

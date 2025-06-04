@@ -316,7 +316,7 @@ namespace CapaPresentacionAdmin.Controllers
 
             using (ExcelPackage package = new ExcelPackage())
             {
-                ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("Reporte de Registro de Ventas");
+                ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("Reporte de Ventas");
                 string[] headers = new string[] {
                 "Fecha Venta", "Cliente", "Tipo Item", "Nombre Item", "Precio Unitario",
                 "Cantidad", "SubTotal Ítem", "Nº de Venta"
