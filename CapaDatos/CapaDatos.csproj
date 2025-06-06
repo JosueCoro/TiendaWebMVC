@@ -46,10 +46,12 @@
     <Compile Include="CD_Cliente.cs" />
     <Compile Include="CD_Compra.cs" />
     <Compile Include="CD_Marca.cs" />
+    <Compile Include="CD_Permisos.cs" />
     <Compile Include="CD_Producto.cs" />
     <Compile Include="CD_Proveedor.cs" />
     <Compile Include="CD_Reporte.cs" />
     <Compile Include="CD_Roles.cs" />
+    <Compile Include="CD_RolPermiso.cs" />
     <Compile Include="CD_Servicios.cs" />
     <Compile Include="CD_Stock.cs" />
     <Compile Include="CD_Tienda.cs" />

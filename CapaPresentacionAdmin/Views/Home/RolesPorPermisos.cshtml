@@ -1,0 +1,191 @@
+﻿@{
+    ViewBag.Title = "Gestión de Permisos por Rol";
+    Layout = "~/Views/Shared/_Layout.cshtml"; 
+}
+
+<ol class="breadcrumb mb-4 mt-4">
+    <li class="breadcrumb-item"><a href="@Url.Action("Index","Home")">Resumen</a></li>
+    <li class="breadcrumb-item active">Roles y Permisos</li>
+</ol>
+
+<div class="card">
+    <div class="card-header">
+        <i class="fas fa-user-tag"></i> Gestión de Permisos por Rol
+    </div>
+
+    <div class="card-body">
+        <div class="row">
+            <div class="col-12">
+                <p>Seleccione un Rol para gestionar sus permisos asociados.</p>
+            </div>
+        </div>
+
+        <hr />
+
+        <table id="tablaRoles" class="display cell-border" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Nombre de Rol</th>
+                    <th>Estado</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="modalGestionPermisos" tabindex="-1" aria-labelledby="modalGestionPermisosLabel" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title" id="modalGestionPermisosLabel">Gestionar Permisos para: <span id="nombreRolSeleccionado"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input id="txtIdRolSeleccionado" type="text" value="0" />
+
+                <div id="contenedorPermisos" class="row">
+                </div>
+
+                <div class="row mt-2">
+                    <div class="col-12">
+                        <div id="mensajeErrorGestionPermisos" class="alert alert-danger" role="alert" style="display:none;">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" onclick="GuardarAsignacionPermisos()">Guardar Permisos</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert@2.1.2/dist/sweetalert.min.js"></script>
+
+    <script>
+        var tabladataRoles; 
+        var filaSeleccionadaRol; 
+
+        $(document).ready(function () {
+            tabladataRoles = $('#tablaRoles').DataTable({
+                responsive: true,
+                ordering: false,
+                "ajax": {
+                    "url": '@Url.Action("ListarRoles2", "Home")',
+                    "type": "GET",
+                    "datatype": "json"
+                },
+                "columns": [
+                    { "data": "nombre" }, 
+                    {
+                        "data": "estado", 
+                        "render": function (valor) {
+                            if (valor) {
+                                return '<span class="badge bg-success">Activo</span>';
+                            } else {
+                                return '<span class="badge bg-danger">Inactivo</span>';
+                            }
+                        }
+                    },
+                    {
+                        "defaultContent": '<button type="button" class="btn btn-info btn-sm btn-gestionar-permisos">Gestionar Permisos</button>',
+                        "orderable": false,
+                        "searchable": false,
+                        "width": "180px"
+                    }
+                ],
+                "language": {
+                    "url": '//cdn.datatables.net/plug-ins/2.2.1/i18n/es-ES.json',
+                },
+            });
+        });
+
+        // Evento click para el botón "Gestionar Permisos" en la tabla de Roles
+        $("#tablaRoles tbody").on("click", '.btn-gestionar-permisos', function () {
+            filaSeleccionadaRol = $(this).closest("tr");
+            var dataRol = tabladataRoles.row(filaSeleccionadaRol).data();
+
+            $("#txtIdRolSeleccionado").val(dataRol.id_rol);
+            $("#nombreRolSeleccionado").text(dataRol.nombreRol); 
+
+            $("#mensajeErrorGestionPermisos").hide();
+            $("#contenedorPermisos").empty();
+
+            $.ajax({
+                "url": '@Url.Action("ObtenerPermisosPorRol", "Home")',
+                "type": "GET",
+                "data": { idRol: dataRol.id_rol }, 
+                "dataType": "json",
+                "success": function (data) {
+                    if (data.listaPermisos && data.listaPermisos.length > 0) {
+                        data.listaPermisos.forEach(function (permiso) {
+                            var checked = permiso.Asignado ? 'checked' : ''; 
+                            var checkboxHtml = `
+                                <div class="col-sm-6 col-md-4 col-lg-3 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input permiso-checkbox" type="checkbox" value="${permiso.IdPermiso}" id="permiso-${permiso.IdPermiso}" ${checked}>
+                                        <label class="form-check-label" for="permiso-${permiso.IdPermiso}">
+                                            ${permiso.Nombre}
+                                        </label>
+                                    </div>
+                                </div>
+                            `;
+                            $("#contenedorPermisos").append(checkboxHtml);
+                        });
+                    } else {
+                        $("#contenedorPermisos").html('<p>No hay permisos disponibles para asignar.</p>');
+                    }
+                    $('#modalGestionPermisos').modal('show'); 
+                },
+                "error": function (xhr, status, error) {
+                    console.error("Error al obtener permisos por rol:", status, error);
+                    $("#mensajeErrorGestionPermisos").text("Error al cargar los permisos. Intente de nuevo.");
+                    $("#mensajeErrorGestionPermisos").show();
+                }
+            });
+        });
+
+        function GuardarAsignacionPermisos() {
+            var idRol = $("#txtIdRolSeleccionado").val();
+            var idsPermisosSeleccionados = [];
+
+            $(".permiso-checkbox:checked").each(function () {
+                idsPermisosSeleccionados.push($(this).val());
+            });
+
+            if (idRol == 0) {
+                $("#mensajeErrorGestionPermisos").text("No se ha seleccionado un Rol válido.");
+                $("#mensajeErrorGestionPermisos").show();
+                return;
+            }
+
+            $.ajax({
+                "url": '@Url.Action("GuardarPermisosRol", "Home")',
+                "type": "POST",
+                "data": JSON.stringify({ idRol: idRol, idsPermisos: idsPermisosSeleccionados }),
+                "dataType": "json",
+                "contentType": "application/json; charset=utf-8",
+                "success": function (data) {
+                    if (data.resultado) {
+                        $('#modalGestionPermisos').modal("hide");
+                        swal("¡Guardado!", data.mensaje, "success");
+                    } else {
+                        $("#mensajeErrorGestionPermisos").text(data.mensaje);
+                        $("#mensajeErrorGestionPermisos").show();
+                    }
+                },
+                "error": function (xhr, status, error) {
+                    console.error("Error AJAX al guardar permisos por rol:", status, error);
+                    $('#mensajeErrorGestionPermisos').text("Ocurrió un error inesperado al guardar los permisos.");
+                    $('#mensajeErrorGestionPermisos').show();
+                }
+            });
+        }
+    </script>
+}

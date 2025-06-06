@@ -3,6 +3,7 @@
     var esAdministracion = controlador == "Home" &&
         (ViewContext.RouteData.Values["action"]?.ToString() == "Usuarios" ||
          ViewContext.RouteData.Values["action"]?.ToString() == "Roles" ||
+         ViewContext.RouteData.Values["action"]?.ToString() == "RolesPorPermisos" ||
          ViewContext.RouteData.Values["action"]?.ToString() == "Permisos");
 
 
@@ -136,9 +137,14 @@
 
                                 </a>
 
-                                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Permisos" ? "active" : "")"href="@Url.Action("Permisos","Home")">
+                                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Permisos" ? "active" : "")" href="@Url.Action("Permisos","Home")">
+                                    <i class="fas fa-shield-alt me-2"></i>Registro de Permisos
+                                </a>
+
+                                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "RolesPorPermisos" ? "active" : "")" href="@Url.Action("RolesPorPermisos","Home")">
                                     <i class="fas fa-shield-alt me-2"></i>Permisos
                                 </a>
+
                             </nav>
                         </div>
 

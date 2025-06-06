@@ -55,6 +55,7 @@
     <Compile Include="ReporteCompraDetalle.cs" />
     <Compile Include="ReporteVentaDetalle.cs" />
     <Compile Include="Roles.cs" />
+    <Compile Include="RolPermiso.cs" />
     <Compile Include="Servicio.cs" />
     <Compile Include="Stock.cs" />
     <Compile Include="Tienda.cs" />

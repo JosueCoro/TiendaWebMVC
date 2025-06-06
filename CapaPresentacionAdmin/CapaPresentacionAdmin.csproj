@@ -151,6 +151,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModels\PermisoAsignacionViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\all.css" />
@@ -560,6 +561,7 @@
     <Content Include="Views\Operaciones\ReporteVentas.cshtml" />
     <Content Include="Views\Operaciones\ReporteCompras.cshtml" />
     <Content Include="Views\Operaciones\_DetalleVentaPartial.cshtml" />
+    <Content Include="Views\Home\RolesPorPermisos.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -45,11 +45,13 @@
     <Compile Include="CN_Clientes.cs" />
     <Compile Include="CN_Compra.cs" />
     <Compile Include="CN_Marcas.cs" />
+    <Compile Include="CN_Permisos.cs" />
     <Compile Include="CN_Producto.cs" />
     <Compile Include="CN_Proveedores.cs" />
     <Compile Include="CN_Recursos.cs" />
     <Compile Include="CN_Reporte.cs" />
     <Compile Include="CN_Roles.cs" />
+    <Compile Include="CN_RolesPermisos.cs" />
     <Compile Include="CN_Servicios.cs" />
     <Compile Include="CN_Stocks.cs" />
     <Compile Include="CN_Tiendas.cs" />
