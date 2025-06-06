@@ -26,7 +26,7 @@ namespace CapaDatos
                 using (SqlConnection oconexion = new SqlConnection(Conexion.cn))
                 {
                     oconexion.Open();
-                    SqlCommand cmd = new SqlCommand("SELECT IdPermiso FROM RolPermiso WHERE IdRol = @IdRol", oconexion);
+                    SqlCommand cmd = new SqlCommand("SELECT PERMISOS_id_permiso FROM SEGURIDAD.ROLES_PERMISOS WHERE ROLES_id_rol = @IdRol", oconexion);
                     cmd.Parameters.AddWithValue("@IdRol", idRol);
                     cmd.CommandType = CommandType.Text;
 
@@ -34,7 +34,7 @@ namespace CapaDatos
                     {
                         while (dr.Read())
                         {
-                            listaIdPermisos.Add(Convert.ToInt32(dr["IdPermiso"]));
+                            listaIdPermisos.Add(Convert.ToInt32(dr["PERMISOS_id_permiso"]));
                         }
                     }
                 }
@@ -68,14 +68,14 @@ namespace CapaDatos
                 {
                     objTransaccion = oconexion.BeginTransaction();
 
-                    SqlCommand cmdDelete = new SqlCommand("DELETE FROM RolPermiso WHERE IdRol = @IdRol", oconexion, objTransaccion);
+                    SqlCommand cmdDelete = new SqlCommand("DELETE FROM SEGURIDAD.ROLES_PERMISOS WHERE ROLES_id_rol = @IdRol", oconexion, objTransaccion);
                     cmdDelete.Parameters.AddWithValue("@IdRol", idRol);
                     cmdDelete.CommandType = CommandType.Text;
                     cmdDelete.ExecuteNonQuery();
 
                     foreach (int idPermiso in idsPermisos)
                     {
-                        SqlCommand cmdInsert = new SqlCommand("INSERT INTO RolPermiso (IdRol, IdPermiso) VALUES (@IdRol, @IdPermiso)", oconexion, objTransaccion);
+                        SqlCommand cmdInsert = new SqlCommand("INSERT INTO SEGURIDAD.ROLES_PERMISOS (ROLES_id_rol, PERMISOS_id_permiso) VALUES (@IdRol, @IdPermiso)", oconexion, objTransaccion);
                         cmdInsert.Parameters.AddWithValue("@IdRol", idRol);
                         cmdInsert.Parameters.AddWithValue("@IdPermiso", idPermiso);
                         cmdInsert.CommandType = CommandType.Text;

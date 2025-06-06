@@ -80,21 +80,43 @@
                 </script>
             </li>
             <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-user fa-fw"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown" style="min-width: 350px;">
                     <li>
-                        <a class="dropdown-item" href="#!">
-                            <i class="fa-solid fa-user"></i>Datos del Usuario
+                        <h6 class="dropdown-header">
+                            <i class="fas fa-id-card me-2"></i> Datos del Usuario
+                        </h6>
+                    </li>
+                    <li><hr class="dropdown-divider" /></li>
+                    <li>
+                        <span class="dropdown-item-text">
+                            <i class="fas fa-user me-2"></i> Nombre: <strong>@Session["NombreUsuario"]</strong>
+                        </span>
+                    </li>
+                    <li>
+                        <span class="dropdown-item-text">
+                            <i class="fas fa-envelope me-2"></i> Email: <strong>@Session["Email"]</strong>
+                        </span>
+                    </li>
+                    <li>
+                        <span class="dropdown-item-text">
+                            <i class="fas fa-tag me-2"></i> Rol: <strong>@Session["NombreRol"]</strong>
+                        </span>
+                    </li>
+
+                    <li><hr class="dropdown-divider" /></li>
+                    <li>
+                        <a class="dropdown-item" href="@Url.Action("CambiarContraseña","Acceso")">
+                            <i class="fas fa-key me-2"></i> Cambiar contraseña
                         </a>
                     </li>
-                    <li><a class="dropdown-item" href="#!">ID: @Session["IdUsuario"]</a></li>
-                    <li><a class="dropdown-item" href="#!">Nombre: @Session["NombreUsuario"]</a></li>
-                    <li><a class="dropdown-item" href="#!">Email: @Session["Email"]</a></li>
-                    <li><a class="dropdown-item" href="#!">Rol: @Session["NombreRol"]</a></li>
-                    <li><hr class="dropdown-divider" /></li>
-                    <li><a class="dropdown-item" href="@Url.Action("CambiarContraseña","Acceso")">Cambiar contraseña</a></li>
-                    <li><a class="dropdown-item" href="@Url.Action("CerrarSesion","Acceso")">Cerrar Sesion</a></li>
-
+                    <li>
+                        <a class="dropdown-item" href="@Url.Action("CerrarSesion","Acceso")">
+                            <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
+                        </a>
+                    </li>
                 </ul>
             </li>
         </ul>
@@ -138,7 +160,7 @@
                                 </a>
 
                                 <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Permisos" ? "active" : "")" href="@Url.Action("Permisos","Home")">
-                                    <i class="fas fa-shield-alt me-2"></i>Registro de Permisos
+                                    <i class="fas fa-solid fa-user-lock me-2"></i>Registro de Permisos
                                 </a>
 
                                 <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "RolesPorPermisos" ? "active" : "")" href="@Url.Action("RolesPorPermisos","Home")">
@@ -159,11 +181,7 @@
                         </a>
                         <div class="collapse @(esMantenedor ? "show" : "")" id="collapseMantenedor" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
-                                @*ejemplo*@
-                                @*<a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Permisos" ? "active" : "")" href="@Url.Action("Permisos","Home")">
-            <i class="fas fa-shield-alt me-2"></i>Permisos
-        </a>*@
-
+                                
 
                                 <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Categorias" ? "active" : "")" href="@Url.Action("Categorias","Mantenedor")">
                                     <i class="fas fa-table me-2"></i>Categorías

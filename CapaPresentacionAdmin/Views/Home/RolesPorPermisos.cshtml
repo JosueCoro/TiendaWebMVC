@@ -77,7 +77,7 @@
                 responsive: true,
                 ordering: false,
                 "ajax": {
-                    "url": '@Url.Action("ListarRoles2", "Home")',
+                    "url": '@Url.Action("ListarRolesPermisos", "Home")',
                     "type": "GET",
                     "datatype": "json"
                 },
@@ -112,7 +112,7 @@
             var dataRol = tabladataRoles.row(filaSeleccionadaRol).data();
 
             $("#txtIdRolSeleccionado").val(dataRol.id_rol);
-            $("#nombreRolSeleccionado").text(dataRol.nombreRol); 
+            $("#nombreRolSeleccionado").text(dataRol.nombre); 
 
             $("#mensajeErrorGestionPermisos").hide();
             $("#contenedorPermisos").empty();

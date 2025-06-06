@@ -240,20 +240,26 @@ namespace CapaDatos
         )
         AS
         BEGIN
-            -- Declarar variables para almacenar el ID del usuario y el resultado
+            -- Declarar variables para almacenar los datos del usuario y el resultado
             DECLARE @ID_Usuario INT;
-	        DECLARE @ID_Tienda INT;
+            DECLARE @ID_Tienda INT;
+            DECLARE @ID_Rol INT;
+            DECLARE @NombreUsuario VARCHAR(100); -- ¡NUEVA VARIABLE PARA EL NOMBRE!
+            DECLARE @CorreoUsuario VARCHAR(50); -- Variable para confirmar el correo si se desea, aunque ya lo tenemos como parámetro
             DECLARE @Resultado INT;
 
             -- Comprobar si el usuario existe con el correo y la contraseña proporcionados
-            SELECT 
-		        @ID_Usuario = id_usuario,
-		        @ID_Tienda = TIENDA_id_tienda
-            FROM 
-		        SEGURIDAD.USUARIO
+            SELECT
+                @ID_Usuario = id_usuario,
+                @ID_Tienda = TIENDA_id_tienda,
+                @ID_Rol = ROLES_id_rol,
+                @NombreUsuario = nombres,     -- ¡NUEVA ASIGNACIÓN!
+                @CorreoUsuario = correo       -- Asignación del correo desde la DB
+            FROM
+                SEGURIDAD.USUARIO
             WHERE correo = @Correo
               AND contraseña = @Contraseña
-              AND estado = 1;  -- Solo usuarios activos
+              AND estado = 1;   -- Solo usuarios activos
 
             -- Si el usuario fue encontrado y está activo
             IF @ID_Usuario IS NOT NULL
@@ -265,11 +271,21 @@ namespace CapaDatos
             BEGIN
                 -- Si no se encuentra el usuario o está inactivo, el resultado es 0
                 SET @Resultado = 0;
-                SET @ID_Usuario = NULL; -- Se asegura de que no se devuelva un ID si no se encuentra el usuario
+                SET @ID_Usuario = NULL;
+                SET @ID_Tienda = NULL;
+                SET @ID_Rol = NULL;
+                SET @NombreUsuario = NULL;   -- También nulo si no hay usuario
+                SET @CorreoUsuario = NULL;   -- También nulo si no hay usuario
             END
 
-            -- Retornar los valores de ID_Usuario y Resultado
-            SELECT @ID_Usuario AS ID_Usuario, @ID_Tienda AS ID_Tienda, @Resultado AS Resultado;
+            -- Retornar los valores
+            SELECT
+                @ID_Usuario AS ID_Usuario,
+                @ID_Tienda AS ID_Tienda,
+                @ID_Rol AS ID_Rol,
+                @NombreUsuario AS NombreUsuario, -- ¡NUEVA COLUMNA EN EL RESULTADO!
+                @CorreoUsuario AS Correo,        -- Incluimos el correo desde la DB si se encontró
+                @Resultado AS Resultado;
         END;
         GO
         */
@@ -293,6 +309,9 @@ namespace CapaDatos
                     {
                         int idUsuario = Convert.ToInt32(lectura["ID_Usuario"]);
                         int idTienda = Convert.ToInt32(lectura["ID_Tienda"]);
+                        int idRol = Convert.ToInt32(lectura["ID_Rol"]);
+                        string nombreUsuario = lectura["NombreUsuario"].ToString();
+                        string ApellidoUsuario = lectura["ApellidoUsuario"].ToString();
                         int resultado = Convert.ToInt32(lectura["Resultado"]); 
 
                         if (resultado == 1)
@@ -300,9 +319,16 @@ namespace CapaDatos
                             oUsuario = new User_activo()
                             {
                                 id_user_activo = idUsuario,
-                                id_tienda_user = idTienda
+                                id_tienda_user = idTienda,
+                                correo = correo,
+                                nombre = nombreUsuario,
+                                apellidos = ApellidoUsuario,
+
+                                oRol = new Roles { id_rol = idRol }
                             };
                         }
+                        
+                        
                         else
                         {
                             oUsuario = null;

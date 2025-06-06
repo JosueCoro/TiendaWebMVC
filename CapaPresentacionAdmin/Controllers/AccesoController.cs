@@ -39,8 +39,7 @@ namespace CapaPresentacionAdmin.Controllers
             }
             else
             {
-                Session["Usuario"] = oUserActivo;
-                //Session["Usuario"] = oUsuario; guarda el objeto en la session para poder usarlo en otras vistas
+                
                 //validar que id_user_activo no sea null
                 if (oUserActivo.id_user_activo == 0 && oUserActivo.id_tienda_user == 0)
                 {
@@ -49,12 +48,21 @@ namespace CapaPresentacionAdmin.Controllers
                 }
                 else
                 {
+                    Session["Usuario"] = oUserActivo;
+                    //Session["Usuario"] = oUsuario; guarda el objeto en la session para poder usarlo en otras vistas
+                    //juntarlo con el apellido del usuario
+                    Session["NombreUsuario"] = oUserActivo.nombre + " " + oUserActivo.apellidos;
+                    Session["Email"] = oUserActivo.correo;
+                    Session["NombreRol"] = oUserActivo.oRol != null ? oUserActivo.oRol.nombre : "Rol Desconocido";
+
+
                     //FormsAuthentication.SetAuthCookie(oUserActivo.correo, false);
                     return RedirectToAction("Index", "Home");
                 }
 
             }
         }
+        
         public ActionResult CerrarSesion()
         {
             //cerrar  session

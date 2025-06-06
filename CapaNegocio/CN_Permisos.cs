@@ -11,10 +11,29 @@ namespace CapaNegocio
     public class CN_Permisos
     {
         private CD_Permisos objCapaDatoPermiso = new CD_Permisos();
+        private CD_RolPermiso objCapaDatoRolPermiso = new CD_RolPermiso();
 
         public List<Permisos> Listar()
         {
             return objCapaDatoPermiso.ListarPermisos();
+        }
+
+        /// <summary>
+        /// Obtiene una lista de objetos Permisos que están asignados a un rol específico.
+        /// </summary>
+        /// <param name="idRol">El ID del rol.</param>
+        /// <returns>Una lista de objetos Permisos.</returns>
+        public List<Permisos> ObtenerPermisosPorIdRol(int idRol)
+        {
+            List<int> idsPermisosAsignados = objCapaDatoRolPermiso.ObtenerPermisosPorRol(idRol);
+
+            List<Permisos> todosLosPermisos = objCapaDatoPermiso.ListarPermisos(); 
+
+            List<Permisos> permisosDelRol = todosLosPermisos
+                                            .Where(p => idsPermisosAsignados.Contains(p.id_permiso))
+                                            .ToList();
+
+            return permisosDelRol;
         }
 
         public int Registrar(Permisos obj, out string Mensaje)

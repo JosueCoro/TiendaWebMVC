@@ -72,6 +72,22 @@ namespace CapaNegocio
             return eliminado;
         }
 
+        /// <summary>
+        /// Obtiene un objeto Rol de la base de datos por su ID.
+        /// </summary>
+        /// <param name="idRol">El ID del rol a obtener.</param>
+        /// <returns>Un objeto Rol si se encuentra, null en caso contrario.</returns>
+        public Roles ObtenerPorId(int idRol)
+        {
+            if (idRol <= 0)
+            {
+                // Manejo de error o log si el ID es inválido
+                Console.WriteLine("CN_Rol: ID de Rol inválido para ObtenerPorId.");
+                return null;
+            }
+            return objRol.ObtenerPorId(idRol);
+        }
+
 
     }
 }

@@ -11,6 +11,8 @@ namespace CapaNegocio
     public class CN_Usuarios
     {
         private CD_Usuarios objUsuario = new CD_Usuarios();
+        private CN_Roles objCapaNegocioRol = new CN_Roles();
+        private CN_Permisos objCapaNegocioPermisos = new CN_Permisos();
 
         public List<Usuario> Listar()
         {
@@ -117,11 +119,39 @@ namespace CapaNegocio
         }
 
         //validar usuario
+        //public User_activo ValidarUsuario(string correo, string contraseña)
+        //{
+
+        //    return objUsuario.ValidarUsuario(correo, contraseña);
+        //}
+
+
+        //validar usuario - AQUI ES DONDE HACEMOS EL CAMBIO CLAVE
         public User_activo ValidarUsuario(string correo, string contraseña)
         {
-            //contraseña = CN_Recursos.ConvertirSha256(contraseña);
+            // 1. Llama a la CapaDatos para la validación básica y obtener los IDs básicos del usuario.
+            // En este punto, 'usuarioBase' solo tendrá id_user_activo, id_tienda_user, correo, y oRol con solo el id_rol.
+            User_activo usuarioBase = objUsuario.ValidarUsuario(correo, contraseña);
 
-            return objUsuario.ValidarUsuario(correo, contraseña);
+            // 2. Si se encontró un usuario y su ID de rol es válido
+            if (usuarioBase != null && usuarioBase.oRol != null && usuarioBase.oRol.id_rol > 0)
+            {
+                // 3. Obtener el objeto Rol completo usando CN_Roles
+                usuarioBase.oRol = objCapaNegocioRol.ObtenerPorId(usuarioBase.oRol.id_rol);
+
+                // 4. Obtener la lista de Permisos asociados a ese rol usando CN_Permisos
+                usuarioBase.listaPermisosDelRol = objCapaNegocioPermisos.ObtenerPermisosPorIdRol(usuarioBase.oRol.id_rol);
+
+                // Opcional: Si el rol o los permisos no se cargan correctamente, podrías invalidar el usuario aquí
+                if (usuarioBase.oRol == null || usuarioBase.listaPermisosDelRol == null)
+                {
+                    // Esto indica un problema de configuración de roles/permisos, no un error de login
+                    // Podrías loggear esto o devolver null para evitar un login parcial.
+                    return null;
+                }
+            }
+
+            return usuarioBase; 
         }
 
 

@@ -280,7 +280,7 @@ namespace CapaPresentacionAdmin.Controllers
         }
 
         [HttpGet]
-        public JsonResult ListarRoles2()
+        public JsonResult ListarRolesPermisos()
         {
             List<Roles> olista = new List<Roles>();
             olista = new CN_Roles().Listar(); 

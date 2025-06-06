@@ -254,5 +254,48 @@ namespace CapaDatos
             }
             return resultado;
         }
+
+        /// <summary>
+        /// Obtiene un objeto Rol por su ID.
+        /// </summary>
+        /// <param name="idRol">El ID del rol a buscar.</param>
+        /// <returns>El objeto Rol si se encuentra, de lo contrario, null.</returns>
+        public Roles ObtenerPorId(int idRol)
+        {
+            Roles oRol = null; // Inicializa a null
+            try
+            {
+                using (SqlConnection oconexion = new SqlConnection(Conexion.cn))
+                {
+                    oconexion.Open();
+                    // Asegúrate que el nombre de la tabla y las columnas coincidan con tu DB
+                    string query = "SELECT id_rol, nombre, descripcion, estado FROM SEGURIDAD.ROLES WHERE id_rol = @idRol";
+                    SqlCommand cmd = new SqlCommand(query, oconexion);
+                    cmd.Parameters.AddWithValue("@idRol", idRol);
+                    cmd.CommandType = CommandType.Text; // Es un SELECT simple, no un SP
+
+                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    {
+                        if (dr.Read()) // Si encuentra una fila
+                        {
+                            oRol = new Roles()
+                            {
+                                id_rol = Convert.ToInt32(dr["id_rol"]),
+                                nombre = dr["nombre"].ToString(),
+                                descripcion = dr["descripcion"].ToString(),
+                                estado = Convert.ToBoolean(dr["estado"])
+                            };
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error en CD_Rol.ObtenerPorId: {ex.Message}");
+                oRol = null; // Retorna null en caso de error
+            }
+            return oRol;
+        }
+
     }
 }
