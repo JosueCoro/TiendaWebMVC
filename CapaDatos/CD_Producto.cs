@@ -365,7 +365,61 @@ namespace CapaDatos
             }
             return resultado;
         }
+        //Lista de productos para el catalogo
+        public List<Producto> ListarProductosFiltro(int idMarca = 0, int idCategoria = 0)
+        {
+            List<Producto> lista = new List<Producto>();
+
+            try
+            {
+                using (SqlConnection oconexion = new SqlConnection(Conexion.cn))
+                {
+                    SqlCommand cmd = new SqlCommand("INVENTARIO.SP_LISTAR_PRODUCTOS_FILTROS", oconexion);
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.AddWithValue("@IdMarca", idMarca == 0 ? (object)DBNull.Value : idMarca);
+                    cmd.Parameters.AddWithValue("@IdCategoria", idCategoria == 0 ? (object)DBNull.Value : idCategoria);
+
+                    oconexion.Open();
+
+                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            lista.Add(new Producto()
+                            {
+                                id_producto = Convert.ToInt32(dr["id_producto"]),
+                                nombre = dr["nombre"].ToString(),
+                                descripcion = dr["DescripcionProducto"].ToString(), 
+                                precio = Convert.ToDecimal(dr["precio"], new CultureInfo("es-PE")),
+                                ruta_imagen = dr["ruta_imagen"].ToString(),
+                                nombre_imagen = dr["nombre_imagen"].ToString(),
+                                estado = Convert.ToBoolean(dr["estado"]),
+
+                                oMarca = new Marca()
+                                {
+                                    id_marca = Convert.ToInt32(dr["id_marca"]),
+                                    descripcion = dr["DescripcionMarca"].ToString(),
+                                },
+                                oCategoria = new Categoria()
+                                {
+                                    id_categoria = Convert.ToInt32(dr["id_categoria"]),
+                                    descripcion = dr["DescripcionCategoria"].ToString(), 
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                lista = new List<Producto>();
+                Console.WriteLine("Error al listar productos con filtros: " + ex.Message); 
+            }
+
+            return lista;
+        }
+
+
     }
-
-
 }

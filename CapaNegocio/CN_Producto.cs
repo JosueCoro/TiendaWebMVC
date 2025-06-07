@@ -17,7 +17,10 @@ namespace CapaNegocio
         {
             return objProducto.Listar();
         }
-
+        public List<Producto> ListarProductos(int idMarca = 0, int idCategoria = 0)
+        {
+            return objProducto.ListarProductosFiltro(idMarca, idCategoria);
+        }
         public int Registrar(Producto obj, out string Mensaje)
         {
             Mensaje = string.Empty;
