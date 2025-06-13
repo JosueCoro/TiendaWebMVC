@@ -17,6 +17,34 @@ namespace CapaPresentacionTienda.Controllers
         {
             return View();
         }
+        public ActionResult DetalleProducto()
+        {
+            return View();
+        }
+
+        // Detalle de Producto
+        [HttpGet]
+        public JsonResult ObtenerProductoPorId(int idProducto = 0)
+        {
+            var olista  = new CN_Producto().ObtenerProductoPorId(idProducto);
+
+            var resultado = olista.Select(p => new
+            {
+                p.id_producto,
+                p.nombre,
+                p.descripcion,
+                p.precio,
+                p.ruta_imagen,
+                p.nombre_imagen,
+                p.estado,
+                marca = p.oMarca != null ? new { id = p.oMarca.id_marca, descripcion = p.oMarca.descripcion } : null,
+                categoria = p.oCategoria != null ? new { id = p.oCategoria.id_categoria, descripcion = p.oCategoria.descripcion } : null
+
+            }).ToList();
+            return Json(new { data = resultado }, JsonRequestBehavior.AllowGet);
+
+
+        }
 
         //Categorias
         [HttpGet]
@@ -58,6 +86,7 @@ namespace CapaPresentacionTienda.Controllers
 
                 marca = p.oMarca != null ? new { id = p.oMarca.id_marca, descripcion = p.oMarca.descripcion } : null,
                 categoria = p.oCategoria != null ? new { id = p.oCategoria.id_categoria, descripcion = p.oCategoria.descripcion } : null
+
             }).ToList(); 
 
             return Json(new { data = resultado }, JsonRequestBehavior.AllowGet);

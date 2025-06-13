@@ -17,10 +17,15 @@ namespace CapaNegocio
         {
             return objProducto.Listar();
         }
+        public List<Producto> ObtenerProductoPorId(int id_producto = 0)
+        {
+            return objProducto.ObtenerProductoPorId(id_producto);
+        }
         public List<Producto> ListarProductos(int idMarca = 0, int idCategoria = 0)
         {
             return objProducto.ListarProductosFiltro(idMarca, idCategoria);
         }
+
         public int Registrar(Producto obj, out string Mensaje)
         {
             Mensaje = string.Empty;

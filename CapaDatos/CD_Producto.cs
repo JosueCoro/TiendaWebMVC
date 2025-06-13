@@ -312,8 +312,6 @@ namespace CapaDatos
 
         }
 
-
-
         /*CREATE PROCEDURE INVENTARIO.sp_EliminarProducto
         (
             @id_producto INT,
@@ -365,6 +363,8 @@ namespace CapaDatos
             }
             return resultado;
         }
+
+
         //Lista de productos para el catalogo
         public List<Producto> ListarProductosFiltro(int idMarca = 0, int idCategoria = 0)
         {
@@ -419,6 +419,54 @@ namespace CapaDatos
 
             return lista;
         }
+
+        public List<Producto> ObtenerProductoPorId(int id_producto = 0) 
+        {
+            List<Producto> lista = new List<Producto>();
+            try
+            {
+                using (SqlConnection oconexion = new SqlConnection(Conexion.cn))
+                {
+                    SqlCommand cmd = new SqlCommand("INVENTARIO.LISTAR_PRODUCTO_ID", oconexion);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@id_producto", id_producto);
+                    oconexion.Open();
+                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            lista.Add(new Producto()
+                            {
+                                id_producto = Convert.ToInt32(dr["id_producto"]),
+                                nombre = dr["nombre"].ToString(),
+                                descripcion = dr["DescripcionProducto"].ToString(),
+                                precio = Convert.ToDecimal(dr["precio"], new CultureInfo("es-PE")),
+                                ruta_imagen = dr["ruta_imagen"].ToString(),
+                                nombre_imagen = dr["nombre_imagen"].ToString(),
+                                estado = Convert.ToBoolean(dr["estado"]),
+                                oMarca = new Marca()
+                                {
+                                    id_marca = Convert.ToInt32(dr["id_marca"]),
+                                    descripcion = dr["descripcion_marca"].ToString(),
+                                },
+                                oCategoria = new Categoria()
+                                {
+                                    id_categoria = Convert.ToInt32(dr["id_categoria"]),
+                                    descripcion = dr["descripcion_categoria"].ToString(),
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                lista = new List<Producto>();
+                Console.WriteLine("Error al obtener producto por ID: " + ex.Message);
+            }
+            return lista;
+        }
+
 
 
     }
