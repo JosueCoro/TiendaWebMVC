@@ -341,8 +341,14 @@
                 id_usuario: $("#txtid").val(),
                 correo: $("#txtCorreo").val(),
                 contraseña: $("#txtContraseña").val()
-
             }
+
+            $(".modal-body").LoadingOverlay("show", {
+                imageResizeFactor: 2,
+                text: "Actualizando...",
+                size: 24
+            });
+
             jQuery.ajax({
                 url: '@Url.Action("ActualizarContraseña", "Home")',
                 type: 'POST',
@@ -350,6 +356,8 @@
                 datatype: 'json',
                 contentType: 'application/json; charset=utf-8',
                 success: function (data) {
+                    $(".modal-body").LoadingOverlay("hide");
+
                     if (data.resultado) {
                         $('#FormModal1').modal("hide");
                     } else {
@@ -358,11 +366,15 @@
                     }
                 },
                 error: function (error) {
-                    console.log(error)
+                    $(".modal-body").LoadingOverlay("hide");
+                    console.log(error);
+                    $("#mensajeError").text("Error Ajax");
+                    $("#mensajeError").show();
                 }
             });
-
         }
+
+        
 
         function Guardar()
         {
@@ -437,7 +449,7 @@
                     })
                 }
             });
-            
+
 
         }
         //funcion que actualiza el datatable

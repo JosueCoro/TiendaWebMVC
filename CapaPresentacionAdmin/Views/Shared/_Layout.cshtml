@@ -6,7 +6,6 @@
          ViewContext.RouteData.Values["action"]?.ToString() == "RolesPorPermisos" ||
          ViewContext.RouteData.Values["action"]?.ToString() == "Permisos");
 
-
     var esMantenedor = controlador == "Mantenedor" &&
         (ViewContext.RouteData.Values["action"]?.ToString() == "Categorias" ||
          ViewContext.RouteData.Values["action"]?.ToString() == "Marcas" ||
@@ -21,11 +20,18 @@
          ViewContext.RouteData.Values["action"]?.ToString() == "Compras" ||
          ViewContext.RouteData.Values["action"]?.ToString() == "Clientes" ||
          ViewContext.RouteData.Values["action"]?.ToString() == "Proveedores" ||
-         ViewContext.RouteData.Values["action"]?.ToString() == "Stock" );
+         ViewContext.RouteData.Values["action"]?.ToString() == "Stock");
 
     var esReporte = controlador == "Operaciones" &&
         (ViewContext.RouteData.Values["action"]?.ToString() == "ReporteVentas" ||
          ViewContext.RouteData.Values["action"]?.ToString() == "ReporteCompras");
+
+    var nombreRolUsuario = Session["NombreRol"]?.ToString();
+
+    bool puedeVerAdministracion = nombreRolUsuario == "ADMINISTRADOR";
+    bool puedeVerMantenedor = nombreRolUsuario == "ADMINISTRADOR" || nombreRolUsuario == "GERENTE"; 
+    bool puedeVerOperaciones = nombreRolUsuario == "ADMINISTRADOR" || nombreRolUsuario == "VENDEDOR" || nombreRolUsuario == "GERENTE"; 
+    bool puedeVerReportes = nombreRolUsuario == "ADMINISTRADOR" || nombreRolUsuario == "GERENTE"; 
 }
 
 <!DOCTYPE html>
@@ -35,34 +41,18 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - Autopartes Dos Hermanos</title>
-    @*<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-xrBntoYltDgRLMC0NPLTYbfkFiR8x91K1HRe6UVHjqMZ1pbMkOnGgRVBXcFFkUETbPmr8s15x7mPlkz8f44I3A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="SHA512-D2F3Q9v+/0eD8vhfFWbpW6SzEv78lO1MYzIHVdPDTUqI5+PWTceQxi+ydbzDQZQyJfNltnDUGFwxyHAYn9IcVg==" crossorigin="anonymous" referrerpolicy="no-referrer" />*@
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-xrBntoYltDgRLMC0NPLTYbfkFiR8x91K1HRe6UVHjqMZ1pbMkOnGgRVBXcFFkUETbPmr8s15x7mPlkz8f44I3A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 
-
-
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
+    <link href="@Url.Content("~/Content/css/custom.css")" rel="stylesheet" type="text/css" />
 </head>
 <body class="sb-nav-fixed">
 
-
     <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
-        <!-- Navbar Brand-->
         <a class="navbar-brand ps-3">AutoGestión Web</a>
-        <!-- Sidebar Toggle-->
         <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
-        <!-- Navbar Search-->
-        @* <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
-                <div class="input-group">
-                    <input class="form-control" type="text" placeholder="Search for..." aria-label="Search for..." aria-describedby="btnNavbarSearch" />
-                    <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>
-                </div>
-            </form>*@
-        <!-- Navbar-->
         <ul class="navbar-nav ms-auto me-0 me-md-3 my-2 my-md-0">
             <li style="background-color: #212529; padding: 5px; border-radius: 5px;">
                 <p id="clock" style="color: #ffffff; font-weight: bold; "></p>
@@ -140,127 +130,120 @@
                             Dashboard
                         </a>
 
-                        <div class="sb-sidenav-menu-heading">Administración</div>
-
-                        <a class="nav-link @(esAdministracion ? "" : "collapsed")" href="#" data-bs-toggle="collapse" data-bs-target="#collapseAdministracion" aria-expanded="@(esAdministracion.ToString().ToLower())" aria-controls="collapseAdministracion">
-                            <div class="sb-nav-link-icon"><i class="fas fa-user-cog"></i></div>
-                            Administración
-                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                        </a>
-                        <div class="collapse @(esAdministracion ? "show" : "")" id="collapseAdministracion" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
-                            <nav class="sb-sidenav-menu-nested nav">
-
-                                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Usuarios" ? "active" : "")" href="@Url.Action("Usuarios","Home")">
-                                    <i class="fas fa-users me-2"></i>Usuarios
-                                </a>
-
-                                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Roles" ? "active" : "")" href="@Url.Action("Roles","Home")">
-                                    <i class="fas fa-user-tag me-2"></i>Roles
-
-                                </a>
-
-                                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Permisos" ? "active" : "")" href="@Url.Action("Permisos","Home")">
-                                    <i class="fas fa-solid fa-user-lock me-2"></i>Registro de Permisos
-                                </a>
-
-                                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "RolesPorPermisos" ? "active" : "")" href="@Url.Action("RolesPorPermisos","Home")">
-                                    <i class="fas fa-shield-alt me-2"></i>Permisos
-                                </a>
-
-                            </nav>
-                        </div>
+                        @* SECCIÓN DE ADMINISTRACIÓN *@
+                        @if (puedeVerAdministracion)
+                        {
+                            <div class="sb-sidenav-menu-heading">Administración</div>
+                            <a class="nav-link @(esAdministracion ? "" : "collapsed")" href="#" data-bs-toggle="collapse" data-bs-target="#collapseAdministracion" aria-expanded="@(esAdministracion.ToString().ToLower())" aria-controls="collapseAdministracion">
+                                <div class="sb-nav-link-icon"><i class="fas fa-user-cog"></i></div>
+                                Administración
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse @(esAdministracion ? "show" : "")" id="collapseAdministracion" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Usuarios" ? "active" : "")" href="@Url.Action("Usuarios","Home")">
+                                        <i class="fas fa-users me-2"></i>Usuarios
+                                    </a>
+                                    <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Roles" ? "active" : "")" href="@Url.Action("Roles","Home")">
+                                        <i class="fas fa-user-tag me-2"></i>Roles
+                                    </a>
+                                    <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Permisos" ? "active" : "")" href="@Url.Action("Permisos","Home")">
+                                        <i class="fas fa-solid fa-user-lock me-2"></i>Registro de Permisos
+                                    </a>
+                                    <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "RolesPorPermisos" ? "active" : "")" href="@Url.Action("RolesPorPermisos","Home")">
+                                        <i class="fas fa-shield-alt me-2"></i>Permisos
+                                    </a>
+                                </nav>
+                            </div>
+                        }
 
 
+                        @* SECCIÓN DE MANTENEDOR *@
+                        @if (puedeVerMantenedor)
+                        {
+                            <div class="sb-sidenav-menu-heading">MANTENEDOR</div>
+                            <a class="nav-link @(esMantenedor ? "" : "collapsed")" href="#" data-bs-toggle="collapse" data-bs-target="#collapseMantenedor" aria-expanded="@(esMantenedor.ToString().ToLower())" aria-controls="collapseMantenedor">
+                                <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                                Mantenimiento
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse @(esMantenedor ? "show" : "")" id="collapseMantenedor" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Categorias" ? "active" : "")" href="@Url.Action("Categorias","Mantenedor")">
+                                        <i class="fas fa-table me-2"></i>Categorías
+                                    </a>
+                                    <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Marcas" ? "active" : "")" href="@Url.Action("Marcas","Mantenedor")">
+                                        <i class="fas fa-bookmark me-2"></i>Marcas
+                                    </a>
+                                    <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "productos" ? "active" : "")" href="@Url.Action("productos","Mantenedor")">
+                                        <i class="fas fa-boxes me-2"></i>Productos
+                                    </a>
+                                    <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "UnidadMedida" ? "active" : "")" href="@Url.Action("UnidadMedida","Mantenedor")">
+                                        <i class="fas fa-chart-bar me-2"></i>Unidad de Medida
+                                    </a>
+                                    <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Servicios" ? "active" : "")" href="@Url.Action("Servicios","Mantenedor")">
+                                        <i class="fas fa-thumbtack me-2"></i>Servicios
+                                    </a>
+                                    <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "TipoPago" ? "active" : "")" href="@Url.Action("TipoPago","Mantenedor")">
+                                        <i class="fas fa-coins me-2"></i>Tipo de Pago
+                                    </a>
+                                    <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Tiendas" ? "active" : "")" href="@Url.Action("Tiendas","Mantenedor")">
+                                        <i class="fas fa-store me-2"></i>Tiendas
+                                    </a>
+                                </nav>
+                            </div>
+                        }
 
-                        <div class="sb-sidenav-menu-heading">MANTENEDOR</div>
+                        @* SECCIÓN DE OPERACIONES *@
+                        @if (puedeVerOperaciones)
+                        {
+                            <div class="sb-sidenav-menu-heading">OPERACIONES</div>
+                            <a class="nav-link @(esOperaciones ? "" : "collapsed")" href="#" data-bs-toggle="collapse" data-bs-target="#collapseOperaciones" aria-expanded="@(esOperaciones.ToString().ToLower())" aria-controls="collapseOperaciones">
+                                <div class="sb-nav-link-icon"><i class="fas fa-cogs"></i></div>
+                                Operaciones
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse @(esOperaciones ? "show" : "")" id="collapseOperaciones" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Ventas" ? "active" : "")" href="@Url.Action("Ventas","Operaciones")">
+                                        <i class="fas fa-shopping-bag me-2"></i>Ventas
+                                    </a>
+                                    <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Compras" ? "active" : "")" href="@Url.Action("Compras","Operaciones")">
+                                        <i class="fas fa-shopping-cart me-2"></i>Compras
+                                    </a>
+                                    <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Clientes" ? "active" : "")" href="@Url.Action("Clientes","Operaciones")">
+                                        <i class="fas fa-users me-2"></i>Clientes
+                                    </a>
+                                    <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Proveedores" ? "active" : "")" href="@Url.Action("Proveedores","Operaciones")">
+                                        <i class="fas fa-truck me-2"></i>Proveedores
+                                    </a>
+                                    <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Stock" ? "active" : "")" href="@Url.Action("Stock","Operaciones")">
+                                        <i class="fas fa-boxes me-2"></i>Stock / Inventario
+                                    </a>
+                                </nav>
+                            </div>
+                        }
 
-                        <a class="nav-link @(esMantenedor ? "" : "collapsed")" href="#" data-bs-toggle="collapse" data-bs-target="#collapseMantenedor" aria-expanded="@(esMantenedor.ToString().ToLower())" aria-controls="collapseMantenedor">
-                            <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
-                            Mantenimiento
-                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                        </a>
-                        <div class="collapse @(esMantenedor ? "show" : "")" id="collapseMantenedor" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
-                            <nav class="sb-sidenav-menu-nested nav">
-                                
-
-                                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Categorias" ? "active" : "")" href="@Url.Action("Categorias","Mantenedor")">
-                                    <i class="fas fa-table me-2"></i>Categorías
-                                </a>
-                                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Marcas" ? "active" : "")" href="@Url.Action("Marcas","Mantenedor")">
-                                    <i class="fas fa-bookmark me-2"></i>Marcas
-                                </a>
-
-                                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "productos" ? "active" : "")" href="@Url.Action("productos","Mantenedor")">
-                                    <i class="fas fa-boxes me-2"></i>Productos
-                                </a>
-                                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "UnidadMedida" ? "active" : "")" href="@Url.Action("UnidadMedida","Mantenedor")">
-                                    <i class="fas fa-chart-bar me-2"></i>Unidad de Medida
-                                </a>
-                                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Servicios" ? "active" : "")" href="@Url.Action("Servicios","Mantenedor")">
-                                    <i class="fas fa-thumbtack me-2"></i>Servicios
-                                </a>
-                                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "TipoPago" ? "active" : "")" href="@Url.Action("TipoPago","Mantenedor")">
-                                    <i class="fas fa-coins me-2"></i>Tipo de Pago
-                                </a>
-                                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Tiendas" ? "active" : "")" href="@Url.Action("Tiendas","Mantenedor")">
-                                    <i class="fas fa-store me-2"></i>Tiendas
-                                </a>
-
-                            </nav>
-                        </div>
-
-
-                        <div class="sb-sidenav-menu-heading">OPERACIONES</div>
-
-
-                        <a class="nav-link @(esOperaciones ? "" : "collapsed")" href="#" data-bs-toggle="collapse" data-bs-target="#collapseOperaciones" aria-expanded="@(esOperaciones.ToString().ToLower())" aria-controls="collapseOperaciones">
-                            <div class="sb-nav-link-icon"><i class="fas fa-cogs"></i></div>
-                            Operaciones
-                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                        </a>
-                        <div class="collapse @(esOperaciones ? "show" : "")" id="collapseOperaciones" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
-                            <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Ventas" ? "active" : "")" href="@Url.Action("Ventas","Operaciones")">
-                                    <i class="fas fa-shopping-bag me-2"></i>Ventas
-                                </a>
-                                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Compras" ? "active" : "")" href="@Url.Action("Compras","Operaciones")">
-                                    <i class="fas fa-shopping-cart me-2"></i>Compras
-                                </a>
-                                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Clientes" ? "active" : "")" href="@Url.Action("Clientes","Operaciones")">
-                                    <i class="fas fa-users me-2"></i>Clientes
-                                </a>
-                                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Proveedores" ? "active" : "")" href="@Url.Action("Proveedores","Operaciones")">
-                                    <i class="fas fa-truck me-2"></i>Proveedores
-                                </a>
-                                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Stock" ? "active" : "")" href="@Url.Action("Stock","Operaciones")">
-                                    <i class="fas fa-boxes me-2"></i>Stock / Inventario
-                                </a>
-
-                            </nav>
-                        </div>
-
-
-
-                        <div class="sb-sidenav-menu-heading">REPORTES</div>
-
-                        <a class="nav-link @(esReporte ? "" : "collapsed")" href="#" data-bs-toggle="collapse" data-bs-target="#collapseReportes" aria-expanded="@(esReporte.ToString().ToLower())" aria-controls="collapseReportes">
-                            <div class="sb-nav-link-icon"><i class="fas fa-chart-line"></i></div>
-                            Reportes
-                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                        </a>
-                        <div class="collapse @(esReporte ? "show" : "")" id="collapseReportes" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
-                            <nav class="sb-sidenav-menu-nested nav">
-
-                                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "ReporteVentas" ? "active" : "")" href="@Url.Action("ReporteVentas","Operaciones")">
-                                    <i class="fas fa-file-invoice-dollar me-2"></i>Reporte de Ventas
-                                </a>
-                                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "ReporteCompras" ? "active" : "")" href="@Url.Action("ReporteCompras","Operaciones")">
-                                    <i class="fas fa-receipt me-2"></i>Reporte de Compras
-                                </a>
-
-                            </nav>
-                        </div>
-
+                        @* SECCIÓN DE REPORTES *@
+                        @if (puedeVerReportes)
+                        {
+                            <div class="sb-sidenav-menu-heading">REPORTES</div>
+                            <a class="nav-link @(esReporte ? "" : "collapsed")" href="#" data-bs-toggle="collapse" data-bs-target="#collapseReportes" aria-expanded="@(esReporte.ToString().ToLower())" aria-controls="collapseReportes">
+                                <div class="sb-nav-link-icon"><i class="fas fa-chart-line"></i></div>
+                                Reportes
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse @(esReporte ? "show" : "")" id="collapseReportes" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "ReporteVentas" ? "active" : "")" href="@Url.Action("ReporteVentas","Operaciones")">
+                                        <i class="fas fa-file-invoice-dollar me-2"></i>Reporte de Ventas
+                                    </a>
+                                    <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "ReporteCompras" ? "active" : "")" href="@Url.Action("ReporteCompras","Operaciones")">
+                                        <i class="fas fa-receipt me-2"></i>Reporte de Compras
+                                    </a>
+                                </nav>
+                            </div>
+                        }
 
                     </div>
                 </div>
@@ -274,7 +257,6 @@
             <main>
                 <div class="container-fluid px-4">
                     @RenderBody()
-
                 </div>
             </main>
             <footer class="py-4 bg-light mt-auto">
@@ -291,12 +273,6 @@
             </footer>
         </div>
     </div>
-
-
-    @*@RenderBody()*@
-    @*<li>@Html.ActionLink("Inicio", "Index", "Home", new { area = "" }, new { @class = "nav-link" })</li>
-        <li>@Html.ActionLink("Acerca de", "About", "Home", new { area = "" }, new { @class = "nav-link" })</li>
-        <li>@Html.ActionLink("Contacto", "Contact", "Home", new { area = "" }, new { @class = "nav-link" })</li>*@
 
 
     @Scripts.Render("~/bundles/jquery")
