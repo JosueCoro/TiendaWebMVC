@@ -148,16 +148,17 @@
                                                 <p class="small text-muted">Categoría: ${producto.categoria ? producto.categoria.descripcion : 'N/A'}</p>
                                             </div>
                                         </div>
-                                        <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                                            <div class="text-center">
-                                                <a class="btn btn-outline-dark mt-auto" href="/Tienda/DetalleProducto?idProducto=${producto.id_producto}">Ver Detalles</a>
-                                            </div>
-                                        </div>
+                                        
                                     </div>
                                 </div>
                             `;
                         });
                     }
+                    //<div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                    //    <div class="text-center">
+                    //        <a class="btn btn-outline-dark mt-auto" href="/Tienda/DetalleProducto?idProducto=${producto.id_producto}">Ver Detalles</a>
+                    //    </div>
+                    //</div>
 
                     $('#contenedor_productos').html(htmlProductos);
 
