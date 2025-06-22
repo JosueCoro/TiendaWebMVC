@@ -1,10 +1,8 @@
-﻿
-@{
+﻿@{
     Layout = null;
 }
 
 <!DOCTYPE html>
-
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
@@ -15,6 +13,50 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+
+    <style>
+        #loadingOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6); /* Un poco más oscuro para que el texto resalte */
+            display: flex;
+            flex-direction: column; /* Para apilar el spinner y el texto */
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0s, opacity 0.3s linear;
+            color: white; 
+            font-size: 1.2rem; 
+            font-weight: 600; 
+        }
+
+            #loadingOverlay.show {
+                visibility: visible;
+                opacity: 1;
+            }
+
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+            color: #ffffff;
+            margin-bottom: 15px; 
+        }
+
+        #loadingMessage {
+            margin-top: 10px;
+        }
+
+        .form-floating .btn {
+            height: calc(1.5em + .75rem + 2px);
+            display: flex;
+            align-items: center;
+        }
+    </style>
 </head>
 <body style="background-color: #2b3c56;">
     <div id="layoutAuthentication">
@@ -26,7 +68,7 @@
                             <div class="card shadow-lg border-0 rounded-lg mt-5">
                                 <div class="card-header"><h3 class="text-center font-weight-light my-4">Cambiar Contraseña</h3></div>
                                 <div class="card-body">
-                                    <form id="formCambiarContraseña" action="@Url.Action("CambiarContraseña", "Acceso")" method="post" onsubmit="return validarContraseñas()">
+                                    <form id="formCambiarContraseña" action="@Url.Action("CambiarContraseña", "Acceso")" method="post" onsubmit="return validarYMostrarCarga()">
                                         <div class="form-floating mb-3">
                                             <input class="form-control" name="correo" type="email" placeholder="Ingrese su correo" required />
                                             <label for="inputEmail">Correo electrónico</label>
@@ -76,17 +118,13 @@
                                             </div>
                                         }
 
-
-
                                         <div class="mt-4 mb-0">
                                             <div class="d-grid"><button type="submit" class="btn btn-primary btn-block">Cambiar Contraseña</button></div>
                                         </div>
                                     </form>
-
-
                                 </div>
                                 <div class="card-footer text-center py-3">
-                                    <div class="small"><a href="@Url.Action("Index", "Acceso")">Volver</a></div>
+                                    <div class="small"><a href="@Url.Action("Index", "Home")">Volver a Inicio</a></div>
                                 </div>
                             </div>
                         </div>
@@ -98,7 +136,7 @@
             <footer class="py-4 bg-light mt-auto">
                 <div class="container-fluid px-4">
                     <div class="d-flex align-items-center justify-content-between small">
-                        <div class="text-muted">Copyright &copy; Your Website 2023</div>
+                        <div class="text-muted">Copyright &copy; @DateTime.Now.Year Autopartes Dos Hermanos</div>
                         <div>
                             <a href="#">Privacy Policy</a>
                             &middot;
@@ -109,6 +147,14 @@
             </footer>
         </div>
     </div>
+
+    <div id="loadingOverlay">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Cargando...</span>
+        </div>
+        <div id="loadingMessage"></div> 
+    </div>
+
     <script src="~/Scripts/bootstrap.bundle.js"></script>
     <script>
         function togglePassword(inputId, iconId) {
@@ -118,6 +164,21 @@
 
             input.type = isPassword ? "text" : "password";
             icon.className = isPassword ? "bi bi-eye-slash" : "bi bi-eye";
+        }
+
+        function validarYMostrarCarga() {
+            const isValid = validarContraseñas();
+
+            if (isValid) {
+                const loadingOverlay = document.getElementById('loadingOverlay');
+                const loadingMessage = document.getElementById('loadingMessage');
+
+                loadingMessage.textContent = "Actualizando su contraseña..."; 
+                loadingOverlay.classList.add('show');
+                return true; 
+            } else {
+                return false; 
+            }
         }
 
         function validarContraseñas() {
@@ -136,7 +197,18 @@
             return true;
         }
 
+        document.addEventListener('DOMContentLoaded', function () {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const loadingMessage = document.getElementById('loadingMessage');
+            const errorServerDiv = document.querySelector('.alert-danger');
+            const successServerDiv = document.querySelector('.alert-success');
 
+            if (errorServerDiv || successServerDiv) {
+                loadingOverlay.classList.remove('show');
+            }
+
+            
+        });
     </script>
 
 </body>

@@ -91,8 +91,6 @@ namespace CapaPresentacionAdmin.Controllers
         //}
         public ActionResult Usuarios()
         {
-            //validar que id_user_activo no sea null osea que el usuario haya iniciado sesion para poder entrar aqui
-            //validar que el usuario tenga un rol asignado asignado como ADMINISTRADOR (verificar con el Session["NombreRol"] = oUserActivo.oRol != null ? oUserActivo.oRol.nombre : "Rol Desconocido";
             if (Session["Usuario"] == null)
             {
                 return RedirectToAction("Index", "Acceso");
@@ -233,13 +231,15 @@ namespace CapaPresentacionAdmin.Controllers
             }
             else
             {
-                //validar que el usuario tenga un rol asignado
                 User_activo oUserActivo = (User_activo)Session["Usuario"];
-                if (oUserActivo.id_user_activo == 0)
+
+                if (oUserActivo.id_user_activo == 0 || oUserActivo.oRol == null || oUserActivo.oRol.nombre != "ADMINISTRADOR")
                 {
-                    return RedirectToAction("Index", "Acceso");
+                    return RedirectToAction("AccesoDenegado", "Home");
                 }
             }
+
+
             return View();
         }
         [HttpGet]
@@ -396,6 +396,18 @@ namespace CapaPresentacionAdmin.Controllers
         #region Acceso Denegado
         public ActionResult AccesoDenegado()
         {
+            if (Session["Usuario"] == null)
+            {
+                return RedirectToAction("Index", "Acceso");
+            }
+            else
+            {
+                User_activo oUserActivo = (User_activo)Session["Usuario"];
+                if (oUserActivo.id_user_activo == 0)
+                {
+                    return RedirectToAction("Index", "Acceso");
+                }
+            }
             return View();
         }
         #endregion

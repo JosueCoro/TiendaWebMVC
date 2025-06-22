@@ -142,16 +142,16 @@
                             <div class="collapse @(esAdministracion ? "show" : "")" id="collapseAdministracion" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
                                     <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Usuarios" ? "active" : "")" href="@Url.Action("Usuarios","Home")">
-                                        <i class="fas fa-users me-2"></i>Usuarios
+                                        <i class="fas fa-users me-2"></i>Usuario
                                     </a>
                                     <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Roles" ? "active" : "")" href="@Url.Action("Roles","Home")">
-                                        <i class="fas fa-user-tag me-2"></i>Roles
+                                        <i class="fas fa-user-tag me-2"></i>Rol
                                     </a>
                                     <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Permisos" ? "active" : "")" href="@Url.Action("Permisos","Home")">
                                         <i class="fas fa-solid fa-user-lock me-2"></i>Registro de Permisos
                                     </a>
                                     <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "RolesPorPermisos" ? "active" : "")" href="@Url.Action("RolesPorPermisos","Home")">
-                                        <i class="fas fa-shield-alt me-2"></i>Permisos
+                                        <i class="fas fa-shield-alt me-2"></i>Permiso
                                     </a>
                                 </nav>
                             </div>
@@ -170,25 +170,25 @@
                             <div class="collapse @(esMantenedor ? "show" : "")" id="collapseMantenedor" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
                                     <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Categorias" ? "active" : "")" href="@Url.Action("Categorias","Mantenedor")">
-                                        <i class="fas fa-table me-2"></i>Categorías
+                                        <i class="fas fa-table me-2"></i>Categoría
                                     </a>
                                     <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Marcas" ? "active" : "")" href="@Url.Action("Marcas","Mantenedor")">
-                                        <i class="fas fa-bookmark me-2"></i>Marcas
+                                        <i class="fas fa-bookmark me-2"></i>Marca
                                     </a>
                                     <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "productos" ? "active" : "")" href="@Url.Action("productos","Mantenedor")">
-                                        <i class="fas fa-boxes me-2"></i>Productos
+                                        <i class="fas fa-boxes me-2"></i>Producto
                                     </a>
                                     <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "UnidadMedida" ? "active" : "")" href="@Url.Action("UnidadMedida","Mantenedor")">
                                         <i class="fas fa-chart-bar me-2"></i>Unidad de Medida
                                     </a>
                                     <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Servicios" ? "active" : "")" href="@Url.Action("Servicios","Mantenedor")">
-                                        <i class="fas fa-thumbtack me-2"></i>Servicios
+                                        <i class="fas fa-thumbtack me-2"></i>Servicio
                                     </a>
                                     <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "TipoPago" ? "active" : "")" href="@Url.Action("TipoPago","Mantenedor")">
                                         <i class="fas fa-coins me-2"></i>Tipo de Pago
                                     </a>
                                     <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Tiendas" ? "active" : "")" href="@Url.Action("Tiendas","Mantenedor")">
-                                        <i class="fas fa-store me-2"></i>Tiendas
+                                        <i class="fas fa-store me-2"></i>Tienda
                                     </a>
                                 </nav>
                             </div>
@@ -206,16 +206,16 @@
                             <div class="collapse @(esOperaciones ? "show" : "")" id="collapseOperaciones" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
                                     <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Ventas" ? "active" : "")" href="@Url.Action("Ventas","Operaciones")">
-                                        <i class="fas fa-shopping-bag me-2"></i>Ventas
+                                        <i class="fas fa-shopping-bag me-2"></i>Venta
                                     </a>
                                     <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Compras" ? "active" : "")" href="@Url.Action("Compras","Operaciones")">
-                                        <i class="fas fa-shopping-cart me-2"></i>Compras
+                                        <i class="fas fa-shopping-cart me-2"></i>Compra
                                     </a>
                                     <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Clientes" ? "active" : "")" href="@Url.Action("Clientes","Operaciones")">
-                                        <i class="fas fa-users me-2"></i>Clientes
+                                        <i class="fas fa-users me-2"></i>Cliente
                                     </a>
                                     <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Proveedores" ? "active" : "")" href="@Url.Action("Proveedores","Operaciones")">
-                                        <i class="fas fa-truck me-2"></i>Proveedores
+                                        <i class="fas fa-truck me-2"></i>Proveedor
                                     </a>
                                     <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Stock" ? "active" : "")" href="@Url.Action("Stock","Operaciones")">
                                         <i class="fas fa-boxes me-2"></i>Stock / Inventario

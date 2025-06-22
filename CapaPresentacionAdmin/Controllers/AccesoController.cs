@@ -120,6 +120,7 @@ namespace CapaPresentacionAdmin.Controllers
             if (resultado)
             {
                 ViewBag.MensajeExito = "Contraseña actualizada correctamente. Revise su correo.";
+                return RedirectToAction("Index", "Acceso");
             }
             else
             {
