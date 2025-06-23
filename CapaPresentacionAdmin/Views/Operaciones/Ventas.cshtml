@@ -175,6 +175,7 @@
                             <th>Nombre</th>
                             <th>Descripción</th>
                             <th>Precio</th>
+                            <th>Unidad de medida</th>
                             <th>Estado</th>
                             <th></th>
                         </tr>
@@ -332,6 +333,19 @@
                         "render": function (data) {
                             return 'Bs./ ' + parseFloat(data).toFixed(2);
                         }
+                    },
+                    { 
+                        "data": null, 
+                        "render": function (data, type, row) {
+                            if (row.tipo_item === 'PRODUCTO' && row.oUnidadMedida && row.oUnidadMedida.descripcion) {
+                                return row.oUnidadMedida.descripcion;
+                            } else if (row.tipo_item === 'SERVICIO') {
+                                return 'No corresponde';
+                            }
+                            return ''; 
+                        },
+                        "orderable": false,
+                        "searchable": false
                     },
                     {
                         "data": "estado",

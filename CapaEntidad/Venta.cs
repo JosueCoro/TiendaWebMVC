@@ -43,10 +43,10 @@ namespace CapaEntidad
             public int? PRODUCTO_id_producto { get; set; } 
             public int? SERVICIO_id_servicio { get; set; }  
 
-            public string tipo_item { get; set; } // 'PRODUCTO' o 'SERVICIO'
+            public string tipo_item { get; set; } 
 
-            public Producto oProducto { get; set; } // Será null si es un servicio
-            public Servicio oServicio { get; set; } // Será null si es un producto
+            public Producto oProducto { get; set; } 
+            public Servicio oServicio { get; set; } 
         }
     }
 }

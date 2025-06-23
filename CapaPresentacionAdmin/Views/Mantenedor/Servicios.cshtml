@@ -133,7 +133,12 @@
             "columns": [
                 { "data": "nombre" },
                 { "data": "descripcion" },
-                { "data": "precio" },
+                {
+                    "data": "precio",
+                    "render": function (data) {
+                        return data.toLocaleString('es-BO', { style: 'currency', currency: 'BOB' });
+                    }
+                },
                 {
                     "data": "estado",
                     "render": function (valor) {

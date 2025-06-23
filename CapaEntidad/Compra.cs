@@ -24,13 +24,11 @@ namespace CapaEntidad
 
         public List<DetalleCompra> oDetalleCompra { get; set; }
 
-        // Constructor para inicializar la lista de detalles
         public Compra()
         {
             oDetalleCompra = new List<DetalleCompra>();
         }
 
-        // Clase anidada para el detalle de cada producto en la compra
         public class DetalleCompra
         {
             public int id_detalle_compra { get; set; }
