@@ -181,17 +181,13 @@ namespace CapaPresentacionAdmin.Controllers
                 p.id_producto,
                 p.nombre,
                 p.descripcion,
+                p.codigo_barra, // Campo incluido para la vista
                 p.precio,
                 p.estado,
-                //retornar ruta imagen y nombre imagen
                 p.ruta_imagen,
                 p.nombre_imagen,
-
-                oTienda = new { nombre = p.oTienda?.nombre ?? "Sin tienda" },                
+                oTienda = new { nombre = p.oTienda?.nombre ?? "Sin tienda" },
                 oStock = new { cantidad = p.oStock?.cantidad ?? 0 },
-                //oUnidadMedida = new { descripcion = p.oUnidadMedida?.descripcion ?? "" },
-                //oCategoria = new { descripcion = p.oCategoria?.descripcion ?? "" },
-                //oMarca = new { descripcion = p.oMarca?.descripcion ?? "" }
                 oUnidadMedida = p.oUnidadMedida != null ? new { p.oUnidadMedida.descripcion, id_unidad_medida = (int?)p.oUnidadMedida.id_unidad_medida } : new { descripcion = (string)null, id_unidad_medida = (int?)null },
                 oCategoria = p.oCategoria != null ? new { p.oCategoria.descripcion, id_categoria = (int?)p.oCategoria.id_categoria } : new { descripcion = (string)null, id_categoria = (int?)null },
                 oMarca = p.oMarca != null ? new { p.oMarca.descripcion, id_marca = (int?)p.oMarca.id_marca } : new { descripcion = (string)null, id_marca = (int?)null }
@@ -200,24 +196,16 @@ namespace CapaPresentacionAdmin.Controllers
             return Json(new { data = resultado }, JsonRequestBehavior.AllowGet);
         }
 
-
-        /*public JsonResult ListarProductos()
-        {
-            List<Producto> olista = new List<Producto>();
-            olista = new CN_Producto().Listar();
-            return Json(new { data = olista }, JsonRequestBehavior.AllowGet);
-        }*/
-
         [HttpPost]
         public JsonResult GuardarProducto(string objeto, HttpPostedFileBase archivoImagen)
         {
-            //object resultado;
             string Mensaje = string.Empty;
             bool operacion_exitosa = true;
             bool guardar_imagen_exito = true;
 
-            Producto oproducto = new Producto();
-            oproducto = JsonConvert.DeserializeObject<Producto>(objeto);
+            // El código de barras se deserializa automáticamente gracias a la propiedad en la entidad
+            Producto oproducto = JsonConvert.DeserializeObject<Producto>(objeto);
+
             if (oproducto.precio <= 0)
             {
                 return Json(new { operacion_exitosa = false, mensaje = "El precio del producto debe ser mayor a cero" }, JsonRequestBehavior.AllowGet);
@@ -226,59 +214,43 @@ namespace CapaPresentacionAdmin.Controllers
             if (oproducto.id_producto == 0)
             {
                 int idProductoGenerado = new CN_Producto().Registrar(oproducto, out Mensaje);
-
                 if (idProductoGenerado != 0)
                 {
-                   oproducto.id_producto = idProductoGenerado;
+                    oproducto.id_producto = idProductoGenerado;
                 }
                 else
                 {
                     operacion_exitosa = false;
                 }
-
-
-
             }
             else
             {
                 operacion_exitosa = new CN_Producto().Editar(oproducto, out Mensaje);
             }
 
-            if (operacion_exitosa)
+            if (operacion_exitosa && archivoImagen != null)
             {
-                if (archivoImagen != null)
+                string ruta_guardar = ConfigurationManager.AppSettings["ServidorFotos"];
+                string extension = Path.GetExtension(archivoImagen.FileName);
+                string nombre_imagen = string.Concat(oproducto.id_producto.ToString(), extension);
+
+                try
                 {
-                    string ruta_guardar = ConfigurationManager.AppSettings["ServidorFotos"];
-                    string extension = Path.GetExtension(archivoImagen.FileName);
-                    string nombre_imagen = string.Concat(oproducto.id_producto.ToString(), extension);
+                    archivoImagen.SaveAs(Path.Combine(ruta_guardar, nombre_imagen));
+                }
+                catch (Exception ex)
+                {
+                    guardar_imagen_exito = false;
+                    Mensaje = "Se guardó el producto pero hubo problemas con la imagen: " + ex.Message;
+                }
 
-                    try
-                    {
-                        archivoImagen.SaveAs(Path.Combine(ruta_guardar, nombre_imagen));
-                    }
-                    catch (Exception ex)
-                    {
-                        //string mensaje_error = ex.Message;
-                        guardar_imagen_exito = false;
-                        Mensaje = "Se guardó el producto pero hubo problemas con la imagen: " + ex.Message;
-                    }
-
-                    if (guardar_imagen_exito)
-                    {
-                        oproducto.ruta_imagen = ruta_guardar;
-                        oproducto.nombre_imagen = nombre_imagen;
-                        bool rspta = new CN_Producto().GuardarDatosImagen(oproducto, out Mensaje);
-                    }
-                    else
-                    {
-                        Mensaje = "Se guardo el producto pero hubo problemas con la imagen";
-
-                    }
-
+                if (guardar_imagen_exito)
+                {
+                    oproducto.ruta_imagen = ruta_guardar;
+                    oproducto.nombre_imagen = nombre_imagen;
+                    new CN_Producto().GuardarDatosImagen(oproducto, out Mensaje);
                 }
             }
-
-
 
             return Json(new { operacionExitosa = operacion_exitosa, idgenerado = oproducto.id_producto, mensaje = Mensaje }, JsonRequestBehavior.AllowGet);
         }

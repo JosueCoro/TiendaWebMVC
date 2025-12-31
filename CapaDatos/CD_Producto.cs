@@ -17,13 +17,12 @@ namespace CapaDatos
         public List<Producto> Listar()
         {
             List<Producto> lista = new List<Producto>();
-
             try
             {
                 using (SqlConnection oconexion = new SqlConnection(Conexion.cn))
                 {
                     StringBuilder sb = new StringBuilder();
-                    sb.AppendLine("SELECT P.id_producto, P.nombre, P.descripcion,");
+                    sb.AppendLine("SELECT P.id_producto, P.nombre, P.descripcion, P.codigo_barra,"); // Se agrega codigo_barra
                     sb.AppendLine("S.id_stock, S.cantidad AS stock_actual,");
                     sb.AppendLine("T.id_tienda, T.nombre AS nombre_tienda,");
                     sb.AppendLine("C.id_categoria, C.descripcion AS DesCategoria,");
@@ -36,14 +35,9 @@ namespace CapaDatos
                     sb.AppendLine("INNER JOIN INVENTARIO.CATEGORIA C ON C.id_categoria = P.CATEGORIA_id_categoria");
                     sb.AppendLine("INNER JOIN INVENTARIO.MARCA M ON M.id_marca = P.MARCA_id_marca");
                     sb.AppendLine("INNER JOIN INVENTARIO.UNIDAD_MEDIDA U ON U.id_unidad_medida = P.UNIDAD_MEDIDA_id_unidad_medida");
-                    //sb.AppendLine("WHERE T.id_tienda = @id_tienda");
 
                     SqlCommand cmd = new SqlCommand(sb.ToString(), oconexion);
                     cmd.CommandType = CommandType.Text;
-
-                    //int id_tienda_activa = user_Activo.id_tienda_user;
-                    //cmd.Parameters.AddWithValue("@id_tienda", id_tienda_activa);
-
                     oconexion.Open();
 
                     using (SqlDataReader dr = cmd.ExecuteReader())
@@ -55,6 +49,7 @@ namespace CapaDatos
                                 id_producto = Convert.ToInt32(dr["id_producto"]),
                                 nombre = dr["nombre"].ToString(),
                                 descripcion = dr["descripcion"].ToString(),
+                                codigo_barra = dr["codigo_barra"].ToString(), // Mapeo de la nueva columna
                                 oStock = new Stock()
                                 {
                                     id_stock = dr["id_stock"] != DBNull.Value ? Convert.ToInt32(dr["id_stock"]) : 0,
@@ -89,69 +84,14 @@ namespace CapaDatos
                     }
                 }
             }
-            catch
-            {
-                lista = new List<Producto>();
-            }
-
+            catch { lista = new List<Producto>(); }
             return lista;
         }
 
 
-        /*CREATE PROCEDURE INVENTARIO.sp_RegistrarProducto
-        (
-            @nombre VARCHAR(150),
-            @descripcion VARCHAR(150),
-            @precio DECIMAL(30,3),
-            @ruta_imagen VARCHAR(100),
-            @nombre_imagen VARCHAR(100),
-            @estado BIT,
-            @MARCA_id_marca INT,
-            @CATEGORIA_id_categoria INT,
-            @UNIDAD_MEDIDA_id_unidad_medida INT,
-            @Mensaje VARCHAR(500) OUTPUT,
-            @Resultado INT OUTPUT
-        )
-        AS
-        BEGIN
-            SET @Resultado = 0
 
-            IF NOT EXISTS (SELECT * FROM INVENTARIO.PRODUCTO WHERE nombre = @nombre)
-            BEGIN
-                INSERT INTO INVENTARIO.PRODUCTO
-                (
-                    nombre,
-                    descripcion,
-                    precio,
-                    ruta_imagen,
-                    nombre_imagen,
-                    estado,
-                    MARCA_id_marca,
-                    CATEGORIA_id_categoria,
-                    UNIDAD_MEDIDA_id_unidad_medida
-                )
-                VALUES
-                (
-                    @nombre,
-                    @descripcion,
-                    @precio,
-                    @ruta_imagen,
-                    @nombre_imagen,
-                    @estado,
-                    @MARCA_id_marca,
-                    @CATEGORIA_id_categoria,
-                    @UNIDAD_MEDIDA_id_unidad_medida
-                )
 
-                SET @Resultado = SCOPE_IDENTITY()
-                SET @Mensaje = 'Producto registrado exitosamente.'
-            END
-            ELSE
-            BEGIN
-                SET @Mensaje = 'El producto ya existe.'
-            END
-        END
-        GO*/
+
         public int Registrar(Producto obj, out string Mensaje)
         {
             int id_autogenerado = 0;
@@ -170,13 +110,14 @@ namespace CapaDatos
                     cmd.Parameters.AddWithValue("@MARCA_id_marca", obj.MARCA_id_marca);
                     cmd.Parameters.AddWithValue("@CATEGORIA_id_categoria", obj.CATEGORIA_id_categoria);
                     cmd.Parameters.AddWithValue("@UNIDAD_MEDIDA_id_unidad_medida", obj.UNIDAD_MEDIDA_id_unidad_medida);
+                    cmd.Parameters.AddWithValue("@codigo_barra", obj.codigo_barra); // Nuevo parámetro enviado al SP
                     cmd.Parameters.Add("@Mensaje", SqlDbType.VarChar, 500).Direction = ParameterDirection.Output;
                     cmd.Parameters.Add("@Resultado", SqlDbType.Int).Direction = ParameterDirection.Output;
                     cmd.CommandType = CommandType.StoredProcedure;
 
                     oconexion.Open();
-
                     cmd.ExecuteNonQuery();
+
                     id_autogenerado = Convert.ToInt32(cmd.Parameters["@Resultado"].Value);
                     Mensaje = cmd.Parameters["@Mensaje"].Value.ToString();
                 }
@@ -188,54 +129,8 @@ namespace CapaDatos
             }
             return id_autogenerado;
         }
-        /*CREATE PROCEDURE INVENTARIO.sp_EditarProducto
-        (
-            @id_producto INT,
-            @nombre VARCHAR(150),
-            @descripcion VARCHAR(150),
-            @precio DECIMAL(30,3),
-            @ruta_imagen VARCHAR(100),
-            @nombre_imagen VARCHAR(100),
-            @estado BIT,
-            @MARCA_id_marca INT,
-            @CATEGORIA_id_categoria INT,
-            @UNIDAD_MEDIDA_id_unidad_medida INT,
-            @Mensaje VARCHAR(500) OUTPUT,
-            @Resultado BIT OUTPUT
-        )
-        AS
-        BEGIN
-            SET @Resultado = 0
 
-            IF NOT EXISTS (
-                SELECT *
-                FROM INVENTARIO.PRODUCTO
-                WHERE nombre = @nombre
-                  AND id_producto != @id_producto
-            )
-            BEGIN
-                UPDATE INVENTARIO.PRODUCTO
-                SET
-                    nombre = @nombre,
-                    descripcion = @descripcion,
-                    precio = @precio,
-                    ruta_imagen = @ruta_imagen,
-                    nombre_imagen = @nombre_imagen,
-                    estado = @estado,
-                    MARCA_id_marca = @MARCA_id_marca,
-                    CATEGORIA_id_categoria = @CATEGORIA_id_categoria,
-                    UNIDAD_MEDIDA_id_unidad_medida = @UNIDAD_MEDIDA_id_unidad_medida
-                WHERE id_producto = @id_producto
-
-                SET @Resultado = 1
-                SET @Mensaje = 'Producto actualizado exitosamente.'
-            END
-            ELSE
-            BEGIN
-                SET @Mensaje = 'El producto ya existe con ese nombre.'
-            END
-        END
-        GO*/
+        
         public bool Editar(Producto obj, out string Mensaje)
         {
             bool resultado = false;
@@ -255,11 +150,14 @@ namespace CapaDatos
                     cmd.Parameters.AddWithValue("@MARCA_id_marca", obj.MARCA_id_marca);
                     cmd.Parameters.AddWithValue("@CATEGORIA_id_categoria", obj.CATEGORIA_id_categoria);
                     cmd.Parameters.AddWithValue("@UNIDAD_MEDIDA_id_unidad_medida", obj.UNIDAD_MEDIDA_id_unidad_medida);
+                    cmd.Parameters.AddWithValue("@codigo_barra", obj.codigo_barra); // Nuevo parámetro enviado al SP
                     cmd.Parameters.Add("@Mensaje", SqlDbType.VarChar, 500).Direction = ParameterDirection.Output;
                     cmd.Parameters.Add("@Resultado", SqlDbType.Int).Direction = ParameterDirection.Output;
                     cmd.CommandType = CommandType.StoredProcedure;
+
                     oconexion.Open();
                     cmd.ExecuteNonQuery();
+
                     resultado = Convert.ToBoolean(cmd.Parameters["@Resultado"].Value);
                     Mensaje = cmd.Parameters["@Mensaje"].Value.ToString();
                 }
@@ -270,7 +168,6 @@ namespace CapaDatos
                 Mensaje = ex.Message;
             }
             return resultado;
-
         }
 
 
@@ -312,31 +209,8 @@ namespace CapaDatos
 
         }
 
-        /*CREATE PROCEDURE INVENTARIO.sp_EliminarProducto
-        (
-            @id_producto INT,
-            @Mensaje VARCHAR(500) OUTPUT,
-            @Resultado BIT OUTPUT
-        )
-        AS
-        BEGIN
-            SET @Resultado = 0
 
-            IF EXISTS (SELECT * FROM INVENTARIO.PRODUCTO WHERE id_producto = @id_producto)
-            BEGIN
-                UPDATE INVENTARIO.PRODUCTO
-                SET estado = 0
-                WHERE id_producto = @id_producto
 
-                SET @Resultado = 1
-                SET @Mensaje = 'Producto desactivado exitosamente.'
-            END
-            ELSE
-            BEGIN
-                SET @Mensaje = 'El producto no existe.'
-            END
-        END
-        GO*/
         public bool Eliminar(int id, out string Mensaje)
         {
             bool resultado = false;

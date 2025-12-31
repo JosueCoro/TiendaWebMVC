@@ -6,20 +6,7 @@ using System.Threading.Tasks;
 
 namespace CapaEntidad
 {
-    //CREATE TABLE INVENTARIO.PRODUCTO 
-    //(
-     //id_producto INTEGER NOT NULL IDENTITY(1,1), 
-     //nombre VARCHAR(150) NOT NULL,
-     //descripcion VARCHAR(150) , 
-     //precio DECIMAL(30,3) NOT NULL,
-     //unidad_medida VARCHAR(50) NOT NULL,
-     //ruta_imagen VARCHAR(100) NOT NULL,
-     //nombre_imagen VARCHAR(100) NOT NULL,
-     //estado BIT DEFAULT 1 NOT NULL,
-     //MARCA_id_marca INTEGER , 
-     //CATEGORIA_id_categoria INTEGER NOT NULL
-    //)
-    //GO
+    
     public class Producto
     {
         public int id_producto { get; set; }
@@ -31,6 +18,7 @@ namespace CapaEntidad
         public bool estado { get; set; }
         public string Base64 { get; set; }
         public string Extension { get; set; }
+        public string codigo_barra { get; set; }
 
         public Marca oMarca { get; set; }
         public Categoria oCategoria { get; set; }

@@ -3,133 +3,156 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<!-- Librerías Externas -->
+<script src="https://unpkg.com/html5-qrcode"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.7/dist/loadingoverlay.min.js"></script>
-
 
 <ol class="breadcrumb mb-4 mt-4">
     <li class="breadcrumb-item"><a href="@Url.Action("Index","Home")">Resumen</a></li>
     <li class="breadcrumb-item active">Registro de Venta</li>
 </ol>
 
-<div class="card">
-    <div class="card-header">
-        <i class="fas fa-cash-register"></i> Registro de Venta
+<div class="card shadow-sm">
+    <div class="card-header bg-white">
+        <i class="fas fa-cash-register"></i> <b>Registro de Venta</b>
     </div>
     <div class="card-body">
         <form id="formRegistroVenta">
-            @*<input id="txtidTIENDA" type="hidden" value="1" />
-            <input id="txtidUSUARIO" type="hidden" value="6" />*@
-
+            <!-- Sección Cliente y Pago -->
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <label class="form-label">Cliente</label>
+                    <label class="form-label font-weight-bold">Cliente</label>
                     <div class="input-group">
                         <input type="hidden" id="txtIdClienteSeleccionado" value="0" />
                         <input type="text" class="form-control" id="txtNombreClienteSeleccionado" placeholder="Seleccione un cliente" readonly />
                         <button type="button" class="btn btn-primary" id="btnAbrirModalClientes">
-                            <i class="fas fa-search"></i> Buscar Cliente
+                            <i class="fas fa-search"></i> Buscar
                         </button>
                     </div>
                 </div>
                 <div class="col-sm-6">
-                    <label class="form-label">Tipo de Pago</label>
-                    <select id="cboTP" class="form-select">
-                    </select>
+                    <label class="form-label font-weight-bold">Tipo de Pago</label>
+                    <select id="cboTP" class="form-select"></select>
                 </div>
             </div>
+
             <hr />
+
+            <!-- Sección de Selección de Ítems -->
             <div class="row mb-3">
                 <div class="col-sm-6">
-                    <label class="form-label">Producto / Servicio</label>
+                    <label class="form-label text-success font-weight-bold">Producto / Servicio</label>
                     <div class="input-group">
                         <input type="hidden" id="txtIdItemSeleccionado" value="0" />
                         <input type="hidden" id="txtTipoItemSeleccionado" value="" />
-                        <input type="text" class="form-control" id="txtNombreItemSeleccionado" placeholder="Seleccione un producto o servicio" readonly />
+                        <input type="text" class="form-control" id="txtNombreItemSeleccionado" placeholder="Escanear o buscar ítem..." readonly />
+
+                        <!-- BOTÓN DE CÁMARA -->
+                        <button class="btn btn-info text-white" type="button" title="Escanear Código" onclick="abrirEscaner()">
+                            <i class="fas fa-camera"></i>
+                        </button>
+
                         <button type="button" class="btn btn-primary" id="btnAbrirModalItems">
-                            <i class="fas fa-search"></i> Buscar Ítem
+                            <i class="fas fa-search"></i>
                         </button>
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <label for="txtCantidad" class="form-label">Cantidad</label>
-                    <input type="number" class="form-control" id="txtCantidad" value="1" min="1" required>
+                    <label for="txtCantidad" class="form-label font-weight-bold">Cantidad</label>
+                    <input type="number" class="form-control" id="txtCantidad" value="1" min="1">
                 </div>
                 <div class="col-md-3">
-                    <label for="txtPrecioUnitario" class="form-label">Precio Unitario</label>
+                    <label for="txtPrecioUnitario" class="form-label font-weight-bold">Precio Unitario</label>
                     <div class="input-group">
-                        <span class="input-group-text">Bs./</span>
-                        <input type="text" class="form-control" id="txtPrecioUnitario" value="0.00" required>
+                        <span class="input-group-text">Bs.</span>
+                        <input type="text" class="form-control" id="txtPrecioUnitario" value="0.00">
                     </div>
                 </div>
             </div>
+
             <div class="row">
-                <div class="col-12">
-                    <button type="button" class="btn btn-success" id="btnAgregarItem">Agregar a Venta</button>
+                <div class="col-12 text-end">
+                    <button type="button" class="btn btn-success" id="btnAgregarItem">
+                        <i class="fas fa-plus"></i> Agregar a Venta
+                    </button>
                 </div>
             </div>
         </form>
 
         <hr />
 
+        <!-- Detalle de la Venta -->
         <div class="row mt-4">
             <div class="col-12">
-                <h4>Detalle de la Venta</h4>
-                <table id="tablaDetalleVenta" class="table table-striped table-bordered" style="width:100%">
-                    <thead>
+                <h5 class="border-bottom pb-2">Detalle de la Venta</h5>
+                <table id="tablaDetalleVenta" class="table table-sm table-striped table-bordered" style="width:100%">
+                    <thead class="table-dark">
                         <tr>
                             <th>Tipo</th>
                             <th>Ítem</th>
                             <th>Cantidad</th>
-                            <th>Precio Unitario</th>
+                            <th>Precio Unit.</th>
                             <th>Subtotal</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
-                    <tbody>
-                    </tbody>
+                    <tbody></tbody>
                 </table>
             </div>
         </div>
 
+        <!-- Totales -->
         <div class="row mt-3">
             <div class="col-md-8"></div>
             <div class="col-md-4">
-                <div class="input-group">
-                    <span class="input-group-text">Total: Bs./</span>
-                    <input type="text" class="form-control" id="txtTotalVenta" value="0.00" readonly>
-                </div>
-            </div>
-        </div>
-        <div class="row mt-3">
-            <div class="col-12">
-                <div id="mensajeError" class="alert alert-danger" role="alert" style="display: none;">
+                <div class="input-group input-group-lg">
+                    <span class="input-group-text bg-primary text-white font-weight-bold">Total Bs.</span>
+                    <input type="text" class="form-control text-end fw-bold" id="txtTotalVenta" value="0.00" readonly>
                 </div>
             </div>
         </div>
 
         <div class="row mt-4">
             <div class="col-12">
-                <button type="button" class="btn btn-primary" id="btnRegistrarVenta">Registrar Venta</button>
+                <div id="mensajeError" class="alert alert-danger" role="alert" style="display: none;"></div>
+                <button type="button" class="btn btn-primary btn-lg w-100" id="btnRegistrarVenta">
+                    <i class="fas fa-shopping-cart"></i> FINALIZAR REGISTRO DE VENTA
+                </button>
             </div>
         </div>
     </div>
 </div>
-@*Modal para el cliente*@
-<div class="modal fade" id="modalBuscarCliente" tabindex="-1" aria-labelledby="modalBuscarClienteLabel" aria-hidden="true" data-bs-backdrop="static">
+
+<!-- Modal para el Escáner de Cámara -->
+<div class="modal fade" id="ScannerModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title"><i class="fas fa-barcode"></i> Escaneando Producto</h5>
+                <button type="button" class="btn-close" onclick="cerrarEscaner()"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div id="reader" style="width: 100%; min-height: 250px; background-color: #000;"></div>
+                <div id="scanner-info" class="text-center py-2 text-muted small">
+                    Enfoque el código de barras frente a la cámara
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary w-100" onclick="cerrarEscaner()">Cerrar Cámara</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Clientes -->
+<div class="modal fade" id="modalBuscarCliente" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header bg-dark text-white">
-                <h5 class="modal-title" id="modalBuscarClienteLabel">Buscar Cliente</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title">Buscar Cliente</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <div class="input-group mb-3">
-                    <input type="text" class="form-control" id="txtBuscarClienteModal" placeholder="Escriba el nombre o apellido del cliente..." />
-                    <button type="button" class="btn btn-outline-secondary" id="btnFiltrarClienteModal">
-                        <i class="fas fa-filter"></i> Filtrar
-                    </button>
-                </div>
                 <table id="tablaClientesModal" class="display cell-border" style="width:100%">
                     <thead>
                         <tr>
@@ -137,55 +160,40 @@
                             <th>Nombres</th>
                             <th>Apellidos</th>
                             <th>Teléfono</th>
-                            <th>Correo</th>
                             <th>Estado</th>
                             <th></th>
                         </tr>
                     </thead>
-                    <tbody>
-                    </tbody>
+                    <tbody></tbody>
                 </table>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
             </div>
         </div>
     </div>
 </div>
 
-<div class="modal fade" id="modalBuscarItem" tabindex="-1" aria-labelledby="modalBuscarItemLabel" aria-hidden="true" data-bs-backdrop="static">
+<!-- Modal Ítems -->
+<div class="modal fade" id="modalBuscarItem" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header bg-dark text-white">
-                <h5 class="modal-title" id="modalBuscarItemLabel">Buscar Producto o Servicio</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title">Buscar Producto o Servicio</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <div class="input-group mb-3">
-                    <input type="text" class="form-control" id="txtBuscarItemModal" placeholder="Escriba el nombre del producto o servicio..." />
-                    <button type="button" class="btn btn-outline-secondary" id="btnFiltrarItemModal">
-                        <i class="fas fa-filter"></i> Filtrar
-                    </button>
-                </div>
                 <table id="tablaItemsModal" class="display cell-border" style="width:100%">
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            <th>Código</th>
                             <th>Tipo</th>
                             <th>Nombre</th>
                             <th>Descripción</th>
                             <th>Precio</th>
-                            <th>Unidad de medida</th>
                             <th>Estado</th>
                             <th></th>
                         </tr>
                     </thead>
-                    <tbody>
-                    </tbody>
+                    <tbody></tbody>
                 </table>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
             </div>
         </div>
     </div>
@@ -193,451 +201,242 @@
 
 @section Scripts {
     <script>
-        var listaClientesGlobal = []; 
-        var listaProductosGlobal = []; 
-        var listaServiciosGlobal = [];
+        var listaClientesGlobal = [];
         var listaItemsGlobal = [];
+        var tablaDetalleVenta;
+        var tablaClientesModal;
+        var tablaItemsModal;
+        var html5QrCode;
 
-        var tablaDetalleVenta; 
-        var tablaClientesModal; 
-        var tablaItemsModal; 
+        // --- LÓGICA DEL ESCÁNER ---
+        function abrirEscaner() {
+            $('#ScannerModal').modal('show');
+            setTimeout(() => {
+                html5QrCode = new Html5Qrcode("reader");
+                const config = { fps: 15, qrbox: { width: 300, height: 150 } };
 
-        tablaDetalleVenta = $('#tablaDetalleVenta').DataTable({
-            responsive: true,
-            ordering: false,
-            "columns": [
-                { "data": "tipo_item" },
-                { "data": "nombreItem" },
-                { "data": "cantidad" },
-                {
-                    "data": "precio",
-                    "render": function (data) {
-                        return 'Bs./ ' + parseFloat(data).toFixed(2);
+                html5QrCode.start(
+                    { facingMode: "environment" },
+                    config,
+                    (decodedText) => {
+                        buscarProductoPorBarra(decodedText);
+                        cerrarEscaner();
                     }
-                },
-                {
-                    "data": "sub_total",
-                    "render": function (data) {
-                        return 'Bs./ ' + parseFloat(data).toFixed(2);
-                    }
-                },
-                {
-                    "defaultContent": '<button type="button" class="btn btn-danger btn-sm btn-eliminar-detalle"><i class="fas fa-trash-alt"></i></button>',
-                    "orderable": false,
-                    "searchable": false,
-                    "width": "80px"
-                }
-            ],
-            "language": {
-                "url": '//cdn.datatables.net/plug-ins/2.2.1/i18n/es-ES.json',
-            },
-            "paging": false, 
-            "info": false,   
-            "searching": false 
+                ).catch(err => { console.error("Error cámara:", err); });
+            }, 500);
+        }
+
+        function cerrarEscaner() {
+            if (html5QrCode && html5QrCode.isScanning) {
+                html5QrCode.stop().then(() => { $('#ScannerModal').modal('hide'); });
+            } else {
+                $('#ScannerModal').modal('hide');
+            }
+        }
+
+        function buscarProductoPorBarra(codigo) {
+            const item = listaItemsGlobal.find(i => i.codigo_barra === codigo && i.tipo_item === 'PRODUCTO');
+
+            if (item) {
+                $("#txtIdItemSeleccionado").val(item.id);
+                $("#txtTipoItemSeleccionado").val(item.tipo_item);
+                $("#txtNombreItemSeleccionado").val(item.nombre);
+                $("#txtPrecioUnitario").val(parseFloat(item.precio).toFixed(2));
+                $("#txtCantidad").val("1").focus();
+
+                Swal.fire({
+                    toast: true, position: 'top-end', icon: 'success',
+                    title: 'Detectado: ' + item.nombre, showConfirmButton: false, timer: 2000
+                });
+            } else {
+                Swal.fire("No encontrado", "El código [" + codigo + "] no está registrado.", "warning");
+            }
+        }
+
+        // --- INICIALIZACIÓN ---
+        $(document).ready(function () {
+            tablaDetalleVenta = $('#tablaDetalleVenta').DataTable({
+                responsive: true, ordering: false, paging: false, info: false, searching: false,
+                columns: [
+                    { "data": "tipo_item" },
+                    { "data": "nombreItem" },
+                    { "data": "cantidad" },
+                    { "data": "precio", render: function(d) { return 'Bs. ' + parseFloat(d).toFixed(2); } },
+                    { "data": "sub_total", render: function(d) { return 'Bs. ' + parseFloat(d).toFixed(2); } },
+                    { "defaultContent": '<button class="btn btn-danger btn-sm btn-eliminar-detalle"><i class="fas fa-trash"></i></button>', "width": "40px" }
+                ]
+            });
+
+            cargarDatosIniciales();
         });
 
-        
-        jQuery.ajax({
-            url: '@Url.Action("ListarClientes", "Operaciones")',
-            type: 'GET',
-            dataType: 'json',
-            contentType: 'application/json; charset=utf-8',
-            success: function (data) {
-                listaClientesGlobal = data.data; 
-
+        function cargarDatosIniciales() {
+            $.get('@Url.Action("ListarClientes", "Operaciones")', function (res) {
+                listaClientesGlobal = res.data;
                 tablaClientesModal = $('#tablaClientesModal').DataTable({
                     data: listaClientesGlobal,
-                    responsive: true,
-                    ordering: false,
-                    "columns": [
+                    columns: [
                         { "data": "id_cliente" },
                         { "data": "nombres" },
                         { "data": "apellidos" },
                         { "data": "telefono" },
-                        { "data": "correo" },
+                        { "data": "estado", render: function(v){ return v ? '<span class="badge bg-success">Activo</span>' : '<span class="badge bg-danger">Inactivo</span>'; } },
+                        { "defaultContent": '<button class="btn btn-primary btn-sm btn-seleccionar-cliente">Seleccionar</button>' }
+                    ]
+                });
+            });
+
+            $.get('@Url.Action("ListarTP", "Mantenedor")', function (res) {
+                $.each(res.data, function (i, v) { $("<option>").val(v.id_tipo_pago).text(v.descripcion).appendTo("#cboTP"); });
+            });
+
+            $.when(
+                $.get('@Url.Action("ListarProductos", "Mantenedor")'),
+                $.get('@Url.Action("ListarServicios", "Mantenedor")')
+            ).done(function (r1, r2) {
+                listaItemsGlobal = [];
+                $.each(r1[0].data, function (i, p) {
+                    listaItemsGlobal.push({
+                        id: p.id_producto, tipo_item: 'PRODUCTO', nombre: p.nombre,
+                        descripcion: p.descripcion, precio: p.precio, estado: p.estado,
+                        codigo_barra: p.codigo_barra, oUnidadMedida: p.oUnidadMedida
+                    });
+                });
+                $.each(r2[0].data, function (i, s) {
+                    listaItemsGlobal.push({
+                        id: s.id_servicio, tipo_item: 'SERVICIO', nombre: s.nombre,
+                        descripcion: s.descripcion, precio: s.precio, estado: s.estado,
+                        codigo_barra: '' // Vacío para servicios
+                    });
+                });
+
+                tablaItemsModal = $('#tablaItemsModal').DataTable({
+                    data: listaItemsGlobal,
+                    columns: [
                         {
-                            "data": "estado",
-                            "render": function (valor) {
-                                return valor ? '<span class="badge bg-success">Activo</span>' : '<span class="badge bg-danger">Inactivo</span>';
+                            "data": "codigo_barra",
+                            "render": function (data, type, row) {
+                                return row.tipo_item === 'PRODUCTO' ? (data || '') : '';
                             }
                         },
-                        {
-                            "defaultContent": '<button type="button" class="btn btn-success btn-sm btn-seleccionar-cliente"><i class="fas fa-check"></i> Seleccionar</button>',
-                            "orderable": false,
-                            "searchable": false,
-                            "width": "100px"
-                        }
-                    ],
-                    "language": {
-                        "url": '//cdn.datatables.net/plug-ins/2.2.1/i18n/es-ES.json',
-                    },
-                    "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Todos"]]
-                });
-            },
-            error: function (error) {
-                console.log("Error al cargar clientes:", error);
-            }
-        });
-
-        $.when(
-            jQuery.ajax({
-                url: '@Url.Action("ListarProductos", "Mantenedor")',
-                type: 'GET',
-                dataType: 'json',
-                contentType: 'application/json; charset=utf-8'
-            }),
-            jQuery.ajax({
-                url: '@Url.Action("ListarServicios", "Mantenedor")', 
-                type: 'GET',
-                dataType: 'json',
-                contentType: 'application/json; charset=utf-8'
-            })
-        ).done(function (productosResponse, serviciosResponse) {
-            listaProductosGlobal = productosResponse[0].data;
-            listaServiciosGlobal = serviciosResponse[0].data;
-
-            listaItemsGlobal = [];
-            $.each(listaProductosGlobal, function (index, p) {
-                listaItemsGlobal.push({
-                    id: p.id_producto,
-                    tipo_item: 'PRODUCTO',
-                    nombre: p.nombre,
-                    descripcion: p.descripcion,
-                    precio: p.precio,
-                    estado: p.estado,
-                    oUnidadMedida: p.oUnidadMedida 
+                        { "data": "tipo_item" },
+                        { "data": "nombre" },
+                        { "data": "descripcion" },
+                        { "data": "precio", render: function(d){ return 'Bs. ' + parseFloat(d).toFixed(2); } },
+                        { "data": "estado", render: function(v){ return v ? '<span class="badge bg-success">Activo</span>' : '<span class="badge bg-danger">Inactivo</span>'; } },
+                        { "defaultContent": '<button class="btn btn-primary btn-sm btn-seleccionar-item">Seleccionar</button>' }
+                    ]
                 });
             });
-            $.each(listaServiciosGlobal, function (index, s) {
-                listaItemsGlobal.push({
-                    id: s.id_servicio,
-                    tipo_item: 'SERVICIO',
-                    nombre: s.nombre,
-                    descripcion: s.descripcion,
-                    precio: s.precio,
-                    estado: s.estado
-                });
-            });
-
-            tablaItemsModal = $('#tablaItemsModal').DataTable({
-                data: listaItemsGlobal,
-                responsive: true,
-                ordering: false,
-                "columns": [
-                    { "data": "id" },
-                    { "data": "tipo_item" },
-                    { "data": "nombre" },
-                    { "data": "descripcion" },
-                    {
-                        "data": "precio",
-                        "render": function (data) {
-                            return 'Bs./ ' + parseFloat(data).toFixed(2);
-                        }
-                    },
-                    { 
-                        "data": null, 
-                        "render": function (data, type, row) {
-                            if (row.tipo_item === 'PRODUCTO' && row.oUnidadMedida && row.oUnidadMedida.descripcion) {
-                                return row.oUnidadMedida.descripcion;
-                            } else if (row.tipo_item === 'SERVICIO') {
-                                return 'No corresponde';
-                            }
-                            return ''; 
-                        },
-                        "orderable": false,
-                        "searchable": false
-                    },
-                    {
-                        "data": "estado",
-                        "render": function (valor) {
-                            return valor ? '<span class="badge bg-success">Activo</span>' : '<span class="badge bg-danger">Inactivo</span>';
-                        }
-                    },
-                    {
-                        "defaultContent": '<button type="button" class="btn btn-success btn-sm btn-seleccionar-item"><i class="fas fa-check"></i> Seleccionar</button>',
-                        "orderable": false,
-                        "searchable": false,
-                        "width": "100px"
-                    }
-                ],
-                "language": {
-                    "url": '//cdn.datatables.net/plug-ins/2.2.1/i18n/es-ES.json',
-                },
-                "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Todos"]]
-            });
-        }).fail(function (error) {
-            console.log("Error al cargar productos o servicios:", error);
-        });
-
-
-        jQuery.ajax({
-            url: '@Url.Action("ListarTP", "Mantenedor")',
-            type: 'GET',
-            dataType: 'json',
-            contentType: 'application/json; charset=utf-8',
-            success: function (data) {
-                $.each(data.data, function (index, valor) {
-                    $("<option>").attr("value", valor.id_tipo_pago).text(valor.descripcion).appendTo("#cboTP");
-                });
-            },
-            error: function (error) {
-                console.log("Error al cargar tipos de pago:", error);
-            }
-        });
-
-        
-        function mostrarMensajeError(mensaje) {
-            $("#mensajeError").text(mensaje);
-            $("#mensajeError").show();
         }
 
-        function ocultarMensajeError() {
-            $("#mensajeError").hide();
-        }
-
-        function calcularTotalVenta() {
-            let total = 0;
-            tablaDetalleVenta.rows().every(function () {
-                let data = this.data();
-                total += parseFloat(data.sub_total);
-            });
-            $("#txtTotalVenta").val(total.toFixed(2));
-        }
-
-        function limpiarFormularioVenta() {
-            $("#txtIdClienteSeleccionado").val("0");
-            $("#txtNombreClienteSeleccionado").val("");
-            //$("#cboTP").val("");
-            $("#txtIdItemSeleccionado").val("0");
-            $("#txtTipoItemSeleccionado").val("");
-            $("#txtNombreItemSeleccionado").val("");
-            $("#txtCantidad").val("1");
-            $("#txtPrecioUnitario").val("0.00");
-            tablaDetalleVenta.clear().draw(); 
-            calcularTotalVenta(); 
-            ocultarMensajeError();
-        }
-
-       
-        //clientes
-        $("#btnAbrirModalClientes").on("click", function () {
-            $("#txtBuscarClienteModal").val("");
-            tablaClientesModal.search('').columns().search('').draw(); 
-            $('#modalBuscarCliente').modal('show');
-        });
-
-        $("#txtBuscarClienteModal").on("keyup", function () {
-            tablaClientesModal.search($(this).val()).draw();
-        });
-
-        $("#btnFiltrarClienteModal").on("click", function () {
-            tablaClientesModal.search($("#txtBuscarClienteModal").val()).draw();
-        });
+        $("#btnAbrirModalClientes").click(() => $('#modalBuscarCliente').modal('show'));
+        $("#btnAbrirModalItems").click(() => $('#modalBuscarItem').modal('show'));
 
         $('#tablaClientesModal tbody').on('click', '.btn-seleccionar-cliente', function () {
-            let data = tablaClientesModal.row($(this).parents('tr')).data();
-
-            $("#txtIdClienteSeleccionado").val(data.id_cliente);
-            $("#txtNombreClienteSeleccionado").val(data.nombres + " " + (data.apellidos || ""));
-
+            let d = tablaClientesModal.row($(this).parents('tr')).data();
+            $("#txtIdClienteSeleccionado").val(d.id_cliente);
+            $("#txtNombreClienteSeleccionado").val(d.nombres + " " + (d.apellidos || ""));
             $('#modalBuscarCliente').modal('hide');
         });
 
-        $("#btnAbrirModalItems").on("click", function () {
-            $("#txtBuscarItemModal").val("");
-            tablaItemsModal.search('').columns().search('').draw();
-            $('#modalBuscarItem').modal('show');
-        });
-
-        $("#txtBuscarItemModal").on("keyup", function () {
-            tablaItemsModal.search($(this).val()).draw();
-        });
-
-        $("#btnFiltrarItemModal").on("click", function () {
-            tablaItemsModal.search($("#txtBuscarItemModal").val()).draw();
-        });
-
         $('#tablaItemsModal tbody').on('click', '.btn-seleccionar-item', function () {
-            let data = tablaItemsModal.row($(this).parents('tr')).data();
-
-            $("#txtIdItemSeleccionado").val(data.id);
-            $("#txtTipoItemSeleccionado").val(data.tipo_item);
-            $("#txtNombreItemSeleccionado").val(data.nombre);
-            $("#txtPrecioUnitario").val(parseFloat(data.precio).toFixed(2));
-            $("#txtCantidad").val("1");
-
+            let d = tablaItemsModal.row($(this).parents('tr')).data();
+            $("#txtIdItemSeleccionado").val(d.id);
+            $("#txtTipoItemSeleccionado").val(d.tipo_item);
+            $("#txtNombreItemSeleccionado").val(d.nombre);
+            $("#txtPrecioUnitario").val(parseFloat(d.precio).toFixed(2));
             $('#modalBuscarItem').modal('hide');
         });
 
-        
         $("#btnAgregarItem").on("click", function () {
-            ocultarMensajeError();
+            let id = $("#txtIdItemSeleccionado").val();
+            let tipo = $("#txtTipoItemSeleccionado").val();
+            let cant = parseInt($("#txtCantidad").val());
+            let prec = parseFloat($("#txtPrecioUnitario").val());
 
-            let idItem = $("#txtIdItemSeleccionado").val();
-            let tipoItem = $("#txtTipoItemSeleccionado").val();
-            let nombreItem = $("#txtNombreItemSeleccionado").val();
-            let cantidad = parseInt($("#txtCantidad").val());
-            let precioUnitario = parseFloat($("#txtPrecioUnitario").val());
+            if (id == "0") { Swal.fire("Error", "Seleccione un producto o servicio", "error"); return; }
+            if (cant <= 0) { Swal.fire("Error", "Cantidad inválida", "error"); return; }
 
-            //validaciones
-            if (idItem === "" || idItem === "0" || tipoItem === "") {
-                mostrarMensajeError("Debe seleccionar un producto o servicio.");
-                return;
-            }
-            if (isNaN(cantidad) || cantidad <= 0) {
-                mostrarMensajeError("La cantidad debe ser un número mayor a cero.");
-                return;
-            }
-            if (isNaN(precioUnitario) || precioUnitario <= 0) {
-                mostrarMensajeError("El precio unitario debe ser un número mayor a cero.");
-                return;
-            }
+            tablaDetalleVenta.row.add({
+                id_item: id, tipo_item: tipo, nombreItem: $("#txtNombreItemSeleccionado").val(),
+                cantidad: cant, precio: prec, sub_total: (cant * prec),
+                PRODUCTO_id_producto: (tipo === 'PRODUCTO' ? parseInt(id) : null),
+                SERVICIO_id_servicio: (tipo === 'SERVICIO' ? parseInt(id) : null)
+            }).draw();
 
-            let itemYaEnTabla = false;
-            tablaDetalleVenta.rows().every(function () {
-                let data = this.data();
-                if (data.id_item == idItem && data.tipo_item == tipoItem) {
-                    itemYaEnTabla = true;
-                    return false;
-                }
-            });
-
-            if (itemYaEnTabla) {
-                mostrarMensajeError("El ítem (producto/servicio) ya ha sido agregado al detalle de la venta.");
-                return;
-            }
-
-            let subTotal = cantidad * precioUnitario;
-
-            let fila = {
-                id_item: idItem, 
-                tipo_item: tipoItem,
-                nombreItem: nombreItem,
-                cantidad: cantidad,
-                precio: precioUnitario,
-                sub_total: subTotal,
-                PRODUCTO_id_producto: (tipoItem === 'PRODUCTO' ? parseInt(idItem) : null),
-                SERVICIO_id_servicio: (tipoItem === 'SERVICIO' ? parseInt(idItem) : null)
-            };
-
-            tablaDetalleVenta.row.add(fila).draw();
-
-            calcularTotalVenta();
-
-            $("#txtIdItemSeleccionado").val("0");
-            $("#txtTipoItemSeleccionado").val("");
-            $("#txtNombreItemSeleccionado").val("");
-            $("#txtCantidad").val("1");
-            $("#txtPrecioUnitario").val("0.00");
+            calcularTotal();
+            resetItemFields();
         });
 
         $('#tablaDetalleVenta tbody').on('click', '.btn-eliminar-detalle', function () {
             tablaDetalleVenta.row($(this).parents('tr')).remove().draw();
-            calcularTotalVenta(); 
+            calcularTotal();
         });
 
+        function calcularTotal() {
+            let t = 0;
+            tablaDetalleVenta.rows().every(function () { t += this.data().sub_total; });
+            $("#txtTotalVenta").val(t.toFixed(2));
+        }
+
+        function resetItemFields() {
+            $("#txtIdItemSeleccionado").val("0");
+            $("#txtTipoItemSeleccionado").val("");
+            $("#txtNombreItemSeleccionado").val("");
+            $("#txtPrecioUnitario").val("0.00");
+            $("#txtCantidad").val("1");
+        }
+
         $("#btnRegistrarVenta").on("click", function () {
-            ocultarMensajeError();
+            let idCli = $("#txtIdClienteSeleccionado").val();
+            let idTP = $("#cboTP").val();
+            let total = parseFloat($("#txtTotalVenta").val());
 
-            let idCliente = $("#txtIdClienteSeleccionado").val();
-            let idTipoPago = $("#cboTP").val();
-            //let idUsuario = $("#txtidUSUARIO").val();
-            //let idTienda = $("#txtidTIENDA").val();
-            let montoTotal = parseFloat($("#txtTotalVenta").val());
-
-            if (idCliente === "" || idCliente === "0") {
-                mostrarMensajeError("Debe seleccionar un cliente.");
-                return;
-            }
-            if (idTipoPago === "" || idTipoPago === "0") {
-                mostrarMensajeError("Debe seleccionar un tipo de pago.");
-                return;
-            }
-            if (tablaDetalleVenta.rows().count() === 0) {
-                mostrarMensajeError("Debe agregar al menos un producto o servicio al detalle de la venta.");
-                return;
-            }
-            if (isNaN(montoTotal) || montoTotal <= 0) {
-                 mostrarMensajeError("El monto total de la venta debe ser mayor a cero.");
-                 return;
-            }
+            if (idCli == "0") { Swal.fire("Error", "Seleccione un cliente", "error"); return; }
+            if (tablaDetalleVenta.rows().count() === 0) { Swal.fire("Error", "Detalle vacío", "error"); return; }
 
             let oVenta = {
-                CLIENTE_id_cliente: parseInt(idCliente),
-                TIPO_PAGO_id_tipo_pago: parseInt(idTipoPago),
-                //USUARIO_id_usuario: parseInt(idUsuario),
-                //TIENDA_id_tienda: parseInt(idTienda),
-                monto_total: montoTotal,
+                CLIENTE_id_cliente: parseInt(idCli),
+                TIPO_PAGO_id_tipo_pago: parseInt(idTP),
+                monto_total: total,
                 oDetalleVenta: []
             };
 
             tablaDetalleVenta.rows().every(function () {
-                let data = this.data();
+                let d = this.data();
                 oVenta.oDetalleVenta.push({
-                    PRODUCTO_id_producto: data.PRODUCTO_id_producto, 
-                    SERVICIO_id_servicio: data.SERVICIO_id_servicio, 
-                    cantidad: parseInt(data.cantidad),
-                    precio: parseFloat(data.precio),
-                    sub_total: parseFloat(data.sub_total),
-                    tipo_item: data.tipo_item
+                    PRODUCTO_id_producto: d.PRODUCTO_id_producto,
+                    SERVICIO_id_servicio: d.SERVICIO_id_servicio,
+                    cantidad: d.cantidad, precio: d.precio, sub_total: d.sub_total, tipo_item: d.tipo_item
                 });
             });
 
-            jQuery.ajax({
+            $(".card-body").LoadingOverlay("show");
+
+            $.ajax({
                 url: '@Url.Action("RegistrarVenta", "Operaciones")',
                 type: 'POST',
                 data: JSON.stringify({ objetoVenta: JSON.stringify(oVenta) }),
-                dataType: 'json',
                 contentType: 'application/json; charset=utf-8',
                 success: function (data) {
                     $(".card-body").LoadingOverlay("hide");
-
                     if (data.operacionExitosa) {
-                        Swal.fire({
-                            title: '¡Venta Registrada!',
-                            text: 'La venta se ha registrado exitosamente. ¿Desea imprimir un comprobante?',
-                            icon: 'success',
-                            showDenyButton: true, 
-                            showCancelButton: true, 
-                            confirmButtonText: 'Imprimir Factura Formal',
-                            denyButtonText: 'Imprimir Recibo Térmico',
-                            cancelButtonText: 'Cerrar',
-                            reverseButtons: true 
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                window.open('@Url.Action("GenerarFacturaFormal", "Operaciones")?idVenta=' + data.idVenta, '_blank');
-                            } else if (result.isDenied) {
-                                window.open('@Url.Action("GenerarReciboTermico", "Operaciones")?idVenta=' + data.idVenta, '_blank');
-                            }
-                            limpiarFormularioVenta(); 
-                        });
+                        Swal.fire("Venta Registrada", "La venta #" + data.idVenta + " se guardó correctamente.", "success");
+                        limpiarTodo();
                     } else {
-                        Swal.fire({
-                            title: 'Error al Registrar Venta',
-                            text: data.mensaje,
-                            icon: 'error',
-                            confirmButtonText: 'Aceptar'
-                        });
+                        Swal.fire("Error", data.mensaje, "error");
                     }
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    console.log(jqXHR.responseText);
-                    $(".card-body").LoadingOverlay("hide");
-                    Swal.fire({
-                        title: 'Error de Conexión',
-                        text: 'Error al registrar la venta: ' + textStatus + ' - ' + errorThrown,
-                        icon: 'error',
-                        confirmButtonText: 'Aceptar'
-                    });
-                },
-                beforeSend: function () {
-                    $(".card-body").LoadingOverlay("show", {
-                        imageResizeFactor: 2,
-                        text: "Registrando venta...",
-                        size: 24
-                    });
                 }
             });
         });
+
+        function limpiarTodo() {
+            $("#txtIdClienteSeleccionado").val("0");
+            $("#txtNombreClienteSeleccionado").val("");
+            tablaDetalleVenta.clear().draw();
+            calcularTotal();
+            resetItemFields();
+        }
     </script>
 }
